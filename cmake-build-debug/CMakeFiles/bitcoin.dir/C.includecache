@@ -9,6 +9,8 @@
 /home/msi/CLionProjects/bitcoin/main.c
 stdio.h
 -
-unistd.h
+stdlib.h
+-
+string.h
 -
 
