@@ -1,37 +1,48 @@
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[]) {
+    int i;
 
-    int opt;
-
-    // put ':' in the starting of the
-    // string so that program can
-    //distinguish between '?' and ':'
-    while ((opt = getopt(argc, argv, ":if:lrx")) != -1) {
-        switch (opt) {
-            case 'i':
-            case 'l':
-            case 'r':
-                printf("option: %c\n", opt);
-                break;
-            case 'f':
-                printf("filename: %s\n", optarg);
-                break;
-            case ':':
-                printf("option needs a value\n");
-                break;
-            case '?':
-                printf("unknown option: %c\n", optopt);
-                break;
+    for (i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "-a") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
+        } else if (strcmp(argv[i], "-t") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
+        } else if (strcmp(argv[i], "-v") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
+        } else if (strcmp(argv[i], "-h1") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
+        } else if (strcmp(argv[i], "-h2") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
+        } else if (strcmp(argv[i], "-b") == 0) {
+            if (argv[i + 1] != NULL && argv[i + 1][0] != '-') {
+                fprintf(stdout, "Argument %s receive the value: %s\n", argv[i], argv[i + 1]);
+            } else {
+                fprintf(stderr, "Argument %s receive wrong value: %s\n", argv[i], argv[i + 1]);
+            }
         }
     }
-
-    // optind is for the extra arguments
-    // which are not parsed
-    for (; optind < argc; optind++) {
-        printf("extra arguments: %s\n", argv[optind]);
-    }
-
-    return 0;
+    return EXIT_SUCCESS;
 }
