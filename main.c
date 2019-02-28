@@ -10,7 +10,8 @@ void readOptions(int argc, char **argv, char **a, char **t, int *v, int *h1, int
 
 int main(int argc, char *argv[]) {
     int i, b = 0, v = 0, h1 = 0, h2 = 0;
-    char  buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL;
+    char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL;
+    FILE *fp_a = NULL, *fp_t = NULL;
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
@@ -22,33 +23,63 @@ int main(int argc, char *argv[]) {
     printf("h2: %d\n", h2);
     printf("b: %d\n", b);
 
-    FILE *fp = fopen(a, "r");
-    if (fp != NULL) {
+    /*Open & read bitCoinBalancesFile*/
+    fp_a = fopen(a, "r");
+    if (fp_a != NULL) {
 
-/*        while (fgets(buf, LINE_SIZE, fp) != NULL) {
-            token = strtok(buf + 1, ",");
+        while (fgets(buf, LINE_SIZE, fp_a) != NULL) {
 
-            token = strtok(NULL, ",");
+            token = strtok(buf, " ");
 
-            token++;
-            token[strlen(token) - 1] = 0;
-            strncpy(primaryRecord.name, token, sizeof(primaryRecord.name));
+            printf("%s ", token);
 
-            token = strtok(NULL, ",");
-            token++;
-            token[strlen(token) - 1] = 0;
-            strncpy(primaryRecord.surname, token, sizeof(primaryRecord.surname));
+            do {
+                token = strtok(NULL, " ");
+                if (token != NULL)
+                    printf("%s ", token);
+            } while (token != NULL);
 
-            token = strtok(NULL, "}");
-            strncpy(primaryRecord.address, token, sizeof(primaryRecord.address));
-
-            HT_InsertEntry(info, primaryRecord);
-        }*/
+            printf("\n");
+        }
 
     } else {
-        fprintf(stderr, "File '%s' doesn't exists!\n", argv[i + 1]);
+        fprintf(stderr, "File '%s' doesn't exists!\n", a);
         exit(1);
     }
+
+    /*Open & read transactionsFile*/
+    fp_t = fopen(t, "r");
+    if (fp_t != NULL) {
+
+        while (fgets(buf, LINE_SIZE, fp_t) != NULL) {
+
+            token = strtok(buf, " ");
+
+            printf("%s ", token);
+
+            do {
+                token = strtok(NULL, " ");
+                if (token != NULL)
+                    printf("%s ", token);
+            } while (token != NULL);
+
+            printf("\n");
+        }
+
+    } else {
+        fprintf(stderr, "File '%s' doesn't exists!\n", t);
+        exit(1);
+    }
+
+
+
+
+
+
+
+
+
+
 
     return EXIT_SUCCESS;
 }
