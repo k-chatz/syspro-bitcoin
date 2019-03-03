@@ -78,6 +78,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/msi/CLionProjects/bitcoin/list.c">
+			<Option target="bitcoin"/>
+		</Unit>
+		<Unit filename="/home/msi/CLionProjects/bitcoin/list.h">
+			<Option target="bitcoin"/>
+		</Unit>
 		<Unit filename="/home/msi/CLionProjects/bitcoin/main.c">
 			<Option target="bitcoin"/>
 		</Unit>

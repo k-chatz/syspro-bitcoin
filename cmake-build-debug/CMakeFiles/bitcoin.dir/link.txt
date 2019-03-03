@@ -1,1 +1,1 @@
-/usr/bin/cc -g   CMakeFiles/bitcoin.dir/main.c.o  -o bitcoin 
+/usr/bin/cc -g   CMakeFiles/bitcoin.dir/main.c.o CMakeFiles/bitcoin.dir/list.c.o  -o bitcoin 

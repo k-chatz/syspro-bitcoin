@@ -14,7 +14,7 @@ void readOptions(int argc, char **argv, char **a, char **t, int *v, int *h1, int
 
 int main(int argc, char *argv[]) {
     int i, b = 0, v = 0, h1 = 0, h2 = 0;
-    char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL;
+    char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL, *bitCoinId;
     FILE *fp_a = NULL, *fp_t = NULL;
     struct Wallet *wallet;
     /*Read argument options from command line*/
@@ -39,19 +39,44 @@ int main(int argc, char *argv[]) {
 
                 wallet = malloc(sizeof(struct Wallet));
                 wallet->userId = malloc(sizeof(token + 1));
+                listCreate(&wallet->bitcoins);
                 strcpy(wallet->userId, token);
 
-                printf("\n");
+                //TODO eisagogi tou wallet sto hash table, elegxos an isixthi sosta
+                if (1) {
+                    printf("\n");
 
-                do {
-                    token = strtok(NULL, " ");
+                    do {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
 
-                    //if (token != NULL)
-                    //printf("%s ", token);
+                            bitCoinId = malloc(sizeof(token + 1));
+                            strcpy(bitCoinId, token);
+                            listInsert(wallet->bitcoins, bitCoinId);
 
-                } while (token != NULL);
+                            //TODO: eisagogi tou bitcoin sto hash table
+                            // tha ginete kai elegxos gia diplotipa opote
+                            // kaliptete kai i lathos periptosi na exei kapoios
+                            // to idio bitcoin parapano fores h to idio bitcoin
+                            // na briskete se allon.
 
-                printf("\n");
+                            //printf("%s ", token);
+                        }
+
+                    } while (token != NULL);
+
+
+                    char *x ;//= listGetFirstData(wallet->bitcoins);
+
+                    while (x = listNext(wallet->bitcoins) != NULL) {
+                        printf("[%s]\n", x);
+                    }
+
+                    printf("\n");
+
+
+                }
+
             }
         }
 
