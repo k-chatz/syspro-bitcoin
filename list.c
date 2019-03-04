@@ -3,7 +3,6 @@
 #include <assert.h>
 #include "list.h"
 
-
 typedef struct node *nodePtr;
 
 struct list {
@@ -74,6 +73,7 @@ void *listInsert(listPtr list, void *data) {
             return list->current->data;
         }
     }
+    return NULL;
 }
 
 void *listGetFirstData(listPtr list) {

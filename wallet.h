@@ -6,6 +6,7 @@
 struct Wallet {
     char *userId;
     listPtr bitcoins;
+    //todo transactions list
 };
 
 #endif //WALLET_H

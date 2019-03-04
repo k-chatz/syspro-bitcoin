@@ -1,5 +1,5 @@
-#ifndef MALLOC_LIST_H
-#define MALLOC_LIST_H
+#ifndef LIST_H
+#define LIST_H
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -20,4 +20,4 @@ void *listPrevious(listPtr);
 
 void listPrintContent(listPtr list, FILE *out);
 
-#endif //MALLOC_LIST_H
+#endif

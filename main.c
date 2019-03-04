@@ -15,10 +15,15 @@ void readOptions(int argc, char **argv, char **a, char **t, int *v, int *h1, int
 int main(int argc, char *argv[]) {
     int i, b = 0, v = 0, h1 = 0, h2 = 0;
     char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL, *bitCoinId;
-    FILE *fp_a = NULL, *fp_t = NULL;
+    hashtablePtr senderHashTable, receiverHashTable;
+    FILE *fp = NULL;
     struct Wallet *wallet;
+
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
+
+    HT_Create(&senderHashTable, h1, b);
+    HT_Create(&receiverHashTable, h2, b);
 
     printf("a: %s\n", a);
     printf("t: %s\n", t);
@@ -27,10 +32,17 @@ int main(int argc, char *argv[]) {
     printf("h2: %d\n", h2);
     printf("b: %d\n\n", b);
 
+
+    printf("struct Wallet: %lu\n", sizeof(struct Wallet));
+    printf("struct * Wallet: %lu\n", sizeof(struct Wallet *));
+    printf("void *: %lu\n", sizeof(void *));
+    printf("int: %lu\n", sizeof(int));
+
+
     /*Open & read bitCoinBalancesFile*/
-    fp_a = fopen(a, "r");
-    if (fp_a != NULL) {
-        while (fgets(buf, LINE_SIZE, fp_a) != NULL) {
+    fp = fopen(a, "r");
+    if (fp != NULL) {
+        while (fgets(buf, LINE_SIZE, fp) != NULL) {
             token = strtok(buf, "\n");
             token = strtok(token, " ");
             if (token != NULL) {
@@ -42,6 +54,12 @@ int main(int argc, char *argv[]) {
                 listCreate(&wallet->bitcoins);
                 strcpy(wallet->userId, token);
 
+                printf("[%d]", HT_Insert(senderHashTable, wallet));
+
+
+                //HT_Insert(receiverHashTable, wallet);
+
+
                 //TODO eisagogi tou wallet sto hash table, elegxos an isixthi sosta
                 if (1) {
                     printf("\n");
@@ -52,7 +70,9 @@ int main(int argc, char *argv[]) {
 
                             bitCoinId = malloc(sizeof(token + 1));
                             strcpy(bitCoinId, token);
-                            listInsert(wallet->bitcoins, bitCoinId);
+
+
+                            //listInsert(wallet->bitcoins, bitCoinId);
 
                             //TODO: eisagogi tou bitcoin sto hash table
                             // tha ginete kai elegxos gia diplotipa opote
@@ -66,14 +86,13 @@ int main(int argc, char *argv[]) {
                     } while (token != NULL);
 
 
-                    char *x ;//= listGetFirstData(wallet->bitcoins);
+                    /*             char *x ;//= listGetFirstData(wallet->bitcoins);
 
-                    while (x = listNext(wallet->bitcoins) != NULL) {
-                        printf("[%s]\n", x);
-                    }
+                                 while (x = listNext(wallet->bitcoins) != NULL) {
+                                     printf("[%s]\n", x);
+                                 }*/
 
                     printf("\n");
-
 
                 }
 
@@ -86,14 +105,11 @@ int main(int argc, char *argv[]) {
     }
 
 
-    return EXIT_SUCCESS;
-
-
     /*Open & read transactionsFile*/
-    fp_t = fopen(t, "r");
-    if (fp_t != NULL) {
+/*    fp = fopen(t, "r");
+    if (fp != NULL) {
 
-        while (fgets(buf, LINE_SIZE, fp_t) != NULL) {
+        while (fgets(buf, LINE_SIZE, fp) != NULL) {
 
             token = strtok(buf, " ");
 
@@ -111,7 +127,7 @@ int main(int argc, char *argv[]) {
     } else {
         fprintf(stderr, "File '%s' doesn't exists!\n", t);
         exit(1);
-    }
+    }*/
 
     return EXIT_SUCCESS;
 }

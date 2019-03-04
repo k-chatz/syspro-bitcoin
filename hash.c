@@ -1,32 +1,42 @@
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include "hash.h"
 
-struct item *hash_table[2048] = { NULL }; /* Initialize all of them to NULL */
+struct hashtable {
+    int bucketSize;
+    void **table;
+    int size;
+};
 
-/* Calculate the hash */
-int hash_get(int key)
-{
-    /* Extremely simple hash alg, just take the lower bits of the key */
-    return (key % (sizeof(hash_table)/sizeof(hash_table[0])));
+int hash(int size, char *key) {
+    int i, sum = 0;
+    size_t keyLength = strlen(key);
+    for (i = 0; i < keyLength; i++) {
+        sum += key[i];
+    }
+    return sum % size;
 }
 
-void hash_insert(struct item *i)
-{
-    int index = hash_get(i->key);
-
-    /* Insert onto the beginning of the list */
-    i->hash_link = hash_table[index];
-    hash_table[index] = i;
+int HT_Create(hashtablePtr *ht, int size, int bucketSize) {
+    *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
+    if ((*ht) != NULL) {
+        (*ht)->bucketSize = bucketSize;
+        (*ht)->size = size;
+        (*ht)->table = malloc(size * sizeof(void *));
+    }
+   return 0;
 }
 
-struct item *hash_index(int key)
-{
-    int index = hash_get(key);
+void HT_Destroy(hashtablePtr ht) {
+    free(ht->table);
+}
 
-    struct item *cur;
-    for (cur = hash_table[index]; cur; cur = cur->hash_link)
-        if (cur->key == key)
-            return cur;
+int HT_Insert(hashtablePtr ht, struct Wallet *wallet) {
+    int position = hash(ht->size, wallet->userId);
+    return position;
+}
 
-    return NULL;
+void HT_Delete(hashtablePtr ht, unsigned int slot, void *ht_node) {
+
 }
