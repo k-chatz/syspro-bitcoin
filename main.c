@@ -32,13 +32,6 @@ int main(int argc, char *argv[]) {
     printf("h2: %d\n", h2);
     printf("b: %d\n\n", b);
 
-
-    printf("struct Wallet: %lu\n", sizeof(struct Wallet));
-    printf("struct * Wallet: %lu\n", sizeof(struct Wallet *));
-    printf("void *: %lu\n", sizeof(void *));
-    printf("int: %lu\n", sizeof(int));
-
-
     /*Open & read bitCoinBalancesFile*/
     fp = fopen(a, "r");
     if (fp != NULL) {
@@ -55,7 +48,6 @@ int main(int argc, char *argv[]) {
                 strcpy(wallet->userId, token);
 
                 printf("[%d]", HT_Insert(senderHashTable, wallet));
-
 
                 //HT_Insert(receiverHashTable, wallet);
 

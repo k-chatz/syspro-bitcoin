@@ -6,7 +6,7 @@
 
 typedef struct hashtable *hashtablePtr;
 
-int HT_Create(hashtablePtr *ht, int size, int bucketSize);
+int HT_Create(hashtablePtr *ht, int capacity, int bucketSize);
 
 void HT_Destroy(hashtablePtr ht);
 

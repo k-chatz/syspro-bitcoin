@@ -3,10 +3,34 @@
 #include <assert.h>
 #include "hash.h"
 
+void getCount(void *bucket, int bucketSize, int *count) {
+    memcpy(count, bucket + bucketSize - sizeof(int) - sizeof(void *), sizeof(int));
+}
+
+void setCount(void *bucket, int bucketSize, const int count) {
+    memcpy(bucket + bucketSize - sizeof(int) - sizeof(void *), &count, sizeof(int));
+}
+
+void getNext(void *bucket, int bucketSize, void *next) {
+    memcpy(next, bucket + bucketSize - sizeof(void *), sizeof(void *));
+}
+
+void setNext(void *bucket, int bucketSize, const void *next) {
+    memcpy(bucket + bucketSize - sizeof(void *), &next, sizeof(void *));
+}
+
+void getRecord(void *bucket, const int offset, struct Wallet *wallet) {
+    memcpy(wallet, bucket + offset * sizeof(struct Wallet *), sizeof(struct Wallet *));
+}
+
+void setRecord(void *bucket, const int offset, const struct Wallet *wallet) {
+    memcpy(bucket + offset * sizeof(struct Wallet *), wallet, sizeof(struct Wallet *));
+}
+
 struct hashtable {
     int bucketSize;
     void **table;
-    int size;
+    int capacity;
 };
 
 int hash(int size, char *key) {
@@ -18,14 +42,18 @@ int hash(int size, char *key) {
     return sum % size;
 }
 
-int HT_Create(hashtablePtr *ht, int size, int bucketSize) {
+int HT_Create(hashtablePtr *ht, int capacity, int bucketSize) {
+    int i;
     *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
     if ((*ht) != NULL) {
         (*ht)->bucketSize = bucketSize;
-        (*ht)->size = size;
-        (*ht)->table = malloc(size * sizeof(void *));
+        (*ht)->capacity = capacity;
+        (*ht)->table = malloc(sizeof(void *) * capacity);
+        for (i = 0; i < capacity; i++) {
+            (*ht)->table[i] = NULL;
+        }
     }
-   return 0;
+    return 0;
 }
 
 void HT_Destroy(hashtablePtr ht) {
@@ -33,7 +61,21 @@ void HT_Destroy(hashtablePtr ht) {
 }
 
 int HT_Insert(hashtablePtr ht, struct Wallet *wallet) {
-    int position = hash(ht->size, wallet->userId);
+    int count = 0, position = 0;
+    void *bucket = NULL;
+    position = hash(ht->capacity, wallet->userId);
+    bucket = ht->table[position];
+    if (bucket == NULL) {
+        bucket = malloc((size_t) ht->bucketSize);
+        setRecord(bucket, 0, wallet);
+        setCount(bucket, ht->bucketSize, 1);
+        setNext(bucket, ht->bucketSize, NULL);
+        ht->table[position] = bucket;
+    } else {
+        printf("BUCKET IS NOT NEW! ");
+        getCount(bucket, ht->bucketSize, &count);
+        printf("count = %d\n", count);
+    }
     return position;
 }
 
