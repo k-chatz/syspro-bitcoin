@@ -12,18 +12,51 @@ void wrongOptionValue(char *opt, char *val);
 
 void readOptions(int argc, char **argv, char **a, char **t, int *v, int *h1, int *h2, int *b);
 
+int cmpWalletId(void *s1, void *s2) {
+    return strcmp((char *) s1, (char *) s2);
+}
+
+/*
+unsigned long int hash(void *element, void *params) {
+    int ascii;
+    params_t *parm = (params_t *) params;
+    char *strkey = ((vertex_t *) element)->id;
+    unsigned long int hv = parm->seed;
+    while ((ascii = *(strkey++)))
+        hv = ((hv << 5) + hv) ^ ascii;
+
+    return (((hv * parm->a) + parm->b) % parm->p) % parm->m;
+}
+
+*/
+
+typedef struct Params {
+    unsigned long int capacity;
+} params_t;
+
+unsigned long int hash(char *key, params_t *params) {
+    int i, sum = 0;
+    size_t keyLength = strlen(key);
+    for (i = 0; i < keyLength; i++) {
+        sum += key[i];
+    }
+    return sum % params->capacity;
+}
+
 int main(int argc, char *argv[]) {
     int i, b = 0, v = 0, h1 = 0, h2 = 0;
     char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL, *bitCoinId;
-    hashtablePtr senderHashTable, receiverHashTable;
+    hashtablePtr senderHashTable;
     FILE *fp = NULL;
     struct Wallet *wallet;
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
 
-    HT_Create(&senderHashTable, h1, b);
-    HT_Create(&receiverHashTable, h2, b);
+    params_t p1;
+    p1.capacity = (unsigned long) h1;
+    HT_Create(&senderHashTable, p1.capacity, b, cmpWalletId, (unsigned long (*)(void *, void *)) hash, &p1);
+
 
     printf("a: %s\n", a);
     printf("t: %s\n", t);
@@ -31,6 +64,7 @@ int main(int argc, char *argv[]) {
     printf("h1: %d\n", h1);
     printf("h2: %d\n", h2);
     printf("b: %d\n\n", b);
+
 
     /*Open & read bitCoinBalancesFile*/
     fp = fopen(a, "r");
@@ -42,14 +76,15 @@ int main(int argc, char *argv[]) {
 
                 printf("%s ", token);
 
+                //createWallet(token, &wallet);
+
                 wallet = malloc(sizeof(struct Wallet));
                 wallet->userId = malloc(sizeof(token + 1));
                 listCreate(&wallet->bitcoins);
                 strcpy(wallet->userId, token);
 
-                printf("[%d]", HT_Insert(senderHashTable, wallet));
 
-                //HT_Insert(receiverHashTable, wallet);
+                printf("[%lu]", HT_Insert(senderHashTable, wallet->userId, wallet));
 
 
                 //TODO eisagogi tou wallet sto hash table, elegxos an isixthi sosta

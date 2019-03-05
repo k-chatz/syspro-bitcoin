@@ -19,30 +19,28 @@ void setNext(void *bucket, int bucketSize, const void *next) {
     memcpy(bucket + bucketSize - sizeof(void *), &next, sizeof(void *));
 }
 
-void getRecord(void *bucket, const int offset, struct Wallet *wallet) {
-    memcpy(wallet, bucket + offset * sizeof(struct Wallet *), sizeof(struct Wallet *));
+void getValue(void *bucket, const int offset, void *value) {
+    memcpy(&value, bucket + offset * sizeof(void *), sizeof(void *));
 }
 
-void setRecord(void *bucket, const int offset, const struct Wallet *wallet) {
-    memcpy(bucket + offset * sizeof(struct Wallet *), wallet, sizeof(struct Wallet *));
+void setValue(void *bucket, const int offset, const void *value) {
+    memcpy(bucket + offset * sizeof(void *), &value, sizeof(void *));
 }
 
 struct hashtable {
     int bucketSize;
     void **table;
-    int capacity;
+    unsigned long int capacity;
+
+    int (*cmp )(void *, void *);
+
+    unsigned long int (*hash)(void *key, void *params);
+
+    void *params;
 };
 
-int hash(int size, char *key) {
-    int i, sum = 0;
-    size_t keyLength = strlen(key);
-    for (i = 0; i < keyLength; i++) {
-        sum += key[i];
-    }
-    return sum % size;
-}
-
-int HT_Create(hashtablePtr *ht, int capacity, int bucketSize) {
+int HT_Create(hashtablePtr *ht, unsigned long capacity, int bucketSize, int (*cmp)(void *, void *),
+              unsigned long (*hash)(void *, void *), void *params) {
     int i;
     *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
     if ((*ht) != NULL) {
@@ -52,6 +50,9 @@ int HT_Create(hashtablePtr *ht, int capacity, int bucketSize) {
         for (i = 0; i < capacity; i++) {
             (*ht)->table[i] = NULL;
         }
+        (*ht)->cmp = cmp;
+        (*ht)->hash = hash;
+        (*ht)->params = params;
     }
     return 0;
 }
@@ -60,20 +61,26 @@ void HT_Destroy(hashtablePtr ht) {
     free(ht->table);
 }
 
-int HT_Insert(hashtablePtr ht, struct Wallet *wallet) {
-    int count = 0, position = 0;
-    void *bucket = NULL;
-    position = hash(ht->capacity, wallet->userId);
+unsigned long int HT_Insert(hashtablePtr ht, char *key, void *v) {
+    int i, count = 0;
+    unsigned long int position = 0;
+    void *bucket = NULL, *value = NULL;
+
+    position = ht->hash(key, ht->params);
     bucket = ht->table[position];
     if (bucket == NULL) {
         bucket = malloc((size_t) ht->bucketSize);
-        setRecord(bucket, 0, wallet);
+        setValue(bucket, 0, v);
         setCount(bucket, ht->bucketSize, 1);
         setNext(bucket, ht->bucketSize, NULL);
         ht->table[position] = bucket;
     } else {
         printf("BUCKET IS NOT NEW! ");
         getCount(bucket, ht->bucketSize, &count);
+        for (i = 0; i < count; i++) {
+            getValue(bucket, i, value);
+            printf("[%p]", value);
+        }
         printf("count = %d\n", count);
     }
     return position;
