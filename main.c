@@ -58,12 +58,12 @@ int main(int argc, char *argv[]) {
     HT_Create(&senderHashTable, p1.capacity, b, cmpWalletId, (unsigned long (*)(void *, void *)) hash, &p1);
 
 
-    printf("a: %s\n", a);
-    printf("t: %s\n", t);
-    printf("v: %d\n", v);
-    printf("h1: %d\n", h1);
-    printf("h2: %d\n", h2);
-    printf("b: %d\n\n", b);
+//    printf("a: %s\n", a);
+//    printf("t: %s\n", t);
+//    printf("v: %d\n", v);
+//    printf("h1: %d\n", h1);
+//    printf("h2: %d\n", h2);
+//    printf("b: %d\n\n", b);
 
 
     /*Open & read bitCoinBalancesFile*/
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
 
                 printf("[%lu]", HT_Insert(senderHashTable, wallet->userId, wallet));
-
+                printf("\n");
 
                 //TODO eisagogi tou wallet sto hash table, elegxos an isixthi sosta
                 if (1) {
@@ -98,23 +98,16 @@ int main(int argc, char *argv[]) {
                             bitCoinId = malloc(sizeof(token + 1));
                             strcpy(bitCoinId, token);
 
-
                             //listInsert(wallet->bitcoins, bitCoinId);
-
                             //TODO: eisagogi tou bitcoin sto hash table
                             // tha ginete kai elegxos gia diplotipa opote
                             // kaliptete kai i lathos periptosi na exei kapoios
                             // to idio bitcoin parapano fores h to idio bitcoin
                             // na briskete se allon.
-
                             //printf("%s ", token);
                         }
-
                     } while (token != NULL);
-
-
-                    /*             char *x ;//= listGetFirstData(wallet->bitcoins);
-
+                    /*           char *x ;//= listGetFirstData(wallet->bitcoins);
                                  while (x = listNext(wallet->bitcoins) != NULL) {
                                      printf("[%s]\n", x);
                                  }*/

@@ -3,6 +3,8 @@
 #include <assert.h>
 #include "hash.h"
 
+typedef void *voidPtr;
+
 void getCount(void *bucket, int bucketSize, int *count) {
     memcpy(count, bucket + bucketSize - sizeof(int) - sizeof(void *), sizeof(int));
 }
@@ -15,21 +17,21 @@ void getNext(void *bucket, int bucketSize, void *next) {
     memcpy(next, bucket + bucketSize - sizeof(void *), sizeof(void *));
 }
 
-void setNext(void *bucket, int bucketSize, const void *next) {
-    memcpy(bucket + bucketSize - sizeof(void *), &next, sizeof(void *));
+void setNext(void *bucket, int bucketSize, void *next) {
+    memcpy(bucket + bucketSize - sizeof(void *), next, sizeof(void *));
 }
 
-void getValue(void *bucket, const int offset, void *value) {
-    memcpy(&value, bucket + offset * sizeof(void *), sizeof(void *));
+void getValue(void *bucket, int bucketSize, void **count) {
+    memcpy(count, bucket + bucketSize - sizeof(int) - sizeof(void *), sizeof(int));
 }
 
-void setValue(void *bucket, const int offset, const void *value) {
-    memcpy(bucket + offset * sizeof(void *), &value, sizeof(void *));
+void setValue(void *bucket, int bucketSize, void *count) {
+    memcpy(bucket + bucketSize - sizeof(int) - sizeof(void *), &count, sizeof(int));
 }
 
 struct hashtable {
     int bucketSize;
-    void **table;
+    void ***table;
     unsigned long int capacity;
 
     int (*cmp )(void *, void *);
@@ -64,7 +66,7 @@ void HT_Destroy(hashtablePtr ht) {
 unsigned long int HT_Insert(hashtablePtr ht, char *key, void *v) {
     int i, count = 0;
     unsigned long int position = 0;
-    void *bucket = NULL, *value = NULL;
+    void *bucket = NULL, *value = NULL, *next = NULL;
 
     position = ht->hash(key, ht->params);
     bucket = ht->table[position];
@@ -72,15 +74,21 @@ unsigned long int HT_Insert(hashtablePtr ht, char *key, void *v) {
         bucket = malloc((size_t) ht->bucketSize);
         setValue(bucket, 0, v);
         setCount(bucket, ht->bucketSize, 1);
-        setNext(bucket, ht->bucketSize, NULL);
+
+        void * b = NULL;
+        //b = malloc((size_t) ht->bucketSize);
+        setNext(bucket, ht->bucketSize, b);
+
         ht->table[position] = bucket;
     } else {
         printf("BUCKET IS NOT NEW! ");
         getCount(bucket, ht->bucketSize, &count);
+
         for (i = 0; i < count; i++) {
             getValue(bucket, i, value);
             printf("[%p]", value);
         }
+
         printf("count = %d\n", count);
     }
     return position;

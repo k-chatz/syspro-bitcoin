@@ -123,6 +123,33 @@ bitcoin/fast:
 	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/build
 .PHONY : bitcoin/fast
 
+hash.o: hash.c.o
+
+.PHONY : hash.o
+
+# target to build an object file
+hash.c.o:
+	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/hash.c.o
+.PHONY : hash.c.o
+
+hash.i: hash.c.i
+
+.PHONY : hash.i
+
+# target to preprocess a source file
+hash.c.i:
+	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/hash.c.i
+.PHONY : hash.c.i
+
+hash.s: hash.c.s
+
+.PHONY : hash.s
+
+# target to generate assembly for a file
+hash.c.s:
+	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/hash.c.s
+.PHONY : hash.c.s
+
 list.o: list.c.o
 
 .PHONY : list.o
@@ -186,6 +213,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... bitcoin"
 	@echo "... edit_cache"
+	@echo "... hash.o"
+	@echo "... hash.i"
+	@echo "... hash.s"
 	@echo "... list.o"
 	@echo "... list.i"
 	@echo "... list.s"

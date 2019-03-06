@@ -6,7 +6,21 @@
 
 #IncludeRegexTransform: 
 
+/home/msi/CLionProjects/bitcoin/hash.c
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+hash.h
 /home/msi/CLionProjects/bitcoin/hash.h
+
+/home/msi/CLionProjects/bitcoin/hash.h
+wallet.h
+/home/msi/CLionProjects/bitcoin/wallet.h
+stdio.h
+-
 
 /home/msi/CLionProjects/bitcoin/list.h
 stdbool.h

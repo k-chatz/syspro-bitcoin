@@ -71,7 +71,7 @@ CMAKE_BINARY_DIR = /home/msi/CLionProjects/bitcoin/cmake-build-debug
 CMakeFiles/bitcoin.dir/all:
 	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/depend
 	$(MAKE) -f CMakeFiles/bitcoin.dir/build.make CMakeFiles/bitcoin.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/msi/CLionProjects/bitcoin/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target bitcoin"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/msi/CLionProjects/bitcoin/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4 "Built target bitcoin"
 .PHONY : CMakeFiles/bitcoin.dir/all
 
 # Include target in all.
@@ -81,7 +81,7 @@ all: CMakeFiles/bitcoin.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/bitcoin.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/msi/CLionProjects/bitcoin/cmake-build-debug/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/msi/CLionProjects/bitcoin/cmake-build-debug/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/bitcoin.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/msi/CLionProjects/bitcoin/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/bitcoin.dir/rule
