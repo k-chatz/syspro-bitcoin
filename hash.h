@@ -4,6 +4,9 @@
 #include "wallet.h"
 #include <stdio.h>
 
+#define HT_ERROR 1;
+#define HT_OK 0;
+
 typedef struct hashtable *hashtablePtr;
 
 int HT_Create(hashtablePtr *ht, unsigned long capacity, int bucketSize, int (*cmp)(void *, void *),
