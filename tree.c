@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "tree.h"
 
 typedef struct Node *nodePtr;
@@ -43,7 +44,13 @@ void treeCreate(treePtr *tree, const long int bid, pointer data) {
     }
 }
 
-void *treeInsert(treePtr tree, void *data) {
+void treeDestroy(treePtr *tree) {
+    assert(*tree != NULL);
+    //TODO Delete all tree nodes!
+    //free(tree);
+}
+
+bool treeInsert(treePtr tree, void *data) {
     assert(tree != NULL);
     assert(data != NULL);
     return NULL;

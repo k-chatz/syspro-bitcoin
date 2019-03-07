@@ -105,16 +105,25 @@ int main(int argc, char *argv[]) {
                             treeCreate(&bc, bid, NULL);
 
                             if (!HT_Insert(bitcoins, &bid, bc)) {
-                                printf("%lu ", bid);
-                            }else{
 
+                            }else{
+                                treeDestroy(&bc);
                             }
+
+                            printf("%lu ", bid);
+
+
                             printf("\n");
                         }
                     } while (token != NULL);
+
+
                 } else {
+
                     destroyWallet(wallet);
                 }
+
+
 
                 printf("\n");
             }

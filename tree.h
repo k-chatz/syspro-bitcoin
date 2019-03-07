@@ -7,6 +7,8 @@ typedef struct Tree *treePtr;
 
 void treeCreate(treePtr *tree, long int bid, void * data);
 
-void *treeInsert(treePtr, void *);
+bool treeInsert(treePtr, void *);
+
+void treeDestroy(treePtr *tree);
 
 #endif
