@@ -5,53 +5,68 @@
 
 typedef void *pointer;
 
-void getCount(pointer bucket, int bucketSize, int *count) {
-    memcpy(count, bucket + bucketSize - sizeof(int) - sizeof(pointer), sizeof(int));
+struct hashtable {
+    unsigned int bucketSize;
+    unsigned long int capacity;
+
+    int (*cmp )(pointer, pointer);
+
+    unsigned long int (*hash)(pointer key, pointer params);
+
+    pointer params;
+    pointer *table;
+};
+
+/***Private functions***/
+
+void _getCount(pointer bucket, unsigned int bucketSize, unsigned int *count) {
+    memcpy(count, bucket + bucketSize - sizeof(unsigned int) - sizeof(pointer), sizeof(unsigned int));
 }
 
-void setCount(pointer bucket, int bucketSize, const int count) {
-    memcpy(bucket + bucketSize - sizeof(int) - sizeof(pointer), &count, sizeof(int));
+void _setCount(pointer bucket, unsigned int bucketSize, const unsigned int count) {
+    memcpy(bucket + bucketSize - sizeof(unsigned int) - sizeof(pointer), &count, sizeof(unsigned int));
 }
 
-void getNext(pointer bucket, int bucketSize, pointer *next) {
+void _getNext(pointer bucket, unsigned int bucketSize, pointer *next) {
     memcpy(next, bucket + bucketSize - sizeof(pointer), sizeof(pointer));
 }
 
-void setNext(pointer bucket, int bucketSize, pointer next) {
+void _setNext(pointer bucket, unsigned int bucketSize, pointer next) {
     memcpy(bucket + bucketSize - sizeof(pointer), &next, sizeof(pointer));
 }
 
-void getValue(pointer bucket, int offset, pointer *value) {
+void _getValue(pointer bucket, unsigned int offset, pointer *value) {
     memcpy(value, bucket + offset, sizeof(pointer));
 }
 
-void setValue(pointer bucket, int offset, pointer value) {
+void _setValue(pointer bucket, unsigned int offset, pointer value) {
     memcpy(bucket + offset, &value, sizeof(pointer));
 }
 
-struct hashtable {
-    int bucketSize;
-    pointer *table;
-    unsigned long int capacity;
-    int (*cmp )(pointer, pointer);
-    unsigned long int (*hash)(pointer key, pointer params);
-    pointer params;
-};
+bool bucketIsFull(pointer bucket, unsigned int count) {
 
-int HT_Create(hashtablePtr *ht, unsigned long capacity, int bucketSize, int (*cmp)(pointer, pointer),
-              unsigned long (*hash)(pointer, pointer), pointer params) {
+   // bucket + bucketSize - sizeof(unsigned int) - sizeof(pointer)
+
+    return 0;
+}
+
+
+/***Public functions***/
+
+bool HT_Create(hashtablePtr *ht, unsigned long capacity, unsigned int bucketSize, int (*cmp)(pointer, pointer),
+               unsigned long (*hash)(pointer, pointer), pointer params) {
     int i;
     *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
     if ((*ht) != NULL) {
         (*ht)->bucketSize = bucketSize;
         (*ht)->capacity = capacity;
+        (*ht)->cmp = cmp;
+        (*ht)->hash = hash;
+        (*ht)->params = params;
         (*ht)->table = malloc(sizeof(pointer) * capacity);
         for (i = 0; i < capacity; i++) {
             (*ht)->table[i] = NULL;
         }
-        (*ht)->cmp = cmp;
-        (*ht)->hash = hash;
-        (*ht)->params = params;
     }
     return 0;
 }
@@ -61,37 +76,56 @@ void HT_Destroy(hashtablePtr ht) {
 }
 
 unsigned long int HT_Insert(hashtablePtr ht, char *key, pointer v) {
-    int i, count = 0;
+    unsigned int count = 0, i;
     unsigned long int position = 0;
     pointer bucket = NULL, value = NULL, next = NULL;
     position = ht->hash(key, ht->params);
+    printf("[%lu] ", position);
     bucket = ht->table[position];
 
+    /* Check if current bucket exists */
     if (bucket == NULL) {
         bucket = malloc((size_t) ht->bucketSize);
-        setValue(bucket, 0, v);
-        setCount(bucket, ht->bucketSize, 1);
-        setNext(bucket, ht->bucketSize, NULL);
+        _setValue(bucket, 0, v);
+        _setCount(bucket, ht->bucketSize, 1);
+        _setNext(bucket, ht->bucketSize, NULL);
         ht->table[position] = bucket;
     } else {
-        printf("BUCKET IS NOT NEW! ");
-        getCount(bucket, ht->bucketSize, &count);
+        printf(":::Collision::: ");
+
+        _getCount(bucket, ht->bucketSize, &count);
+
+        //TODO: CHECK IF CURRENT BUCKET IS FULL
+
+        pointer kati = NULL;
         // Check values for each bucket
         do {
+
             for (i = 0; i < count; i++) {
-                getValue(bucket, i, &value);
+                _getValue(bucket, i, &value);
+
                 if (!ht->cmp(value, v)) {
                     return HT_ERROR;
                 }
+
+                kati = bucket + i + sizeof(pointer);
             }
-            getNext(bucket, ht->bucketSize, &next);
+
+            if (bucketIsFull(bucket, count)) {
+
+            }
+
+            _getNext(bucket, ht->bucketSize, &next);
             bucket = next;
         } while (bucket != NULL);
+
+        //_getValue(bucket, i, &value);
     }
-    printf("[%lu] ", position);
+
 
     return HT_OK;
 }
+
 
 void HT_Delete(hashtablePtr ht, unsigned int slot, pointer ht_node) {
 

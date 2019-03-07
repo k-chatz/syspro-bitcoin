@@ -34,7 +34,7 @@ void destroyWallet(struct Wallet *wallet) {
 }
 
 void readOptions(int argc, char **argv, char **a, char **t, int *v,
-                 unsigned long int *h1, unsigned long int *h2, int *b);
+                 unsigned long int *h1, unsigned long int *h2, unsigned int *b);
 
 int cmpWallet(struct Wallet *w1, struct Wallet *w2) {
     return strcmp(w1->userId, w2->userId);
@@ -65,7 +65,8 @@ unsigned long int bitCoinHash(char *key, params_t *params) {
 }
 
 int main(int argc, char *argv[]) {
-    int i, b = 0, v = 0;
+    int i, v = 0;
+    unsigned int b = 0;
     unsigned long int h1 = 0, h2 = 0;
     char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL, *bitCoinId;
     hashtablePtr wallets, bitcoins;
@@ -107,7 +108,7 @@ int main(int argc, char *argv[]) {
                         }
                     } while (token != NULL);
                 } else {
-                    fprintf(stderr, "Wallet '%s' already exists!\n", wallet->userId);
+                    printf("Wallet '%s' already exists! ", wallet->userId);
                     destroyWallet(wallet);
                 }
                 printf("\n");
@@ -146,8 +147,8 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 
-void
-readOptions(int argc, char **argv, char **a, char **t, int *v, unsigned long int *h1, unsigned long int *h2, int *b) {
+void readOptions(int argc, char **argv, char **a, char **t, int *v,
+                 unsigned long int *h1, unsigned long int *h2, unsigned int *b) {
     int i;
     char *opt, *optVal;
     for (i = 1; i < argc; ++i) {

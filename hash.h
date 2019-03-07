@@ -9,7 +9,7 @@
 
 typedef struct hashtable *hashtablePtr;
 
-int HT_Create(hashtablePtr *ht, unsigned long capacity, int bucketSize, int (*cmp)(void *, void *),
+bool HT_Create(hashtablePtr *ht, unsigned long capacity, unsigned int bucketSize, int (*cmp)(void *, void *),
               unsigned long (*hash)(void *, void *), void * params);
 
 void HT_Destroy(hashtablePtr ht);
