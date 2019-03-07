@@ -5,7 +5,7 @@
 
 typedef void *pointer;
 
-struct hashtable {
+struct Hashtable {
     unsigned int bucketSize;
     unsigned long int capacity;
 
@@ -16,6 +16,7 @@ struct hashtable {
     pointer params;
     pointer *table;
 };
+
 
 /***Private functions***/
 
@@ -53,13 +54,14 @@ const pointer _allocBucket(unsigned int size) {
     return bucket;
 }
 
+
 /***Public functions***/
 
 bool HT_Create(hashtablePtr *ht, unsigned long capacity, unsigned int bucketSize, int (*cmp)(pointer, pointer),
                unsigned long (*hash)(pointer, pointer), pointer params) {
     assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned int));
     int i;
-    *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
+    *ht = (hashtablePtr) malloc(sizeof(struct Hashtable));
     if ((*ht) != NULL) {
         (*ht)->bucketSize = bucketSize;
         (*ht)->capacity = capacity;
@@ -74,26 +76,20 @@ bool HT_Create(hashtablePtr *ht, unsigned long capacity, unsigned int bucketSize
     return 0;
 }
 
-void HT_Destroy(hashtablePtr ht) {
-    free(ht->table);
-}
-
-unsigned long int HT_Insert(hashtablePtr ht, char *key, pointer v) {
+int HT_Insert(hashtablePtr ht, pointer key, pointer value) {
     unsigned int count = 0, slots = 0, i = 0;
-    unsigned long int position = 0;
-    pointer bucket = NULL, value = NULL, next = NULL;
-    position = ht->hash(key, ht->params);
-    printf("\tPOSITION --> [%lu] VALUE --> [%p] ", position, v);
-    bucket = ht->table[position];
+    unsigned long int index = 0;
+    pointer bucket = NULL, v = NULL, next = NULL;
+    index = ht->hash(key, ht->params);
+    printf("\tPOSITION --> [%lu] VALUE --> [%p] ", index, value);
+    bucket = ht->table[index];
 
     /* Check if current bucket exists */
     if (bucket == NULL) {
-
         bucket = _allocBucket(ht->bucketSize);
-        _setValue(bucket, 0, v);
+        _setValue(bucket, 0, value);
         _setCount(bucket, ht->bucketSize, 1);
-
-        ht->table[position] = bucket;
+        ht->table[index] = bucket;
     } else {
         printf(" --> !!! Collision !!! ");
         next = bucket;
@@ -104,8 +100,8 @@ unsigned long int HT_Insert(hashtablePtr ht, char *key, pointer v) {
             _getCount(bucket, ht->bucketSize, &count);
             slots = _getEmptySlots(ht->bucketSize, count);
             for (i = 0; i < count; i++) {
-                _getValue(bucket, i, &value);
-                if (!ht->cmp(value, v)) {
+                _getValue(bucket, i, &v);
+                if (!ht->cmp(v, value)) {
                     printf(":::DUPLICATE::: ");
                     return HT_ERROR;
                 }
@@ -119,20 +115,20 @@ unsigned long int HT_Insert(hashtablePtr ht, char *key, pointer v) {
         /*Check if there are exists empty slots at the last bucket*/
         if (slots) {
             printf(":::BUCKET [%p] HAS %d SLOTS::: ", bucket, slots - 1);
-            _setValue(bucket, i, v);
+            _setValue(bucket, i, value);
             _setCount(bucket, ht->bucketSize, count + 1);
         } else {
             printf(":::BUCKET [%p] IS FULL::: ", bucket);
             pointer b = _allocBucket(ht->bucketSize);
             printf(" --> ALLOCATE BUCKET [%p] ", b);
             _setNext(bucket, ht->bucketSize, b);
-            _setValue(b, 0, v);
+            _setValue(b, 0, value);
             _setCount(b, ht->bucketSize, 1);
         }
     }
     return HT_OK;
 }
 
-void HT_Delete(hashtablePtr ht, unsigned int slot, pointer ht_node) {
-
+void HT_Destroy(hashtablePtr ht) {
+    free(ht->table);
 }

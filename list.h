@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-typedef struct list *listPtr;
+typedef struct List *listPtr;
 
 bool listExists(listPtr *list);
 

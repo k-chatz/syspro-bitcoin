@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
-
 #include "list.h"
+#include "tree.h"
 #include "wallet.h"
 
 #define LINE_SIZE 256
@@ -40,10 +40,9 @@ int cmpWallet(struct Wallet *w1, struct Wallet *w2) {
     return strcmp(w1->userId, w2->userId);
 }
 
-
 //TODO: Struct Tree * bitcoin;
-int cmpBitcoin(struct Wallet *w1, struct Wallet *w2) {
-    return strcmp(w1->userId, w2->userId);
+int cmpBitCoin(const long int *bid1, const long int *bid2) {
+    return *bid1 != *bid2;
 }
 
 unsigned long int walletHash(char *key, params_t *params) {
@@ -55,21 +54,19 @@ unsigned long int walletHash(char *key, params_t *params) {
     return sum % params->capacity;
 }
 
-unsigned long int bitCoinHash(char *key, params_t *params) {
-    int i, sum = 0;
-    size_t keyLength = strlen(key);
-    for (i = 0; i < keyLength; i++) {
-        sum += key[i];
-    }
-    return sum % params->capacity;
+unsigned long int bitCoinHash(const long int *bid1, params_t *params) {
+    return *bid1 % params->capacity;
 }
 
 int main(int argc, char *argv[]) {
     int i, v = 0;
+    long int bid = 0;
     unsigned int b = 0;
     unsigned long int h1 = 0, h2 = 0;
-    char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL, *bitCoinId;
+    char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL;
     hashtablePtr wallets, bitcoins;
+    treePtr bc = NULL;
+
     FILE *fp = NULL;
     struct Wallet *wallet;
 
@@ -85,7 +82,7 @@ int main(int argc, char *argv[]) {
     /*Create hashtable for Bitcoins*/
     params_t bp;
     bp.capacity = h2;
-    HT_Create(&bitcoins, bp.capacity, b, (int (*)(pointer, pointer)) cmpBitcoin,
+    HT_Create(&bitcoins, bp.capacity, b, (int (*)(pointer, pointer)) cmpBitCoin,
               (unsigned long (*)(pointer, pointer)) bitCoinHash, &bp);
 
     /*Open & read bitCoinBalancesFile*/
@@ -97,17 +94,28 @@ int main(int argc, char *argv[]) {
             if (token != NULL) {
                 printf("%s ", token);
                 wallet = createWallet(token);
+
                 // Insert wallet, check if the insertion fails
-                if (!HT_Insert(wallets, wallet->userId, wallet)) {
+                if ( /*!HT_Insert(wallets, wallet->userId, wallet)*/ 1  ) {
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
-                            // printf("%s ", token);
+                            bc = NULL;
+                            bid = strtol(token, NULL, 10);
+                            treeCreate(&bc, bid, NULL);
+
+                            if (!HT_Insert(bitcoins, &bid, bc)) {
+                                printf("%lu ", bid);
+                            }else{
+
+                            }
+                            printf("\n");
                         }
                     } while (token != NULL);
                 } else {
                     destroyWallet(wallet);
                 }
+
                 printf("\n");
             }
         }

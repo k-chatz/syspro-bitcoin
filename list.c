@@ -3,32 +3,32 @@
 #include <assert.h>
 #include "list.h"
 
-typedef struct node *nodePtr;
+typedef struct Node *nodePtr;
 
-struct list {
+struct List {
     nodePtr start;
     nodePtr current;
 };
 
-struct node {
+struct Node {
     nodePtr right, left;
     void *data;
 };
 
-int _existsNode(nodePtr node) {
+int l_existsNode(nodePtr node) {
     return node != NULL;
 }
 
-int _isFirst(nodePtr target) {
+int l_isFirst(nodePtr target) {
     return target->left == NULL;
 }
 
-int _isLast(nodePtr node) {
+int l_isLast(nodePtr node) {
     return node->right == NULL;
 }
 
-nodePtr _createNode() {
-    nodePtr node = (nodePtr) malloc(sizeof(struct node));
+nodePtr l_createNode() {
+    nodePtr node = (nodePtr) malloc(sizeof(struct Node));
     if (node != NULL) {
         node->right = NULL;
         node->left = NULL;
@@ -54,7 +54,7 @@ bool listExists(listPtr *list) {
 
 void listCreate(listPtr *list) {
     assert(*list == NULL);
-    *list = (listPtr) malloc(sizeof(struct list));
+    *list = (listPtr) malloc(sizeof(struct List));
     if ((*list) != NULL) {
         (*list)->start = NULL;
         (*list)->current = NULL;
@@ -64,7 +64,7 @@ void listCreate(listPtr *list) {
 void *listInsert(listPtr list, void *data) {
     assert(list != NULL);
     assert(data != NULL);
-    nodePtr newNode = _createNode();
+    nodePtr newNode = l_createNode();
     if (newNode != NULL) {
         newNode = _attachNode(list, newNode);
         if (newNode != NULL) {
@@ -86,7 +86,7 @@ void *listGetFirstData(listPtr list) {
 
 void *listNext(listPtr list) {
     assert(list != NULL);
-    if (!_isLast(list->current)) {
+    if (!l_isLast(list->current)) {
         list->current = list->current->right;
         return list->current->data;
     }
