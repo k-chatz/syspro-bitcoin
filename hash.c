@@ -36,25 +36,28 @@ void _setNext(pointer bucket, unsigned int bucketSize, pointer next) {
 }
 
 void _getValue(pointer bucket, unsigned int offset, pointer *value) {
-    memcpy(value, bucket + offset, sizeof(pointer));
+    memcpy(value, bucket + offset * sizeof(pointer), sizeof(pointer));
 }
 
 void _setValue(pointer bucket, unsigned int offset, pointer value) {
-    memcpy(bucket + offset, &value, sizeof(pointer));
+    memcpy(bucket + offset * sizeof(pointer), &value, sizeof(pointer));
 }
 
-bool bucketIsFull(pointer bucket, unsigned int count) {
-
-   // bucket + bucketSize - sizeof(unsigned int) - sizeof(pointer)
-
-    return 0;
+unsigned int _getEmptySlots(unsigned int bucketSize, unsigned int count) {
+    return (bucketSize - sizeof(pointer) - sizeof(unsigned int)) / sizeof(pointer) - count;
 }
 
+const pointer _allocBucket(unsigned int size) {
+    pointer bucket = malloc((size_t) size);
+    _setNext(bucket, size, NULL);
+    return bucket;
+}
 
 /***Public functions***/
 
 bool HT_Create(hashtablePtr *ht, unsigned long capacity, unsigned int bucketSize, int (*cmp)(pointer, pointer),
                unsigned long (*hash)(pointer, pointer), pointer params) {
+    assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned int));
     int i;
     *ht = (hashtablePtr) malloc(sizeof(struct hashtable));
     if ((*ht) != NULL) {
@@ -76,56 +79,59 @@ void HT_Destroy(hashtablePtr ht) {
 }
 
 unsigned long int HT_Insert(hashtablePtr ht, char *key, pointer v) {
-    unsigned int count = 0, i;
+    unsigned int count = 0, slots = 0, i = 0;
     unsigned long int position = 0;
     pointer bucket = NULL, value = NULL, next = NULL;
     position = ht->hash(key, ht->params);
-    printf("[%lu] ", position);
+    printf("\tPOSITION --> [%lu] VALUE --> [%p] ", position, v);
     bucket = ht->table[position];
 
     /* Check if current bucket exists */
     if (bucket == NULL) {
-        bucket = malloc((size_t) ht->bucketSize);
+
+        bucket = _allocBucket(ht->bucketSize);
         _setValue(bucket, 0, v);
         _setCount(bucket, ht->bucketSize, 1);
-        _setNext(bucket, ht->bucketSize, NULL);
+
         ht->table[position] = bucket;
     } else {
-        printf(":::Collision::: ");
+        printf(" --> !!! Collision !!! ");
+        next = bucket;
 
-        _getCount(bucket, ht->bucketSize, &count);
-
-        //TODO: CHECK IF CURRENT BUCKET IS FULL
-
-        pointer kati = NULL;
-        // Check values for each bucket
-        do {
-
+        /* Check each bucket to detect possibly duplicate values and
+         * determine where is the target slot to write the new value.*/
+        while (next != NULL) {
+            _getCount(bucket, ht->bucketSize, &count);
+            slots = _getEmptySlots(ht->bucketSize, count);
             for (i = 0; i < count; i++) {
                 _getValue(bucket, i, &value);
-
                 if (!ht->cmp(value, v)) {
+                    printf(":::DUPLICATE::: ");
                     return HT_ERROR;
                 }
-
-                kati = bucket + i + sizeof(pointer);
             }
-
-            if (bucketIsFull(bucket, count)) {
-
-            }
-
             _getNext(bucket, ht->bucketSize, &next);
-            bucket = next;
-        } while (bucket != NULL);
+            if (next != NULL) {
+                bucket = next;
+            }
+        };
 
-        //_getValue(bucket, i, &value);
+        /*Check if there are exists empty slots at the last bucket*/
+        if (slots) {
+            printf(":::BUCKET [%p] HAS %d SLOTS::: ", bucket, slots - 1);
+            _setValue(bucket, i, v);
+            _setCount(bucket, ht->bucketSize, count + 1);
+        } else {
+            printf(":::BUCKET [%p] IS FULL::: ", bucket);
+            pointer b = _allocBucket(ht->bucketSize);
+            printf(" --> ALLOCATE BUCKET [%p] ", b);
+            _setNext(bucket, ht->bucketSize, b);
+            _setValue(b, 0, v);
+            _setCount(b, ht->bucketSize, 1);
+        }
     }
-
-
     return HT_OK;
 }
-
 
 void HT_Delete(hashtablePtr ht, unsigned int slot, pointer ht_node) {
 

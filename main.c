@@ -102,13 +102,10 @@ int main(int argc, char *argv[]) {
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
-                            printf("%s ", token);
-
-
+                            // printf("%s ", token);
                         }
                     } while (token != NULL);
                 } else {
-                    printf("Wallet '%s' already exists! ", wallet->userId);
                     destroyWallet(wallet);
                 }
                 printf("\n");
