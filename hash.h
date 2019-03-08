@@ -4,9 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define HT_ERROR 1;
-#define HT_OK 0;
-
 typedef struct Hashtable *hashtable;
 
 bool HT_Create(hashtable *ht, unsigned long capacity, unsigned long int bucketSize, int (*cmp)(void *, void *),

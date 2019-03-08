@@ -103,7 +103,7 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
                 _getValue(bucket, i, &v);
                 if (!ht->cmp(v, value)) {
                     //printf(":::DUPLICATE::: ");
-                    return HT_ERROR;
+                    return false;
                 }
             }
             _getNext(bucket, ht->bucketSize, &next);
@@ -126,7 +126,7 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
             _setCount(b, ht->bucketSize, 1);
         }
     }
-    return HT_OK;
+    return true;
 }
 
 void HT_Destroy(hashtable ht) {

@@ -28,8 +28,8 @@ int l_isFirst(nodePtr target) {
     return target->left == NULL;
 }
 
-int l_isLast(nodePtr node) {
-    return node->right == NULL;
+int l_isEmpty(listPtr list) {
+    return list->start == NULL;
 }
 
 nodePtr l_createNode() {
@@ -40,17 +40,6 @@ nodePtr l_createNode() {
         return node;
     } else
         return NULL;
-}
-
-nodePtr _attachNode(listPtr list, nodePtr newNode) {
-    assert(list != NULL);
-    assert(newNode != NULL);
-    newNode->right = list->start;
-    if (list->start != NULL)
-        list->start->left = newNode;
-    list->start = newNode;
-    //list->current = newNode;
-    return newNode;
 }
 
 bool listExists(listPtr *list) {
@@ -69,46 +58,34 @@ void listCreate(listPtr *list) {
     }
 }
 
-pointer listInsert(listPtr list, pointer data) {
+bool listInsert(listPtr list, pointer data) {
     assert(list != NULL);
     assert(data != NULL);
     nodePtr newNode = l_createNode();
     if (newNode != NULL) {
-
-
-        //newNode = _attachNode(list, newNode);
-
+        newNode->data = data;
         newNode->right = list->start;
-        if (list->start != NULL)
+        if (!l_isEmpty(list))
             list->start->left = newNode;
         list->start = newNode;
-        //list->current = newNode;
-
-
-        if (newNode != NULL) {
-            list->current = newNode;
-            list->current->data = data;
-            return list->current->data;
-        }
-
-
+        list->current = newNode;
+        return true;
     }
-    return NULL;
-}
-
-pointer listGetFirstData(listPtr list) {
-    assert(list != NULL);
-    if (list->start != NULL)
-        return list->start->data;
-    else
-        return NULL;
+    return false;
 }
 
 pointer listNext(listPtr list) {
     assert(list != NULL);
-    if (list->current != NULL && !l_isLast(list->current)) {
+    nodePtr tmp = NULL;
+    if (list->current != NULL) {
+        tmp = list->current;
         list->current = list->current->right;
-        return list->current->data;
+        return tmp->data;
     }
     return NULL;
+}
+
+void listDestroy(listPtr list){
+
+
 }

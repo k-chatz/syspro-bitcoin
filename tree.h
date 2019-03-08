@@ -2,7 +2,6 @@
 #define TREE_H
 
 #include <stdio.h>
-
 #include "wallet.h"
 
 typedef struct Tree *treePtr;

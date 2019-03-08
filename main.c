@@ -93,27 +93,33 @@ int main(int argc, char *argv[]) {
                 printf("%s \n", token);
                 wallet = createWallet(token);
 
-                // Insert wallet, check if the insertion fails
-                if (!HT_Insert(wallets, wallet->userId, wallet)) {
+                /*Insert wallet, check if the insertion fails*/
+                if (HT_Insert(wallets, wallet->userId, wallet)) {
+
+                    /*Read bitcoins for current wallet*/
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
                             bc = NULL;
                             bid = (unsigned long) strtol(token, NULL, 10);
 
-                            printf("%lu ", bid);
                             /*Create bitcoin & insert bitcoin into hashtable*/
                             treeCreate(&bc, bid, wallet, v);
-
-                            printf("[%p] \n", bc);
+                            printf("%lu [%p] \n", bid, bc);
 
                             /*Insert bitcoin into bitcoins hashtable*/
-                            if (!HT_Insert(bitCoins, &bid, bc)) {
+                            if (HT_Insert(bitCoins, &bid, bc)) {
+
                                 /*Insert bitcoin (pointer to tree) in wallet's bitcoin list*/
-                                listInsert(wallet->bitcoins, bc);
+                                if (!listInsert(wallet->bitcoins, bc)) {
+                                    fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
+                                    listDestroy(wallet->bitcoins);
+                                    exit(EXIT_FAILURE);
+                                };
                             } else {
-                                fprintf(stderr, "Bitcoin [%p] was not inserted because is duplicate!\n", bc);
+                                fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
                                 treeDestroy(&bc);
+                                exit(EXIT_FAILURE);
                             }
                         }
                     } while (token != NULL);
@@ -121,24 +127,60 @@ int main(int argc, char *argv[]) {
 
 
 
+
+
+
+
+                    /*******/
                     pointer x = NULL;
                     while ((x = listNext(wallet->bitcoins)) != NULL) {
+
+
+
                         printf("[%p] ", x);
                     }
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 } else {
-                    fprintf(stderr, "Wallet [%s] was not inserted because is duplicate!\n", token);
+                    fprintf(stderr, "\nWallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
+                    exit(EXIT_FAILURE);
                 }
                 printf("\n\n");
             }
         }
     } else {
-        fprintf(stderr, "File '%s' doesn't exists!\n", a);
-        exit(1);
+        fprintf(stderr, "\nFile '%s' doesn't exists!\n", a);
+        exit(EXIT_FAILURE);
     }
 
     /*Open & read transactionsFile*/
