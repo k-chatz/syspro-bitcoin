@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 
+#include "wallet.h"
+
 typedef struct Tree *treePtr;
 
-void treeCreate(treePtr *tree, long int bid, void * data);
+void treeCreate(treePtr *tree, long unsigned int bid, struct Wallet * w, unsigned long int balance);
 
 bool treeInsert(treePtr, void *);
 

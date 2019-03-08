@@ -22,7 +22,7 @@ struct Wallet *createWallet(char *userId) {
     struct Wallet *wallet = NULL;
     wallet = malloc(sizeof(struct Wallet));
     wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
-    //listCreate(&wallet->bitcoins);
+    listCreate(&wallet->bitcoins);
     strcpy(wallet->userId, userId);
     return wallet;
 }
@@ -33,8 +33,8 @@ void destroyWallet(struct Wallet *wallet) {
     free(wallet);
 }
 
-void readOptions(int argc, char **argv, char **a, char **t, int *v,
-                 unsigned long int *h1, unsigned long int *h2, unsigned int *b);
+void readOptions(int argc, char **argv, char **a, char **t, unsigned long int *v,
+                 unsigned long int *h1, unsigned long int *h2, unsigned long int *b);
 
 int cmpWallet(struct Wallet *w1, struct Wallet *w2) {
     return strcmp(w1->userId, w2->userId);
@@ -59,12 +59,10 @@ unsigned long int bitCoinHash(const long int *bid1, params_t *params) {
 }
 
 int main(int argc, char *argv[]) {
-    int i, v = 0;
-    long int bid = 0;
-    unsigned int b = 0;
-    unsigned long int h1 = 0, h2 = 0;
+    int i;
+    unsigned long int h1 = 0, h2 = 0, b = 0, bid = 0, v = 0;
     char buf[LINE_SIZE], *opt, *optVal, *a = NULL, *t = NULL, *token = NULL;
-    hashtablePtr wallets, bitcoins;
+    hashtable wallets, bitCoins, senderHashtable, recieverHashtable;
     treePtr bc = NULL;
 
     FILE *fp = NULL;
@@ -82,7 +80,7 @@ int main(int argc, char *argv[]) {
     /*Create hashtable for Bitcoins*/
     params_t bp;
     bp.capacity = h2;
-    HT_Create(&bitcoins, bp.capacity, b, (int (*)(pointer, pointer)) cmpBitCoin,
+    HT_Create(&bitCoins, bp.capacity, b, (int (*)(pointer, pointer)) cmpBitCoin,
               (unsigned long (*)(pointer, pointer)) bitCoinHash, &bp);
 
     /*Open & read bitCoinBalancesFile*/
@@ -92,47 +90,56 @@ int main(int argc, char *argv[]) {
             token = strtok(buf, "\n");
             token = strtok(token, " ");
             if (token != NULL) {
-                printf("%s ", token);
+                printf("%s \n", token);
                 wallet = createWallet(token);
 
                 // Insert wallet, check if the insertion fails
-                if ( /*!HT_Insert(wallets, wallet->userId, wallet)*/ 1  ) {
+                if (!HT_Insert(wallets, wallet->userId, wallet)) {
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
                             bc = NULL;
-                            bid = strtol(token, NULL, 10);
-                            treeCreate(&bc, bid, NULL);
-
-                            if (!HT_Insert(bitcoins, &bid, bc)) {
-
-                            }else{
-                                treeDestroy(&bc);
-                            }
+                            bid = (unsigned long) strtol(token, NULL, 10);
 
                             printf("%lu ", bid);
+                            /*Create bitcoin & insert bitcoin into hashtable*/
+                            treeCreate(&bc, bid, wallet, v);
 
+                            printf("[%p] \n", bc);
 
-                            printf("\n");
+                            /*Insert bitcoin into bitcoins hashtable*/
+                            if (!HT_Insert(bitCoins, &bid, bc)) {
+                                /*Insert bitcoin (pointer to tree) in wallet's bitcoin list*/
+                                listInsert(wallet->bitcoins, bc);
+                            } else {
+                                fprintf(stderr, "Bitcoin [%p] was not inserted because is duplicate!\n", bc);
+                                treeDestroy(&bc);
+                            }
                         }
                     } while (token != NULL);
 
 
-                } else {
 
+
+                    pointer x = NULL;
+                    while ((x = listNext(wallet->bitcoins)) != NULL) {
+                        printf("[%p] ", x);
+                    }
+
+
+
+
+                } else {
+                    fprintf(stderr, "Wallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
                 }
-
-
-
-                printf("\n");
+                printf("\n\n");
             }
         }
     } else {
         fprintf(stderr, "File '%s' doesn't exists!\n", a);
         exit(1);
     }
-
 
     /*Open & read transactionsFile*/
 /*    fp = fopen(t, "r");
@@ -161,8 +168,8 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 
-void readOptions(int argc, char **argv, char **a, char **t, int *v,
-                 unsigned long int *h1, unsigned long int *h2, unsigned int *b) {
+void readOptions(int argc, char **argv, char **a, char **t, unsigned long int *v,
+                 unsigned long int *h1, unsigned long int *h2, unsigned long int *b) {
     int i;
     char *opt, *optVal;
     for (i = 1; i < argc; ++i) {
@@ -182,25 +189,26 @@ void readOptions(int argc, char **argv, char **a, char **t, int *v,
             }
         } else if (strcmp(opt, "-v") == 0) { /*bitCoinValue*/
             if (optVal != NULL && optVal[0] != '-') {
-                *v = atoi(optVal);
+                //*v = atoi(optVal);
+                *v = (unsigned long int) strtol(optVal, NULL, 10);
             } else {
                 wrongOptionValue(opt, optVal);
             }
         } else if (strcmp(opt, "-h1") == 0) { /*senderHashtableNumOfEntries*/
             if (optVal != NULL && optVal[0] != '-') {
-                *h1 = atoi(optVal);
+                *h1 = (unsigned long) strtol(optVal, NULL, 10);
             } else {
                 wrongOptionValue(opt, optVal);
             }
         } else if (strcmp(opt, "-h2") == 0) { /*receiverHashtableNumOfEntries*/
             if (optVal != NULL && optVal[0] != '-') {
-                *h2 = atoi(optVal);
+                *h2 = (unsigned long) strtol(optVal, NULL, 10);
             } else {
                 wrongOptionValue(opt, optVal);
             }
         } else if (strcmp(opt, "-b") == 0) { /*bucketSize*/
             if (optVal != NULL && optVal[0] != '-') {
-                *b = atoi(optVal);
+                *b = (unsigned long) strtol(optVal, NULL, 10);
             } else {
                 wrongOptionValue(opt, optVal);
             }

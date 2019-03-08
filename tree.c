@@ -4,25 +4,25 @@
 #include <stdbool.h>
 #include "tree.h"
 
-typedef struct Node *nodePtr;
+typedef struct Node *treeNodePtr;
 
 typedef void *pointer;
 
 struct Tree {
     long int bid;
-    nodePtr root;
+    treeNodePtr root;
 };
 
 struct Node {
-    nodePtr left, right;
-    pointer data;
+    struct Wallet * wallet;
+    unsigned long int balance;
+    treeNodePtr left, right;
 };
-
 
 /***Private functions***/
 
-nodePtr _createNode() {
-    nodePtr node = (nodePtr) malloc(sizeof(struct Node));
+treeNodePtr _createNode() {
+    treeNodePtr node = (treeNodePtr) malloc(sizeof(struct Node));
     if (node != NULL) {
         node->right = NULL;
         node->left = NULL;
@@ -34,13 +34,14 @@ nodePtr _createNode() {
 
 /***Public functions***/
 
-void treeCreate(treePtr *tree, const long int bid, pointer data) {
+void treeCreate(treePtr *tree, const long unsigned int bid, struct Wallet * w, unsigned long int balance) {
     assert(*tree == NULL);
     *tree = (treePtr) malloc(sizeof(struct Tree));
     if ((*tree) != NULL) {
         (*tree)->bid = bid;
         (*tree)->root = _createNode();
-        (*tree)->root->data = data;
+        (*tree)->root->wallet = w;
+        (*tree)->root->balance = balance;
     }
 }
 

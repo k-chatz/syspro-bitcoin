@@ -5,6 +5,8 @@
 
 typedef struct Node *nodePtr;
 
+typedef void *pointer;
+
 struct List {
     nodePtr start;
     nodePtr current;
@@ -12,8 +14,11 @@ struct List {
 
 struct Node {
     nodePtr right, left;
-    void *data;
+    pointer data;
 };
+
+
+/***Private functions***/
 
 int l_existsNode(nodePtr node) {
     return node != NULL;
@@ -44,13 +49,16 @@ nodePtr _attachNode(listPtr list, nodePtr newNode) {
     if (list->start != NULL)
         list->start->left = newNode;
     list->start = newNode;
-    list->current = newNode;
+    //list->current = newNode;
     return newNode;
 }
 
 bool listExists(listPtr *list) {
     return (*list != NULL);
 }
+
+
+/***Public functions***/
 
 void listCreate(listPtr *list) {
     assert(*list == NULL);
@@ -61,22 +69,34 @@ void listCreate(listPtr *list) {
     }
 }
 
-void *listInsert(listPtr list, void *data) {
+pointer listInsert(listPtr list, pointer data) {
     assert(list != NULL);
     assert(data != NULL);
     nodePtr newNode = l_createNode();
     if (newNode != NULL) {
-        newNode = _attachNode(list, newNode);
+
+
+        //newNode = _attachNode(list, newNode);
+
+        newNode->right = list->start;
+        if (list->start != NULL)
+            list->start->left = newNode;
+        list->start = newNode;
+        //list->current = newNode;
+
+
         if (newNode != NULL) {
             list->current = newNode;
             list->current->data = data;
             return list->current->data;
         }
+
+
     }
     return NULL;
 }
 
-void *listGetFirstData(listPtr list) {
+pointer listGetFirstData(listPtr list) {
     assert(list != NULL);
     if (list->start != NULL)
         return list->start->data;
@@ -84,9 +104,9 @@ void *listGetFirstData(listPtr list) {
         return NULL;
 }
 
-void *listNext(listPtr list) {
+pointer listNext(listPtr list) {
     assert(list != NULL);
-    if (!l_isLast(list->current)) {
+    if (list->current != NULL && !l_isLast(list->current)) {
         list->current = list->current->right;
         return list->current->data;
     }
