@@ -99,6 +99,8 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
         while (next != NULL) {
             _getCount(bucket, ht->bucketSize, &count);
             slots = _getEmptySlots(ht->bucketSize, count);
+
+            /*Get value for each slot of bucket*/
             for (i = 0; i < count; i++) {
                 _getValue(bucket, i, &v);
                 if (!ht->cmp(v, value)) {
@@ -106,7 +108,10 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
                     return false;
                 }
             }
+
+            /*Get next pointer to determine if this bucket has an overflow bucket*/
             _getNext(bucket, ht->bucketSize, &next);
+
             if (next != NULL) {
                 bucket = next;
             }

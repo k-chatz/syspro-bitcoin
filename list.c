@@ -86,6 +86,5 @@ pointer listNext(listPtr list) {
 }
 
 void listDestroy(listPtr list){
-
-
+    //TODO: DESTROY ALL LIST NODES AND LIST!!
 }

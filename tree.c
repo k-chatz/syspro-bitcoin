@@ -9,12 +9,12 @@ typedef struct Node *treeNodePtr;
 typedef void *pointer;
 
 struct Tree {
-    long int bid;
+    unsigned long int bid;
     treeNodePtr root;
 };
 
 struct Node {
-    struct Wallet * wallet;
+    struct Wallet *wallet;
     unsigned long int balance;
     treeNodePtr left, right;
 };
@@ -34,7 +34,7 @@ treeNodePtr _createNode() {
 
 /***Public functions***/
 
-void treeCreate(treePtr *tree, const long unsigned int bid, struct Wallet * w, unsigned long int balance) {
+void treeCreate(treePtr *tree, const unsigned long int bid, struct Wallet *w, const unsigned long int balance) {
     assert(*tree == NULL);
     *tree = (treePtr) malloc(sizeof(struct Tree));
     if ((*tree) != NULL) {
@@ -43,6 +43,10 @@ void treeCreate(treePtr *tree, const long unsigned int bid, struct Wallet * w, u
         (*tree)->root->wallet = w;
         (*tree)->root->balance = balance;
     }
+}
+
+long unsigned int getBid(treePtr tree) {
+    return tree->bid;
 }
 
 void treeDestroy(treePtr *tree) {
