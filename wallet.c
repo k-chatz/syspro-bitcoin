@@ -16,8 +16,8 @@ struct Wallet *createWallet(char *userId) {
 
 /*Callback
  * Compare keys function for wallets hashtable*/
-int cmpWallet(struct Wallet *w1, struct Wallet *w2, void *key) {
-    return strcmp(w1->userId, w2 == NULL ? (char *) key : w2->userId);
+int cmpWallet(struct Wallet *w1, void *params) {
+    return strcmp(w1->userId, (char *) params);
 }
 
 /*Callback
@@ -37,4 +37,7 @@ void destroyWallet(struct Wallet *w) {
     free(w->userId);
     listDestroy(w->bitcoins);
     free(w);
+    //TODO: Fix this!!! doesn't work !!!
+
+    printf(" ");
 }
