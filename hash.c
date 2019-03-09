@@ -11,7 +11,9 @@ struct Hashtable {
 
     int (*cmp )(pointer, pointer);
 
-    unsigned long int (*hash)(pointer key, pointer params);
+    unsigned long int (*hash)(pointer, pointer);
+
+    unsigned long int (*destroy)(pointer);
 
     pointer params;
     pointer *table;
@@ -58,7 +60,7 @@ const pointer _allocBucket(unsigned long int size) {
 /***Public functions***/
 
 bool HT_Create(hashtable *ht, unsigned long int capacity, unsigned long int bucketSize, int (*cmp)(pointer, pointer),
-               unsigned long (*hash)(pointer, pointer), pointer params) {
+               unsigned long (*hash)(pointer, pointer), unsigned long (*destroy)(pointer), pointer params) {
     assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned long int));
     int i;
     *ht = (hashtable) malloc(sizeof(struct Hashtable));
@@ -67,6 +69,7 @@ bool HT_Create(hashtable *ht, unsigned long int capacity, unsigned long int buck
         (*ht)->capacity = capacity;
         (*ht)->cmp = cmp;
         (*ht)->hash = hash;
+        (*ht)->destroy = destroy;
         (*ht)->params = params;
         (*ht)->table = malloc(sizeof(pointer) * capacity);
         for (i = 0; i < capacity; i++) {
@@ -77,8 +80,7 @@ bool HT_Create(hashtable *ht, unsigned long int capacity, unsigned long int buck
 }
 
 int HT_Insert(hashtable ht, pointer key, pointer value) {
-    unsigned int i = 0;
-    unsigned long int index = 0, count = 0, slots = 0;
+    unsigned long int index = 0, count = 0, slots = 0, slot = 0;
     pointer bucket = NULL, v = NULL, next = NULL;
     index = ht->hash(key, ht->params);
     //printf("\tPOSITION --> [%lu] VALUE --> [%p] ", index, value);
@@ -101,8 +103,8 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
             slots = _getEmptySlots(ht->bucketSize, count);
 
             /*Get value for each slot of bucket*/
-            for (i = 0; i < count; i++) {
-                _getValue(bucket, i, &v);
+            for (slot = 0; slot < count; slot++) {
+                _getValue(bucket, slot, &v);
                 if (!ht->cmp(v, value)) {
                     //printf(":::DUPLICATE::: ");
                     return false;
@@ -120,7 +122,7 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
         /*Check if there are exists empty slots at the last bucket*/
         if (slots) {
             //printf(":::BUCKET [%p] HAS %d SLOTS::: ", bucket, slots - 1);
-            _setValue(bucket, i, value);
+            _setValue(bucket, slot, value);
             _setCount(bucket, ht->bucketSize, count + 1);
         } else {
             //printf(":::BUCKET [%p] IS FULL::: ", bucket);
@@ -134,6 +136,31 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
     return true;
 }
 
-void HT_Destroy(hashtable ht) {
-    free(ht->table);
+void HT_Destroy(hashtable *ht) {
+    assert((*ht) != NULL);
+    pointer next = NULL, v = NULL, bucket = NULL;
+    unsigned long int count = 0, i, slot;
+    for (i = 0; i < (*ht)->capacity; i++) {
+        bucket = next = (*ht)->table[i];
+        if (bucket != NULL) {
+            printf("[%lu]\n", i);
+            while (next != NULL) {
+                _getCount(bucket, (*ht)->bucketSize, &count);
+
+                /*Get value for each slot of bucket to destroy it.*/
+                for (slot = 0; slot < count; slot++) {
+                    _getValue(bucket, slot, &v);
+                    (*ht)->destroy(v);
+                }
+
+                /*Get next pointer to determine if this bucket has an overflow bucket.*/
+                _getNext(bucket, (*ht)->bucketSize, &next);
+                if (next != NULL) {
+                    bucket = next;
+                }
+            };
+        }
+    }
+    free((*ht)->table);
+    free(*ht);
 }

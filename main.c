@@ -5,65 +5,16 @@
 #include "list.h"
 #include "tree.h"
 #include "wallet.h"
+#include "bitcoin.h"
 
 #define LINE_SIZE 256
 
 typedef void *pointer;
 
-typedef struct Params {
-    unsigned long int capacity;
-} params_t;
-
-struct Wallet *createWallet(char *userId);
-
 void wrongOptionValue(char *opt, char *val);
-
-struct Wallet *createWallet(char *userId) {
-    struct Wallet *wallet = NULL;
-    wallet = malloc(sizeof(struct Wallet));
-    wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
-    listCreate(&wallet->bitcoins);
-    strcpy(wallet->userId, userId);
-    return wallet;
-}
-
-void destroyWallet(struct Wallet *wallet) {
-    free(wallet->userId);
-    listDestroy(wallet->bitcoins);
-    free(wallet);
-}
 
 void readOptions(int argc, char **argv, char **a, char **t, unsigned long int *v,
                  unsigned long int *h1, unsigned long int *h2, unsigned long int *b);
-
-/*Callback
- * Compare keys function for wallets hashtable*/
-int cmpWallet(struct Wallet *w1, struct Wallet *w2) {
-    return strcmp(w1->userId, w2->userId);
-}
-
-/*Callback
- * Compare trees function for bitCoins hashtable*/
-int cmpBitCoin(treePtr t1, treePtr t2) {
-    return getBid(t1) != getBid(t2);
-}
-
-/*Callback
- * Hash function for wallets hashtable*/
-unsigned long int walletHash(char *key, params_t *params) {
-    int i, sum = 0;
-    size_t keyLength = strlen(key);
-    for (i = 0; i < keyLength; i++) {
-        sum += key[i];
-    }
-    return sum % params->capacity;
-}
-
-/*Callback
- * Hash function for bitCoins hashtable*/
-unsigned long int bitCoinHash(const long int *bid1, params_t *params) {
-    return *bid1 % params->capacity;
-}
 
 int main(int argc, char *argv[]) {
     int i;
@@ -79,16 +30,16 @@ int main(int argc, char *argv[]) {
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
 
     /*Create hashtable for Wallets*/
-    params_t wp;
+    ht_wallet_params wp;
     wp.capacity = h1;
     HT_Create(&wallets, wp.capacity, b, (int (*)(pointer, pointer)) cmpWallet,
-              (unsigned long (*)(pointer, pointer)) walletHash, &wp);
+              (unsigned long (*)(pointer, pointer)) walletHash, (unsigned long (*)(void *)) destroyWallet, &wp);
 
-    /*Create hashtable for Bitcoins*/
-    params_t bp;
+    /*Create hashtable for BitCoins*/
+    ht_bitcoin_params bp;
     bp.capacity = h2;
     HT_Create(&bitCoins, bp.capacity, b, (int (*)(pointer, pointer)) cmpBitCoin,
-              (unsigned long (*)(pointer, pointer)) bitCoinHash, &bp);
+              (unsigned long (*)(pointer, pointer)) bitCoinHash, (unsigned long (*)(void *)) destroyBitCoin, &bp);
 
     /*Open & read bitCoinBalancesFile*/
     fp = fopen(a, "r");
@@ -131,16 +82,12 @@ int main(int argc, char *argv[]) {
                         }
                     } while (token != NULL);
 
-
-
-                    /*******JUST FOR TEST*/
+                    /***********************************JUST FOR TEST*/
                     pointer x = NULL;
                     while ((x = listNext(wallet->bitcoins)) != NULL) {
                         printf("[%p] ", x);
                     }
-                    /*********************/
-
-
+                    /*************************************************/
 
                     printf("\n");
                     printf(" ");
@@ -156,6 +103,11 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "\nFile '%s' doesn't exists!\n", a);
         exit(EXIT_FAILURE);
     }
+
+    HT_Destroy(&wallets);
+    HT_Destroy(&bitCoins);
+    //HT_Destroy(senderHashtable);
+    //HT_Destroy(recieverHashtable);
 
     /*Open & read transactionsFile*/
 /*    fp = fopen(t, "r");

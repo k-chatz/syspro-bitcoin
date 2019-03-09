@@ -3,4 +3,4 @@ project(bitcoin C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(bitcoin main.c tree.c list.c hash.c)
+add_executable(bitcoin main.c tree.c list.c hash.c wallet.c bitcoin.c bitcoin.h)
