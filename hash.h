@@ -6,8 +6,8 @@
 
 typedef struct Hashtable *hashtable;
 
-bool HT_Create(hashtable *ht, unsigned long capacity, unsigned long int bucketSize, int (*cmp)(void *, void *),
-               unsigned long (*hash)(void *, void *),  unsigned long (*destroy)(void *), void *params);
+bool HT_Init(hashtable *ht, unsigned long capacity, unsigned long int bucketSize, int (*cmp)(void *, void *),
+             unsigned long (*hash)(void *, void *), unsigned long (*destroy)(void *), void *params);
 
 int HT_Insert(hashtable ht, void *key, void *value);
 

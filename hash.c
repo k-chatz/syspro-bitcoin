@@ -59,8 +59,8 @@ const pointer _allocBucket(unsigned long int size) {
 
 /***Public functions***/
 
-bool HT_Create(hashtable *ht, unsigned long int capacity, unsigned long int bucketSize, int (*cmp)(pointer, pointer),
-               unsigned long (*hash)(pointer, pointer), unsigned long (*destroy)(pointer), pointer params) {
+bool HT_Init(hashtable *ht, unsigned long int capacity, unsigned long int bucketSize, int (*cmp)(pointer, pointer),
+             unsigned long (*hash)(pointer, pointer), unsigned long (*destroy)(pointer), pointer params) {
     assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned long int));
     int i;
     *ht = (hashtable) malloc(sizeof(struct Hashtable));
@@ -140,10 +140,11 @@ void HT_Destroy(hashtable *ht) {
     assert((*ht) != NULL);
     pointer next = NULL, v = NULL, bucket = NULL;
     unsigned long int count = 0, i, slot;
+    //printf("\n");
     for (i = 0; i < (*ht)->capacity; i++) {
         bucket = next = (*ht)->table[i];
         if (bucket != NULL) {
-            printf("[%lu]\n", i);
+            //printf("[%.3lu] --> ", i);
             while (next != NULL) {
                 _getCount(bucket, (*ht)->bucketSize, &count);
 
@@ -151,6 +152,7 @@ void HT_Destroy(hashtable *ht) {
                 for (slot = 0; slot < count; slot++) {
                     _getValue(bucket, slot, &v);
                     (*ht)->destroy(v);
+                    //printf("[%p] ", v);
                 }
 
                 /*Get next pointer to determine if this bucket has an overflow bucket.*/
@@ -159,6 +161,7 @@ void HT_Destroy(hashtable *ht) {
                     bucket = next;
                 }
             };
+            //printf("\n");
         }
     }
     free((*ht)->table);
