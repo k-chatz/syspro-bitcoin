@@ -16,7 +16,7 @@ struct Wallet *createWallet(char *userId);
 
 /*Callback
  * Compare keys function for wallets hashtable*/
-int cmpWallet(struct Wallet *w1, struct Wallet *w2);
+int cmpWallet(struct Wallet *w1, struct Wallet *w2, void *key);
 
 /*Callback
  * Hash function for wallets hashtable*/

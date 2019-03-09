@@ -3,7 +3,7 @@
 
 /*Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(listPtr *tr1, listPtr *tr2) {
+int cmpTransactionList(listPtr *tr1, listPtr *tr2, void *key) {
 
     return 0;
 }

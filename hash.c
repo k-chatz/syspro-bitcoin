@@ -9,7 +9,7 @@ struct Hashtable {
     unsigned long int bucketSize;
     unsigned long int capacity;
 
-    int (*cmp )(pointer, pointer);
+    int (*cmp )(pointer, pointer, pointer);
 
     unsigned long int (*hash)(pointer, pointer);
 
@@ -59,8 +59,9 @@ const pointer _allocBucket(unsigned long int size) {
 
 /***Public functions***/
 
-bool HT_Init(hashtable *ht, unsigned long int capacity, unsigned long int bucketSize, int (*cmp)(pointer, pointer),
-             unsigned long (*hash)(pointer, pointer), unsigned long (*destroy)(pointer), pointer params) {
+bool
+HT_Init(hashtable *ht, unsigned long int capacity, unsigned long int bucketSize, int (*cmp)(pointer, pointer, pointer),
+        unsigned long (*hash)(pointer, pointer), unsigned long (*destroy)(pointer), pointer params) {
     assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned long int));
     int i;
     *ht = (hashtable) malloc(sizeof(struct Hashtable));
@@ -105,7 +106,7 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
             /*Get value for each slot of bucket*/
             for (slot = 0; slot < count; slot++) {
                 _getValue(bucket, slot, &v);
-                if (!ht->cmp(v, value)) {
+                if (!ht->cmp(v, value, NULL)) {
                     //printf(":::DUPLICATE::: ");
                     return false;
                 }
@@ -134,6 +135,39 @@ int HT_Insert(hashtable ht, pointer key, pointer value) {
         }
     }
     return true;
+}
+
+pointer HT_Get(hashtable ht, pointer key) {
+    unsigned long int index = 0, count = 0, slot = 0;
+    pointer bucket = NULL, v = NULL, next = NULL;
+
+    index = ht->hash(key, ht->params);
+    bucket = ht->table[index];
+
+    /* Check if current bucket exists */
+    if (bucket != NULL) {
+        next = bucket;
+
+        /* Check each bucket to determine where is the target slot.*/
+        while (next != NULL) {
+            _getCount(bucket, ht->bucketSize, &count);
+
+            /*Get value for each slot of bucket*/
+            for (slot = 0; slot < count; slot++) {
+                _getValue(bucket, slot, &v);
+                if (!ht->cmp(v, NULL, key)) {
+                    return v;
+                }
+            }
+
+            /*Get next pointer to determine if this bucket has an overflow bucket*/
+            _getNext(bucket, ht->bucketSize, &next);
+            if (next != NULL) {
+                bucket = next;
+            }
+        };
+    }
+    return NULL;
 }
 
 void HT_Destroy(hashtable *ht) {

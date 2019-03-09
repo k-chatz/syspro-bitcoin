@@ -3,7 +3,7 @@
 
 /*Callback
  * Compare trees function for bitCoins hashtable*/
-int cmpBitCoin(treePtr t1, treePtr t2) {
+int cmpBitCoin(treePtr t1, treePtr t2, void *key) {
     return getBid(t1) != getBid(t2);
 }
 
