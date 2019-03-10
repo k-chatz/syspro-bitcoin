@@ -65,45 +65,45 @@ void readOptions(int argc, char **argv, char **a, char **t, unsigned long int *v
     }
 }
 
-void init(hashtable *wallets, hashtable *bitCoins, char *a, unsigned long int v, unsigned long int b,
+void init(hashtable *wallets,
+          hashtable *bitCoins,
+          char *a,
+          unsigned long int v,
+          unsigned long int b,
           const unsigned long int h1,
-          const unsigned long int h2) {
+          const unsigned long int h2
+) {
     FILE *fp = NULL;
     struct Wallet *wallet = NULL;
     char buf[LINE_SIZE], *token = NULL;
     unsigned long int bid = 0;
     treePtr bc = NULL;
+    ht_bitCoin_params htBitCoinParams;
 
     /*Open bitCoinBalancesFile*/
     fp = fopen(a, "r");
     if (fp != NULL) {
 
         /*Initialize Wallets hashtable*/
-        ht_wallet_params wp;
-        wp.capacity = h1;
         HT_Init(
                 wallets,
-                wp.capacity,
+                h1,
                 b,
                 (pointer (*)(pointer)) createWallet,
                 (int (*)(pointer, pointer)) cmpWallet,
-                (unsigned long (*)(pointer, pointer)) walletHash,
-                (unsigned long (*)(void *)) destroyWallet,
-                &wp
+                (unsigned long (*)(pointer, unsigned long int)) walletHash,
+                (unsigned long (*)(pointer)) destroyWallet
         );
 
         /*Initialize BitCoins hashtable*/
-        ht_bitcoin_params bp;
-        bp.capacity = h2;
         HT_Init(
                 bitCoins,
-                bp.capacity,
+                h2,
                 b,
-                NULL,
+                (pointer (*)(pointer)) createBitCoin,
                 (int (*)(pointer, pointer)) cmpBitCoin,
-                (unsigned long (*)(pointer, pointer)) bitCoinHash,
-                (unsigned long (*)(void *)) destroyBitCoin,
-                &bp
+                (unsigned long (*)(pointer, unsigned long int)) bitCoinHash,
+                (unsigned long (*)(pointer)) destroyBitCoin
         );
 
         /*Read bitCoinBalancesFile*/
@@ -112,25 +112,25 @@ void init(hashtable *wallets, hashtable *bitCoins, char *a, unsigned long int v,
             token = strtok(token, " ");
             if (token != NULL) {
 
-                //printf("%s \n", token);
-                //wallet = createWallet(token);
+                printf("%s \n", token);
 
                 /*Insert wallet, check if the insertion fails*/
-                if (HT_Insert(*wallets, token, token, (void **)&wallet)) {
+                if (HT_Insert(*wallets, token, token, (void **) &wallet)) {
 
                     /*Read bitcoins for current wallet*/
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
-                            bc = NULL;
                             bid = (unsigned long int) strtol(token, NULL, 10);
 
-                            /*Create bitCoin & insert bitCoin into hashtable*/
-                            treeCreate(&bc, bid, wallet, v);
-                            //printf("%lu [%p] \n", bid, bc);
+                            /*Initialize parameters for bitCoin*/
+                            htBitCoinParams.wallet = wallet;
+                            htBitCoinParams.bid = bid;
+                            htBitCoinParams.v = v;
 
                             /*Insert bitCoin into bitCoins hashtable*/
-                            if (/*HT_Insert(*bitCoins, &bid, bc)*/1) {
+                            if (HT_Insert(*bitCoins, &bid, &htBitCoinParams, (void **) &bc)) {
+                                printf("[%lu] [%p] \n", bid, bc);
 
                                 /*Insert bitCoin (pointer to tree) in wallet's bitCoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
@@ -140,7 +140,6 @@ void init(hashtable *wallets, hashtable *bitCoins, char *a, unsigned long int v,
                                     HT_Destroy(bitCoins);
                                     exit(EXIT_FAILURE);
                                 };
-
                             } else {
                                 fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
                                 treeDestroy(&bc);
@@ -148,18 +147,14 @@ void init(hashtable *wallets, hashtable *bitCoins, char *a, unsigned long int v,
                                 HT_Destroy(bitCoins);
                                 exit(EXIT_FAILURE);
                             }
-
                         }
                     } while (token != NULL);
 
-                    /***********************************JUST FOR TEST
-                    pointer x = NULL;
+/*                    pointer x = NULL;
                     while ((x = listNext(wallet->bitcoins)) != NULL) {
                         printf("[%p] ", x);
-                    }
-                    printf("\n");
-                    printf(" ");
-                    */
+                    }*/
+
                 } else {
                     fprintf(stderr, "\nWallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
@@ -167,7 +162,7 @@ void init(hashtable *wallets, hashtable *bitCoins, char *a, unsigned long int v,
                     HT_Destroy(bitCoins);
                     exit(EXIT_FAILURE);
                 }
-                //printf("\n\n");
+                printf("\n\n");
             }
         }
     } else {
@@ -190,31 +185,25 @@ void initTransactions(hashtable *wallets, hashtable *bitCoins, hashtable *sender
     if (fp != NULL) {
 
         /* Initialize hashtable for sender transactions list hashtable*/
-        ht_transaction_list_params tp1;
-        tp1.capacity = h2;
         HT_Init(
                 senderHashtable,
-                tp1.capacity,
+                h1,
                 b,
                 NULL,
                 (int (*)(pointer, pointer)) cmpTransactionList,
-                (unsigned long (*)(pointer, pointer)) walletHash,
-                (unsigned long (*)(void *)) destroyTransactionList,
-                &tp1
+                (unsigned long (*)(pointer, unsigned long int)) walletHash,
+                (unsigned long (*)(pointer)) destroyTransactionList
         );
 
         /* Initialize hashtable for receiver transactions list hashtable*/
-        ht_transaction_list_params tp2;
-        tp2.capacity = h2;
         HT_Init(
                 receiverHashtable,
-                tp2.capacity,
+                h2,
                 b,
                 NULL,
                 (int (*)(pointer, pointer)) cmpTransactionList,
-                (unsigned long (*)(pointer, pointer)) walletHash,
-                (unsigned long (*)(void *)) destroyTransactionList,
-                &tp2
+                (unsigned long (*)(pointer, unsigned long int)) walletHash,
+                (unsigned long (*)(pointer)) destroyTransactionList
         );
 
         /*Read bitCoinBalancesFile*/
@@ -254,7 +243,7 @@ int main(int argc, char *argv[]) {
     //initTransactions(&wallets, &bitCoins, &senderHashtable, &receiverHashtable, b, h1, h2, t, v);
 
     HT_Destroy(&wallets);
-    //HT_Destroy(&bitCoins);
+    HT_Destroy(&bitCoins);
     //HT_Destroy(&senderHashtable);
     //HT_Destroy(&receiverHashtable);
     return EXIT_SUCCESS;

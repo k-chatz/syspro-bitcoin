@@ -15,24 +15,24 @@ struct Wallet *createWallet(char *userId) {
 }
 
 /*Callback
- * Compare keys function for wallets hashtable*/
-int cmpWallet(struct Wallet *w1, void *params) {
-    return strcmp(w1->userId, (char *) params);
+ * Compare wallet with userId field*/
+int cmpWallet(struct Wallet *w1, char *userId) {
+    return strcmp(w1->userId,  userId);
 }
 
 /*Callback
  * Hash function for wallets hashtable*/
-unsigned long int walletHash(char *key, ht_wallet_params *params) {
+unsigned long int walletHash(char *key, unsigned long int capacity) {
     int i, sum = 0;
     size_t keyLength = strlen(key);
     for (i = 0; i < keyLength; i++) {
         sum += key[i];
     }
-    return sum % params->capacity;
+    return sum % capacity;
 }
 
 /*Callback
- * Compare keys function for wallets hashtable*/
+ * Destroy wallet*/
 void destroyWallet(struct Wallet *w) {
     free(w->userId);
     listDestroy(w->bitcoins);

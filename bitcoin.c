@@ -1,6 +1,16 @@
 #include "tree.h"
 #include "bitcoin.h"
 
+/*Create
+ * Initialize & return a new wallet*/
+treePtr createBitCoin(ht_bitCoin_params *htBitCoinParams) {
+    treePtr bc = NULL;
+    /*Create bitCoin & insert bitCoin into hashtable*/
+    treeCreate(&bc, htBitCoinParams->bid, htBitCoinParams->wallet, htBitCoinParams->v);
+    return bc;
+}
+
+
 /*Callback
  * Compare trees function for bitCoins hashtable*/
 int cmpBitCoin(treePtr t1, treePtr t2, void *key) {
@@ -9,8 +19,8 @@ int cmpBitCoin(treePtr t1, treePtr t2, void *key) {
 
 /*Callback
  * Hash function for bitCoins hashtable*/
-unsigned long int bitCoinHash(const long int *bid1, ht_bitcoin_params *params) {
-    return *bid1 % params->capacity;
+unsigned long int bitCoinHash(const long int *bid1, unsigned long int capacity) {
+    return *bid1 % capacity;
 }
 
 /*Callback

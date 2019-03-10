@@ -12,9 +12,8 @@ bool HT_Init(
         unsigned long int bucketSize,
         void *(*createValue)(void *),
         int (*cmp)(void *, void *),
-        unsigned long (*hash)(void *, void *),
-        unsigned long (*destroy)(void *),
-        void *params
+        unsigned long (*hash)(void *, unsigned long int),
+        unsigned long (*destroy)(void *)
 );
 
 int HT_Insert(

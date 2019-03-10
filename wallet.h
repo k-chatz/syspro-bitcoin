@@ -8,22 +8,20 @@ struct Wallet {
     listPtr bitcoins;
 };
 
-typedef struct HT_Wallet_Params {
-    unsigned long int capacity;
-} ht_wallet_params;
-
+/*Create
+ * Initialize & return a new wallet*/
 struct Wallet *createWallet(char *userId);
 
 /*Callback
- * Compare keys function for wallets hashtable*/
-int cmpWallet(struct Wallet *w1, void *key);
+ * Compare wallet with userId field*/
+int cmpWallet(struct Wallet *w1, char *userId);
 
 /*Callback
  * Hash function for wallets hashtable*/
-unsigned long int walletHash(char *key, ht_wallet_params *params);
+unsigned long int walletHash(char *key, unsigned long int capacity);
 
 /*Callback
- * Compare keys function for wallets hashtable*/
+ * Destroy wallet*/
 void destroyWallet(struct Wallet *w);
 
 #endif //WALLET_H
