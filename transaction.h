@@ -1,16 +1,27 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
+#include <bits/types/time_t.h>
 #include "tree.h"
 
-struct Transaction {
+#define BUF 256
+
+typedef struct Transaction {
     char *transactionId;
-    char *senderWalletId;
-    char *reciverWalletId;
-    int value;
-    int date; //TODO type check
-    int time;
-};
+    void *node;
+    unsigned long int value;
+    time_t timestamp;
+} *Transaction;
+
+/*Create
+ * Initialize & return a new transaction*/
+Transaction createTransaction(char *buf);
+
+bool performTransaction(char *buf);
+
+/*Parse
+ * Parse transactions from input stream*/
+bool performTransactions(FILE *fp);
 
 /*Create
  * Initialize & return a new transaction list*/

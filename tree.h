@@ -6,7 +6,7 @@
 
 typedef struct Tree *treePtr;
 
-void treeCreate(treePtr *tree, long unsigned int bid, struct Wallet * w, unsigned long int balance);
+void treeCreate(treePtr *tree, long unsigned int bid, Wallet w, unsigned long int balance);
 
 long unsigned int treeGetBid(treePtr tree);
 

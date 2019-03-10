@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "hash.h"
 #include "list.h"
 #include "tree.h"
@@ -82,7 +83,7 @@ void init(hashtable *wallets,
           const unsigned long int h2
 ) {
     FILE *fp = NULL;
-    struct Wallet *wallet = NULL;
+    Wallet wallet = NULL;
     char buf[LINE_SIZE], *token = NULL;
     unsigned long int bid = 0;
     treePtr bc = NULL;
@@ -125,7 +126,7 @@ void init(hashtable *wallets,
                 /*Insert wallet, check if the insertion fails*/
                 if (HT_Insert(*wallets, token, token, (void **) &wallet)) {
 
-                    /*Read bitcoins for current wallet*/
+                    /*Read BitCoins for current wallet*/
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
@@ -143,7 +144,7 @@ void init(hashtable *wallets,
                                 /*Insert bitCoin (pointer to tree) in wallet's bitCoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
                                     fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
-                                    listDestroy(wallet->bitcoins);
+                                    listDestroy(&wallet->bitcoins);
                                     HT_Destroy(wallets);
                                     HT_Destroy(bitCoins);
                                     exit(EXIT_FAILURE);
@@ -173,6 +174,7 @@ void init(hashtable *wallets,
                 //printf("\n\n");
             }
         }
+        fclose(fp);
     } else {
         fprintf(stderr, "\nFile '%s' doesn't exists!\n", a);
         exit(EXIT_FAILURE);
@@ -191,7 +193,7 @@ void initTransactions(
         unsigned long int v
 ) {
     FILE *fp = NULL;
-    struct Wallet *wallet;
+    Wallet wallet;
     char buf[LINE_SIZE], *token = NULL;
     listPtr transactions = NULL;
 
@@ -235,19 +237,9 @@ void initTransactions(
         HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
         printf("I need new list for BBB: [%p] \n", transactions);
 
-
-
-        /*Read bitCoinBalancesFile*/
-        while (fgets(buf, LINE_SIZE, fp) != NULL) {
-            token = strtok(buf, " ");
-            printf("%s ", token);
-            do {
-                token = strtok(NULL, " ");
-                if (token != NULL)
-                    printf("%s ", token);
-            } while (token != NULL);
-            printf("\n");
-        }
+        bool x = performTransactions(fp);
+        printf("\n---%d---\n", x);
+        fclose(fp);
     } else {
         fprintf(stderr, "File '%s' doesn't exists!\n", t);
         exit(1);
@@ -265,7 +257,7 @@ int main(int argc, char *argv[]) {
     /*Init structures*/
     init(&wallets, &bitCoins, a, v, b, h1, h2);
 
-    //struct Wallet *w1 = HT_Get(wallets, "A");
+    //Walletw1 = HT_Get(wallets, "A");
 
     /*TODO:Initialize with some transactions*/
     initTransactions(&wallets, &bitCoins, &senderHashtable, &receiverHashtable, h1, h2, b, t, v);
@@ -273,8 +265,8 @@ int main(int argc, char *argv[]) {
     /*TODO:CLI*/
 
     HT_Destroy(&wallets);
-    HT_Destroy(&bitCoins);
-    HT_Destroy(&senderHashtable);
-    HT_Destroy(&receiverHashtable);
+    // HT_Destroy(&bitCoins);
+    // HT_Destroy(&senderHashtable);
+    //HT_Destroy(&receiverHashtable);
     return EXIT_SUCCESS;
 }

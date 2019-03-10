@@ -14,7 +14,9 @@ struct Tree {
 };
 
 struct Node {
-    struct Wallet *wallet;
+    pointer *parrent;
+    struct Transaction *transaction;
+    Wallet wallet;
     unsigned long int balance;
     treeNodePtr left, right;
 };
@@ -34,7 +36,7 @@ treeNodePtr _createNode() {
 
 /***Public functions***/
 
-void treeCreate(treePtr *tree, unsigned long int bid, struct Wallet *w, unsigned long int balance) {
+void treeCreate(treePtr *tree, unsigned long int bid, Wallet w, unsigned long int balance) {
     assert(*tree == NULL);
     *tree = (treePtr) malloc(sizeof(struct Tree));
     if ((*tree) != NULL) {

@@ -5,7 +5,7 @@
 
 typedef struct Params {
     unsigned long int bid;
-    struct Wallet *wallet;
+    Wallet wallet;
     unsigned long int v;
 } ht_bitCoin_params;
 

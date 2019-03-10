@@ -14,6 +14,6 @@ bool listInsert(listPtr, void *);
 
 void *listNext(listPtr);
 
-void listDestroy(listPtr list);
+void listDestroy(listPtr *list);
 
 #endif

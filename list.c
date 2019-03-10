@@ -91,6 +91,13 @@ pointer listNext(listPtr list) {
     return NULL;
 }
 
-void listDestroy(listPtr list) {
-    //TODO: DESTROY ALL LIST NODES AND LIST!!
+void listDestroy(listPtr *list) {
+    assert(*list != NULL);
+    nodePtr next = NULL;
+    nodePtr point = (*list)->start;
+    do {
+        next = point->right;
+        free(point);
+    } while ((point = next) != NULL);
+    free(*list);
 }

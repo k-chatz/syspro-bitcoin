@@ -5,9 +5,8 @@
 
 /*Create
  * Initialize & return a new wallet*/
-struct Wallet *createWallet(char *userId) {
-    struct Wallet *wallet = NULL;
-    wallet = malloc(sizeof(struct Wallet));
+Wallet createWallet(char *userId) {
+    Wallet wallet = malloc(sizeof(struct Wallet));
     wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
     listCreate(&wallet->bitcoins, userId);
     strcpy(wallet->userId, userId);
@@ -16,7 +15,7 @@ struct Wallet *createWallet(char *userId) {
 
 /*Callback
  * Compare wallet with userId field*/
-int cmpWallet(struct Wallet *w1, char *userId) {
+int cmpWallet(Wallet w1, char *userId) {
     return strcmp(w1->userId,  userId);
 }
 
@@ -33,9 +32,9 @@ unsigned long int walletHash(char *key, unsigned long int capacity) {
 
 /*Callback
  * Destroy wallet*/
-void destroyWallet(struct Wallet *w) {
+void destroyWallet(Wallet w) {
     free(w->userId);
-    listDestroy(w->bitcoins);
+    listDestroy(&w->bitcoins);
     free(w);
     //TODO: Fix this!!! doesn't work !!!
 
