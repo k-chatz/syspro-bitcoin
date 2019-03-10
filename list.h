@@ -6,7 +6,9 @@
 
 typedef struct List *listPtr;
 
-void listCreate(listPtr *list);
+void listCreate(listPtr *list, void *identifier);
+
+void *listGetIdentifier(listPtr);
 
 bool listInsert(listPtr, void *);
 

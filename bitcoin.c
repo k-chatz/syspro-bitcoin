@@ -13,8 +13,8 @@ treePtr createBitCoin(ht_bitCoin_params *htBitCoinParams) {
 
 /*Callback
  * Compare trees function for bitCoins hashtable*/
-int cmpBitCoin(treePtr t1, treePtr t2, void *key) {
-    return getBid(t1) != getBid(t2);
+int cmpBitCoin(treePtr t1, treePtr t2) {
+    return treeGetBid(t1) != treeGetBid(t2);
 }
 
 /*Callback

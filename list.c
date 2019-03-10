@@ -8,6 +8,7 @@ typedef struct Node *nodePtr;
 typedef void *pointer;
 
 struct List {
+    pointer identifier;
     nodePtr start;
     nodePtr current;
 };
@@ -49,13 +50,18 @@ bool listExists(listPtr *list) {
 
 /***Public functions***/
 
-void listCreate(listPtr *list) {
+void listCreate(listPtr *list, pointer identifier) {
     assert(*list == NULL);
     *list = (listPtr) malloc(sizeof(struct List));
     if ((*list) != NULL) {
+        (*list)->identifier = identifier;
         (*list)->start = NULL;
         (*list)->current = NULL;
     }
+}
+
+pointer listGetIdentifier(listPtr list) {
+    return list->identifier;
 }
 
 bool listInsert(listPtr list, pointer data) {
@@ -85,6 +91,6 @@ pointer listNext(listPtr list) {
     return NULL;
 }
 
-void listDestroy(listPtr list){
+void listDestroy(listPtr list) {
     //TODO: DESTROY ALL LIST NODES AND LIST!!
 }

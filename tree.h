@@ -8,7 +8,7 @@ typedef struct Tree *treePtr;
 
 void treeCreate(treePtr *tree, long unsigned int bid, struct Wallet * w, unsigned long int balance);
 
-long unsigned int getBid(treePtr);
+long unsigned int treeGetBid(treePtr tree);
 
 bool treeInsert(treePtr, void *);
 

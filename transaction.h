@@ -12,13 +12,13 @@ struct Transaction {
     int time;
 };
 
-typedef struct HT_TransactionsListParams {
-    unsigned long int capacity;
-} ht_transaction_list_params;
+/*Create
+ * Initialize & return a new transaction list*/
+listPtr createTransactionList(char *userId);
 
 /*Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(listPtr *tr1, listPtr *tr2, void *key);
+int cmpTransactionList(listPtr tr1, char *userId);
 
 /*Callback
  * Compare keys function for wallets hashtable*/

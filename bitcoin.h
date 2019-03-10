@@ -15,7 +15,7 @@ treePtr createBitCoin(ht_bitCoin_params *htBitCoinParams);
 
 /*Callback
  * Compare trees function for bitCoins hashtable*/
-int cmpBitCoin(treePtr t1, treePtr t2, void *key);
+int cmpBitCoin(treePtr t1, treePtr t2);
 
 /*Callback
  * Hash function for bitCoins hashtable*/

@@ -9,7 +9,7 @@ struct Wallet *createWallet(char *userId) {
     struct Wallet *wallet = NULL;
     wallet = malloc(sizeof(struct Wallet));
     wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
-    listCreate(&wallet->bitcoins);
+    listCreate(&wallet->bitcoins, userId);
     strcpy(wallet->userId, userId);
     return wallet;
 }

@@ -45,7 +45,7 @@ void treeCreate(treePtr *tree, unsigned long int bid, struct Wallet *w, unsigned
     }
 }
 
-long unsigned int getBid(treePtr tree) {
+long unsigned int treeGetBid(treePtr tree) {
     return tree->bid;
 }
 
