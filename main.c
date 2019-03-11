@@ -13,6 +13,8 @@
 
 typedef void *pointer;
 
+void cli();
+
 void wrongOptionValue(char *opt, char *val) {
     fprintf(stderr, "Wrong value [%s] for option '%s'\n", val, opt);
     exit(EXIT_FAILURE);
@@ -96,7 +98,7 @@ void init(hashtable *wallets,
         /*Initialize Wallets hashtable*/
         HT_Init(
                 wallets,
-                h1,
+                h1 > h2 ? h1 : h2,
                 b,
                 (pointer (*)(pointer)) createWallet,
                 (int (*)(pointer, pointer)) cmpWallet,
@@ -107,7 +109,7 @@ void init(hashtable *wallets,
         /*Initialize BitCoins hashtable*/
         HT_Init(
                 bitCoins,
-                h2,
+                h1 > h2 ? h1 : h2,
                 b,
                 (pointer (*)(pointer)) createBitCoin,
                 (int (*)(pointer, pointer)) cmpBitCoin,
@@ -186,6 +188,7 @@ void initTransactions(
         hashtable *bitCoins,
         hashtable *senderHashtable,
         hashtable *receiverHashtable,
+        hashtable *transactionsHashtable,
         const unsigned long int h1,
         const unsigned long int h2,
         unsigned long int b,
@@ -193,9 +196,7 @@ void initTransactions(
         unsigned long int v
 ) {
     FILE *fp = NULL;
-    Wallet wallet;
-    char buf[LINE_SIZE], *token = NULL;
-    listPtr transactions = NULL;
+    bool error = false;
 
     /*Open transactionsFile*/
     fp = fopen(t, "r");
@@ -223,33 +224,47 @@ void initTransactions(
                 (unsigned long (*)(pointer)) destroyTransactionList
         );
 
+        /* Initialize hashtable for transactions hashtable*/
+        HT_Init(
+                transactionsHashtable,
+                h1 > h2 ? h1 : h2,
+                b,
+                (pointer (*)(pointer)) createTransaction,
+                (int (*)(pointer, pointer)) cmpTransaction,
+                (unsigned long (*)(pointer, unsigned long int)) transactionHash,
+                (unsigned long (*)(pointer)) destroyTransaction
+        );
 
-        char *userId = "A";
+        error = performTransactions(
+                fp,
+                wallets,
+                bitCoins,
+                senderHashtable,
+                receiverHashtable,
+                transactionsHashtable,
+                "\n"
+        );
 
-        HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-        printf("list of A: [%p] \n", transactions);
+        if (error) {
+            fprintf(stderr, "Perform transactions function complete with errors!\n");
+            exit(EXIT_FAILURE);
+        }
 
-        HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-        printf("I expect the same list: [%p] \n", transactions);
-
-        userId = "BBB";
-
-        HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-        printf("I need new list for BBB: [%p] \n", transactions);
-
-        bool x = performTransactions(fp);
-        printf("\n---%d---\n", x);
         fclose(fp);
     } else {
         fprintf(stderr, "File '%s' doesn't exists!\n", t);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
+}
+
+void cli() {
+// TODO: Get input from user to perform various cli commands (switch case)
 }
 
 int main(int argc, char *argv[]) {
     unsigned long int h1 = 0, h2 = 0, b = 0, v = 0;
     char *a = NULL, *t = NULL;
-    hashtable wallets, bitCoins, senderHashtable, receiverHashtable;
+    hashtable wallets, bitCoins, senderHashtable, receiverHashtable, transactionsHashtable;
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
@@ -257,16 +272,16 @@ int main(int argc, char *argv[]) {
     /*Init structures*/
     init(&wallets, &bitCoins, a, v, b, h1, h2);
 
-    //Walletw1 = HT_Get(wallets, "A");
+    /*Initialize with some transactions*/
+    initTransactions(&wallets, &bitCoins, &senderHashtable, &receiverHashtable, &transactionsHashtable, h1, h2, b, t,
+                     v);
 
-    /*TODO:Initialize with some transactions*/
-    initTransactions(&wallets, &bitCoins, &senderHashtable, &receiverHashtable, h1, h2, b, t, v);
-
-    /*TODO:CLI*/
+    /*Get input from user to perform various cli commands*/
+    cli();
 
     HT_Destroy(&wallets);
-    // HT_Destroy(&bitCoins);
-    // HT_Destroy(&senderHashtable);
+    //HT_Destroy(&bitCoins);
+    //HT_Destroy(&senderHashtable);
     //HT_Destroy(&receiverHashtable);
     return EXIT_SUCCESS;
 }

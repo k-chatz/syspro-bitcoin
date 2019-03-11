@@ -95,20 +95,24 @@ int HT_Insert(
         pointer *value
 ) {
     unsigned long int index = 0, count = 0, slots = 0, slot = 0;
-    pointer bucket = NULL, next = NULL, slotValue = NULL;
+    pointer bucket = NULL, b = NULL, next = NULL, slotValue = NULL;
     index = ht->hash(key, ht->capacity);
     //printf("[%.3lu] ", index);
     bucket = ht->table[index];
 
     /* Check if current bucket exists */
     if (bucket == NULL) {
-        bucket = _allocBucket(ht->bucketSize);
         slotValue = ht->createValue(valueParams);
-        _setValue(bucket, 0, slotValue);
-        *value = slotValue;
-        //printf("--> [%p] ", *value);
-        _setCount(bucket, ht->bucketSize, 1);
-        ht->table[index] = bucket;
+        if (slotValue != NULL) {
+            bucket = _allocBucket(ht->bucketSize);
+            _setValue(bucket, 0, slotValue);
+            *value = slotValue;
+            //printf("--> [%p] ", *value);
+            _setCount(bucket, ht->bucketSize, 1);
+            ht->table[index] = bucket;
+        } else {
+            return false;
+        }
     } else {
         //printf(" --> !!! Collision !!! ");
         next = bucket;
@@ -142,18 +146,26 @@ int HT_Insert(
         if (slots) {
             //printf(":::BUCKET [%p] HAS %lu SLOTS::: ", bucket, slots - 1);
             slotValue = ht->createValue(valueParams);
-            _setValue(bucket, slot, slotValue);
-            *value = slotValue;
-            _setCount(bucket, ht->bucketSize, count + 1);
+            if (slotValue != NULL) {
+                _setValue(bucket, slot, slotValue);
+                *value = slotValue;
+                _setCount(bucket, ht->bucketSize, count + 1);
+            } else {
+                return false;
+            }
         } else {
             //printf(":::BUCKET [%p] IS FULL::: ", bucket);
-            pointer b = _allocBucket(ht->bucketSize);
-            //printf(" --> ALLOCATE BUCKET [%p] ", b);
-            _setNext(bucket, ht->bucketSize, b);
             slotValue = ht->createValue(valueParams);
-            _setValue(b, 0, slotValue);
-            *value = slotValue;
-            _setCount(b, ht->bucketSize, 1);
+            if (slotValue != NULL) {
+                b = _allocBucket(ht->bucketSize);
+                //printf(" --> ALLOCATE BUCKET [%p] ", b);
+                _setNext(bucket, ht->bucketSize, b);
+                _setValue(b, 0, slotValue);
+                *value = slotValue;
+                _setCount(b, ht->bucketSize, 1);
+            } else {
+                return false;
+            }
         }
     }
     //printf("\n");
