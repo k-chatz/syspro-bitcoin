@@ -275,5 +275,6 @@ int main(int argc, char *argv[]) {
     HT_Destroy(&bitCoins);
     HT_Destroy(&senderHashtable);
     HT_Destroy(&receiverHashtable);
+    HT_Destroy(&transactionsHashtable);
     return EXIT_SUCCESS;
 }

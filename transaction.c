@@ -76,6 +76,8 @@ unsigned long int transactionHash(char *key, unsigned long int capacity) {
  * Destroy transaction*/
 void destroyTransaction(Transaction transaction) {
     free(transaction->transactionId);
+    free(transaction->senderWalletId);
+    free(transaction->receiverWalletId);
     free(transaction);
 }
 
