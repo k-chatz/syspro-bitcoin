@@ -9,7 +9,7 @@
 #include "bitcoin.h"
 #include "transaction.h"
 
-#define LINE_SIZE 256
+#define BUFFER_SIZE 256
 
 typedef void *pointer;
 
@@ -86,7 +86,7 @@ void init(hashtable *wallets,
 ) {
     FILE *fp = NULL;
     Wallet wallet = NULL;
-    char buf[LINE_SIZE], *token = NULL;
+    char buf[BUFFER_SIZE], *token = NULL;
     unsigned long int bid = 0;
     treePtr bc = NULL;
     ht_bitCoin_params htBitCoinParams;
@@ -118,13 +118,11 @@ void init(hashtable *wallets,
         );
 
         /*Read bitCoinBalancesFile*/
-        while (fgets(buf, LINE_SIZE, fp) != NULL) {
+        while (fgets(buf, BUFFER_SIZE, fp) != NULL) {
             token = strtok(buf, "\n");
             token = strtok(token, " ");
             if (token != NULL) {
-
                 //printf("%s \n", token);
-
                 /*Insert wallet, check if the insertion fails*/
                 if (HT_Insert(*wallets, token, token, (void **) &wallet)) {
 
@@ -160,12 +158,6 @@ void init(hashtable *wallets,
                             }
                         }
                     } while (token != NULL);
-
-/*                    pointer x = NULL;
-                    while ((x = listNext(wallet->bitcoins)) != NULL) {
-                        printf("[%p] ", x);
-                    }*/
-
                 } else {
                     fprintf(stderr, "\nWallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
@@ -280,8 +272,8 @@ int main(int argc, char *argv[]) {
     cli();
 
     HT_Destroy(&wallets);
-    //HT_Destroy(&bitCoins);
-    //HT_Destroy(&senderHashtable);
-    //HT_Destroy(&receiverHashtable);
+    HT_Destroy(&bitCoins);
+    HT_Destroy(&senderHashtable);
+    HT_Destroy(&receiverHashtable);
     return EXIT_SUCCESS;
 }

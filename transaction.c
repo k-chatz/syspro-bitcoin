@@ -15,34 +15,42 @@ Transaction createTransaction(char *token) {
 
     transaction = (Transaction) malloc(sizeof(struct Transaction));
     if (transaction != NULL) {
-
         transaction->treeNode = NULL;
-        printf("[%s]\n", token);
 
         token = strtok(token, " "); // TransactionId
-        transaction->transactionId = malloc(strlen(token) * sizeof(char *));
-        strcpy(transaction->transactionId, token);
+        transaction->transactionId = malloc(strlen(token) * sizeof(char *) + 1);
+        if (transaction->transactionId) {
+            strcpy(transaction->transactionId, token);
+        }
 
         token = strtok(NULL, " "); // SenderWalletId
-        senderWalletId = token;
+        transaction->senderWalletId = malloc(strlen(token) * sizeof(char *) + 1);
+        if (transaction->senderWalletId != NULL) {
+            strcpy(transaction->senderWalletId, token);
+        }
 
         token = strtok(NULL, " "); // RecieverWalletId
-        receiverWalletId = token;
+        transaction->receiverWalletId = malloc(strlen(token) * sizeof(char *) + 1);
+        if (transaction->receiverWalletId != NULL) {
+            strcpy(transaction->receiverWalletId, token);
+        }
 
         token = strtok(NULL, " "); // Amount
         transaction->value = (unsigned long int) strtol(token, NULL, 10);
 
         token = strtok(NULL, "\0"); // Date time
-
         if (sscanf(token, "%d-%d-%d %d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour,
                    &tmVar.tm_min) ==
             5) {
             transaction->timestamp = mktime(&tmVar);
+            if (transaction->timestamp < 0) {
+                fprintf(stderr, "\nBad datetime!\n");
+                return NULL;
+            }
         } else {
-            printf("error");
-
+            fprintf(stderr, "\nBad datetime format!\n");
+            return NULL;
         }
-
     }
     return transaction;
 }
@@ -81,37 +89,73 @@ bool performTransaction(char *token,
                         hashtable *transactionsHashtable
 ) {
     bool error = false;
+    char *senderWalletId = NULL, *receiverWalletId = NULL, *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
-    char *senderWalletId = NULL, *recieverWalletId = NULL, *line = NULL, *transactionId = NULL;
-    time_t timestamp;
-    struct tm tmVar;
+    Wallet senderWallet = NULL, receiverWallet = NULL;
+    treePtr bc = NULL;
+    listPtr SenderTransactions = NULL, ReceiverTransactions = NULL;
+
+    /*Allocate space for line string to save a copy of token.*/
+    line = malloc(strlen(token) * sizeof(char) + 1);
+    if(line != NULL) {
+        strcpy(line, token);
+        transactionId = strtok(token, " ");
+        printf("Transaction: [%s]", line);
 
 
-    //line = token;
-    transactionId = strtok_r(token, " ", &line);
 
-    //TODO: Change this
-    line = strcat(token, " ");
-    line = strcat(line, line);
+        /*Create a transaction through hashtable to ensure there is no other one with the same id.*/
+        if (HT_Insert(*transactionsHashtable, transactionId, line, (void **) &transaction)) {
 
-    if (HT_Insert(*transactionsHashtable, transactionId, strcat(token, line), (void **) &transaction)) {
-        printf("transaction: [%s]", transaction->transactionId);
+            /*Get sender's wallet.*/
+            senderWallet = HT_Get(*wallets, transaction->senderWalletId);
+            if (senderWallet != NULL) {
+                printf("\nSender's wallet: [%p,'%s'] ", senderWallet, senderWallet->userId);
+
+                /*Access each bitCoin*/
+                while ((bc = listNext(senderWallet->bitcoins)) != NULL) {
+                    printf("[%lu] ", treeGetBid(bc));
+                }
+            }
+
+            /*Get receiver's wallet.*/
+            receiverWallet = HT_Get(*wallets, transaction->receiverWalletId);
+            if (receiverWallet != NULL) {
+                printf("\nReceiver's wallet: [%p,'%s'] ", receiverWallet, receiverWallet->userId);
+
+                /*Access each bitCoin*/
+                while ((bc = listNext(receiverWallet->bitcoins)) != NULL) {
+                    printf("[%lu] ", treeGetBid(bc));
+                }
+            }
+
+            if (HT_Insert(*senderHashtable, transaction->senderWalletId, transaction->senderWalletId,
+                          (void **) &SenderTransactions)) {
+                printf("\nTransactions list of '%s': [%p] \n", transaction->senderWalletId, SenderTransactions);
+            } else {
+                fprintf(stderr, "\nTransaction.c | performTransaction | Sender Hashtable INSERT error\n");
+                exit(EXIT_FAILURE);
+            }
+
+            if (HT_Insert(*receiverHashtable, transaction->senderWalletId, transaction->senderWalletId,
+                          (void **) &ReceiverTransactions)) {
+                printf("\nTransactions list of '%s': [%p] \n", transaction->receiverWalletId, ReceiverTransactions);
+            } else {
+                fprintf(stderr, "\nTransaction.c | performTransaction | Receiver Hashtable INSERT error\n");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            fprintf(stderr, "\nTransaction.c | performTransaction | Transactions Hashtable INSERT error\n");
+            error = true;
+        }
+
+
+
+        printf("\n\n");
+        free(line);
+    }else{
+        error = true;
     }
-
-    //Wallet = HT_Get(wallets, "A");
-//    char *userId = "A";
-//    listPtr transactions = NULL;
-//    HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-//    printf("list of A: [%p] \n", transactions);
-//
-//    HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-//    printf("I expect the same list: [%p] \n", transactions);
-//
-//    userId = "BBB";
-//
-//    HT_Insert(*senderHashtable, userId, userId, (void **) &transactions);
-//    printf("I need new list for BBB: [%p] \n", transactions);
-
     return error;
 }
 

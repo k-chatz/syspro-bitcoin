@@ -7,9 +7,16 @@
  * Initialize & return a new wallet*/
 Wallet createWallet(char *userId) {
     Wallet wallet = malloc(sizeof(struct Wallet));
-    wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
-    listCreate(&wallet->bitcoins, userId);
-    strcpy(wallet->userId, userId);
+    if(wallet != NULL){
+        wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
+        if(wallet->userId !=NULL){
+            listCreate(&wallet->bitcoins, userId);
+            strcpy(wallet->userId, userId);
+        }
+        else{
+            return NULL;
+        }
+    }
     return wallet;
 }
 

@@ -9,6 +9,8 @@
 
 typedef struct Transaction {
     char *transactionId;
+    char *senderWalletId;
+    char *receiverWalletId;
     void *treeNode;
     unsigned long int value;
     time_t timestamp;

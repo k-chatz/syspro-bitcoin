@@ -53,7 +53,9 @@ unsigned long int _getEmptySlots(unsigned long int bucketSize, unsigned long int
 
 const pointer _allocBucket(unsigned long int size) {
     pointer bucket = malloc((size_t) size);
-    _setNext(bucket, size, NULL);
+    if (bucket != NULL) {
+        _setNext(bucket, size, NULL);
+    }
     return bucket;
 }
 
@@ -80,10 +82,12 @@ bool HT_Init(hashtable *ht,
         (*ht)->hash = hash;
         (*ht)->destroy = destroy;
         (*ht)->table = malloc(sizeof(pointer) * capacity);
-        for (i = 0; i < capacity; i++) {
-            (*ht)->table[i] = NULL;
+        if ((*ht)->table != NULL) {
+            for (i = 0; i < capacity; i++) {
+                (*ht)->table[i] = NULL;
+            }
+            return true;
         }
-        return true;
     }
     return false;
 }
@@ -96,6 +100,9 @@ int HT_Insert(
 ) {
     unsigned long int index = 0, count = 0, slots = 0, slot = 0;
     pointer bucket = NULL, b = NULL, next = NULL, slotValue = NULL;
+    assert(ht != NULL);
+    assert(key != NULL);
+    assert(value != NULL);
     index = ht->hash(key, ht->capacity);
     //printf("[%.3lu] ", index);
     bucket = ht->table[index];
@@ -178,7 +185,8 @@ pointer HT_Get(
 ) {
     unsigned long int index = 0, count = 0, slot = 0;
     pointer bucket = NULL, v = NULL, next = NULL;
-
+    assert(ht != NULL);
+    assert(key != NULL);
     index = ht->hash(key, ht->capacity);
     bucket = ht->table[index];
 
