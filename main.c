@@ -230,11 +230,8 @@ void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *sender
 }
 
 
-
-
-
 void requestTransaction(char *buf) {
-
+    printf("\n[%s]\n", buf);
 }
 
 void requestTransactions(char *buf) {
@@ -266,51 +263,39 @@ void traceCoin(char *buf) {
 }
 
 
-
-
-
-
-
 /* Command line interface
  * Get input from user to perform various cli commands.*/
 void cli() {
     int fd;
-    char *line = NULL;
+    char *rest = NULL, *token = NULL;
     size_t len = 0;
-    ssize_t read;
-    char *rest = NULL;
+    ssize_t read = NULL;
 
     printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
     putchar('>');
-    while ((read = getline(&line, &len, stdin)) != EOF) {
-        line = strtok(line, " \n");
-        if (line != NULL) {
-            if (strcmp(line, "requestTransaction") == 0) {
-                line = strtok(NULL, " \n");
-                requestTransaction(line);
-                printf("[%s]\n", line);
-            } else if (strcmp(line, "requestTransactions") == 0) {
-                line = strtok(NULL, " \n");
-                requestTransactions(line);
-            } else if (strcmp(line, "findEarnings") == 0) {
-                line = strtok(NULL, " \n");
-                findEarnings(line);
-            } else if (strcmp(line, "findPayments") == 0) {
-                line = strtok(NULL, " \n");
-                findPayments(line);
-            } else if (strcmp(line, "walletStatus") == 0) {
-                line = strtok(NULL, " \n");
-                walletStatus(line);
-            } else if (strcmp(line, "bitCoinStatus") == 0) {
-                line = strtok(NULL, " \n");
-                bitCoinStatus(line);
-            } else if (strcmp(line, "traceCoin") == 0) {
-                line = strtok(NULL, " \n");
-                traceCoin(line);
-            } else if (strcmp(line, "exit") == 0) {
+    while ((read = getline(&token, &len, stdin)) != EOF) {
+        rest = token;
+        token = strtok_r(rest, " \n", &rest);
+        if (token != NULL) {
+            if (strcmp(token, "requestTransaction") == 0) {
+                requestTransaction(rest);
+                printf("[%s]\n", token);
+            } else if (strcmp(token, "requestTransactions") == 0) {
+                requestTransactions(rest);
+            } else if (strcmp(token, "findEarnings") == 0) {
+                findEarnings(rest);
+            } else if (strcmp(token, "findPayments") == 0) {
+                findPayments(rest);
+            } else if (strcmp(token, "walletStatus") == 0) {
+                walletStatus(rest);
+            } else if (strcmp(token, "bitCoinStatus") == 0) {
+                bitCoinStatus(rest);
+            } else if (strcmp(token, "traceCoin") == 0) {
+                traceCoin(rest);
+            } else if (strcmp(token, "exit") == 0) {
                 fd = open("/dev/null", O_WRONLY);
                 dup2(fd, 0);
-                free(line);
+                free(token);
                 close(fd);
                 break;
             } else {
