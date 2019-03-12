@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "wallet.h"
 #include "transaction.h"
 #include "bitcoin.h"
@@ -10,21 +11,31 @@
  * transaction*/
 bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
              Transaction transaction, listPtr rollback) {
+    assert(senderWallet != NULL);
+    assert(senderTransactions != NULL);
+    assert(receiverWallet != NULL);
+    assert(receiverTransactions != NULL);
+    assert(transaction != NULL);
+    assert(transaction->value > 0);
+
     bool error = false;
+    unsigned long int rest = transaction->value;
     bitcoin bc = NULL;
     printf("\n• • • E X E C U T E   T R A N S A C T I O N • • •\n");
 
+
     /* Access each bitcoin of sender to perform transaction*/
-    while ((bc = listNext(senderWallet->bitcoins)) != NULL) {
-
-        printf("Try with bitcoin %lu\n", bcGetId(bc));
-        bcNode l = NULL, r = NULL;
-
-        bool done = bcInsert(bc, l, r, transaction);
-
-        //TODO: ADD bcNode to rollback stack!
+    while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
+        printf("Try with bitcoin [%lu]\n", bcGetId(bc));
+        if (bcInsert(bc, &rollback, &rest, transaction)) {
+            printf("\nNodes affected!\n");
+        }
+        printf("Rest: [%lu]\n", rest);
     }
 
+    if (rest > 0) {
+        error = true;
+    }
 
     printf("\n• • • • • • • • • • • • • • • • • • • • • • • • •\n");
     return error;
@@ -35,11 +46,11 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
                         hashtable *receiverHashtable, hashtable *transactionsHashtable) {
     bool error = false;
-    char *senderWalletId = NULL, *receiverWalletId = NULL, *line = NULL, *transactionId = NULL;
+    char *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
     Wallet senderWallet = NULL, receiverWallet = NULL;
     listPtr rollback = NULL, senderTransactions = NULL, receiverTransactions = NULL;
-    bcNode bn, parrent = NULL;
+    bcNode bn;
 
     /* Allocate space for line string to save a copy of token.*/
     line = malloc(strlen(token) * sizeof(char) + 1);
@@ -87,28 +98,25 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, ha
                 error = true;
             }
 
+
+            //todo : dates check!!!
+
+
             /* List that stores bitcoin nodes to restore the tree to its original format in case of failure to execute
              * the transaction.*/
             listCreate(&rollback, &transaction);
 
             if (!error) {
-                error = execute(senderWallet,
-                                senderTransactions,
-                                receiverWallet,
-                                receiverTransactions,
-                                transaction,
-                                rollback
-                );
+                error = execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions, transaction,
+                                rollback);
             }
 
             if (error) {
-                fprintf(stderr, "\n!! The transaction was failed, now a rollback will be performed !!\n");
+                fprintf(stderr, "\n!! The transaction was failed, now a rollback will be performed !!\n\n");
 
                 /* RollBack,
                  * remove every new item from bitcoin tree in order to restore the tree to its original state.*/
-                printf("Rollback");
                 while ((bn = listNext(rollback)) != NULL) {
-                    printf("• ");
                     //printf("Rollback : [%p]\n", bn);
                     bcDestroyNode(bn);
                 }
@@ -182,6 +190,9 @@ Transaction createTransaction(char *token) {
         if (sscanf(token, "%d-%d-%d %d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour,
                    &tmVar.tm_min) ==
             5) {
+
+            //todo: set to NULL
+
             transaction->timestamp = mktime(&tmVar);
             if (transaction->timestamp < 0) {
                 fprintf(stderr, "\nBad datetime!\n");

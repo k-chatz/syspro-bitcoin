@@ -3,6 +3,7 @@
 
 #include <bits/types/time_t.h>
 #include "hash.h"
+#include "wallet.h"
 
 #define BUF 256
 

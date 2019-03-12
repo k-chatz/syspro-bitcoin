@@ -1,23 +1,30 @@
-output: main.o bitcoin.o hash.o list.o transaction.o wallet.o
-   gcc main.o bitcoin.o hash.o list.o transaction.o wallet.o -o bitcoin
+OBJS	= main.o bitcoin.o hash.o list.o transaction.o wallet.o
+SOURCE	= main.c bitcoin.c hash.c list.c transaction.c wallet.c
+HEADER	= bitcoin.h hash.h list.h transaction.h wallet.h
+OUT	= bitcoin
+CC	 = gcc
+FLAGS	 = -c -Wall
+
+all: $(OBJS)
+	$(CC) $(OBJS) -o $(OUT)
 
 main.o: main.c
-   gcc: -c main.c
+	$(CC) $(FLAGS) main.c
 
-bitcoin.o: bitcoin.c bitcoin.h
-   gcc -c bitcoin.c
+bitcoin.o: bitcoin.c
+	$(CC) $(FLAGS) bitcoin.c
 
-hash.o: hash.c hash.h
-   gcc -c hash.c
+hash.o: hash.c
+	$(CC) $(FLAGS) hash.c
 
-list.o: list.c list.h
-   gcc -c list.c
+list.o: list.c
+	$(CC) $(FLAGS) list.c
 
-transaction.o: transaction.c transaction.h
-   gcc -c transaction.c
+transaction.o: transaction.c
+	$(CC) $(FLAGS) transaction.c
 
-wallet.o: wallet.c wallet.h
-   gcc -c wallet.c
+wallet.o: wallet.c
+	$(CC) $(FLAGS) wallet.c
 
 clean:
-    rm *.o output
+	rm -f $(OBJS) $(OUT)

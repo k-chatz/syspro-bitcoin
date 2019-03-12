@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <zconf.h>
 #include "hash.h"
 #include "list.h"
 #include "wallet.h"
@@ -11,8 +13,6 @@
 #define BUFFER_SIZE 256
 
 typedef void *pointer;
-
-void cli();
 
 void wrongOptionValue(char *opt, char *val) {
     fprintf(stderr, "Wrong value [%s] for option '%s'\n", val, opt);
@@ -75,14 +75,8 @@ void readOptions(
     }
 }
 
-void init(hashtable *wallets,
-          hashtable *bitcoins,
-          char *a,
-          unsigned long int v,
-          unsigned long int b,
-          const unsigned long int h1,
-          const unsigned long int h2
-) {
+void init(hashtable *wallets, hashtable *bitcoins, char *a, unsigned long int v, unsigned long int b,
+          const unsigned long int h1, const unsigned long int h2) {
     FILE *fp = NULL;
     Wallet wallet = NULL;
     char buf[BUFFER_SIZE], *token = NULL;
@@ -140,14 +134,11 @@ void init(hashtable *wallets,
                             if (HT_Insert(*bitcoins, &bid, &htBitCoinParams, (void **) &bc)) {
                                 //printf("[%lu] [%p] \n", bid, bc);
 
-                                /*Insert bitcoin in wallet's bitcoin list*/
+                                /*Insert user bitcoin entry in wallet's bitcoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
                                     fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
-                                    listDestroy(&wallet->bitcoins);
-                                    HT_Destroy(wallets);
-                                    HT_Destroy(bitcoins);
-                                    exit(EXIT_FAILURE);
                                 };
+
                             } else {
                                 fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
                                 HT_Destroy(wallets);
@@ -173,18 +164,10 @@ void init(hashtable *wallets,
     }
 }
 
-void initTransactions(
-        hashtable *wallets,
-        hashtable *bitcoins,
-        hashtable *senderHashtable,
-        hashtable *receiverHashtable,
-        hashtable *transactionsHashtable,
-        const unsigned long int h1,
-        const unsigned long int h2,
-        unsigned long int b,
-        char *t,
-        unsigned long int v
-) {
+void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable, hashtable *receiverHashtable,
+                      hashtable *transactionsHashtable, const unsigned long int h1, const unsigned long int h2,
+                      unsigned long int b,
+                      char *t, unsigned long int v) {
     FILE *fp = NULL;
     bool error = false;
 
@@ -237,7 +220,6 @@ void initTransactions(
 
         if (error) {
             fprintf(stderr, "Perform transactions function complete with errors!\n");
-            exit(EXIT_FAILURE);
         }
 
         fclose(fp);
@@ -247,54 +229,97 @@ void initTransactions(
     }
 }
 
+
+
+
+
+void requestTransaction(char *buf) {
+
+}
+
+void requestTransactions(char *buf) {
+    /*TODO:
+          requestTransactions inputFile
+          requestTransactions senderWalletID receiverWalletID amount date time;
+                            senderWalletID2 receiverWalletID2 amount2 date2 time2;
+       */
+}
+
+void findEarnings(char *buf) {
+
+}
+
+void findPayments(char *buf) {
+
+}
+
+void walletStatus(char *buf) {
+
+}
+
+void bitCoinStatus(char *buf) {
+
+}
+
+void traceCoin(char *buf) {
+
+}
+
+
+
+
+
+
+
+/* Command line interface
+ * Get input from user to perform various cli commands.*/
 void cli() {
-// TODO: Get input from user to perform various cli commands (switch case)
+    int fd;
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    char *rest = NULL;
 
+    printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
+    putchar('>');
     while ((read = getline(&line, &len, stdin)) != EOF) {
-        printf("[%s]", line);
+        line = strtok(line, " \n");
+        if (line != NULL) {
+            if (strcmp(line, "requestTransaction") == 0) {
+                line = strtok(NULL, " \n");
+                requestTransaction(line);
+                printf("[%s]\n", line);
+            } else if (strcmp(line, "requestTransactions") == 0) {
+                line = strtok(NULL, " \n");
+                requestTransactions(line);
+            } else if (strcmp(line, "findEarnings") == 0) {
+                line = strtok(NULL, " \n");
+                findEarnings(line);
+            } else if (strcmp(line, "findPayments") == 0) {
+                line = strtok(NULL, " \n");
+                findPayments(line);
+            } else if (strcmp(line, "walletStatus") == 0) {
+                line = strtok(NULL, " \n");
+                walletStatus(line);
+            } else if (strcmp(line, "bitCoinStatus") == 0) {
+                line = strtok(NULL, " \n");
+                bitCoinStatus(line);
+            } else if (strcmp(line, "traceCoin") == 0) {
+                line = strtok(NULL, " \n");
+                traceCoin(line);
+            } else if (strcmp(line, "exit") == 0) {
+                fd = open("/dev/null", O_WRONLY);
+                dup2(fd, 0);
+                free(line);
+                close(fd);
+                break;
+            } else {
+                fprintf(stderr, "Command not found!\n");
+            }
+        }
         putchar('>');
         putchar(' ');
     }
-
-    free(line);
-
-//    char line[256];
-//    char *pos;
-//    while (1) {
-//        fgets(line, sizeof(line), stdin);
-//
-//        // deleting the newline captured by fgets
-//        if ((pos = strchr(line, '\n')) != NULL)
-//            *pos = '\0';
-//
-//        putchar('>');
-//
-//    }
-
-/*    while ((read = getdelim(&s, &len, ';', stdin)) != EOF) {
-        if (s[strlen(s) - 1] == ';')
-            s[strlen(s) - 1] = '\0';
-        s[0] = '/';
-        printf("\n[%s]\n", s);
-    }*/
-
-//    while (getline(&cmd, &size, stdin) != EOF) {
-//        cmd = strtok(cmd, "\n");
-//        printf("\\033[<1>C");
-//        printf("\n[%s]\n>", cmd);
-//
-//    }
-
-    //scanf("%[^\n]%*c", buf);
-    //printf("[%s]\n", buf);
-
-    //while (fgets(buf, BUFFER_SIZE, stdin) != NULL) {
-    //cmd = strtok(buf, "\n");
-    //printf("[%s]", cmd);
-    //}
 }
 
 int main(int argc, char *argv[]) {
@@ -315,6 +340,7 @@ int main(int argc, char *argv[]) {
     /*Get input from user to perform various cli commands*/
     cli();
 
+    /*Deallocate previously allocated memory.*/
     HT_Destroy(&wallets);
     HT_Destroy(&bitcoins);
     HT_Destroy(&senderHashtable);

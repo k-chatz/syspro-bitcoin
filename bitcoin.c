@@ -32,16 +32,48 @@ bcNode _createNode(bcNode parrent) {
 }
 
 
+/* Given a binary tree, print its nodes in level order
+   using array for implementing queue *//*
+
+void printLevelOrder(struct node* root)
+{
+    int rear, front;
+    struct node **queue = createQueue(&front, &rear);
+    struct node *temp_node = root;
+
+    while (temp_node)
+    {
+        printf("%d ", temp_node->data);
+
+        */
+/*Enqueue left child *//*
+
+        if (temp_node->left)
+            enQueue(queue, &rear, temp_node->left);
+
+        */
+/*Enqueue right child *//*
+
+        if (temp_node->right)
+            enQueue(queue, &rear, temp_node->right);
+
+        */
+/*Dequeue node and make it temp_node*//*
+
+        temp_node = deQueue(queue, &front);
+    }
+}
+*/
+
+
 /***Public functions***/
-bool bcInsert(bitcoin bc, bcNode l, bcNode r, Transaction transaction) {
+bool bcInsert(bitcoin bc, listPtr *rollback, unsigned long int *rest, Transaction transaction) {
     assert(bc != NULL);
-    assert(transaction != NULL);
+    assert(*rollback != NULL);
+    //assert(*rest != NULL);
+    //assert(transaction != NULL);
 
-
-
-    _createNode(NULL);
-
-
+   // *p = _createNode(NULL);
     return true;
 }
 
@@ -51,7 +83,7 @@ long unsigned int bcGetId(bitcoin bc) {
 
 void bcDestroyNode(bcNode bc){
     if(bc !=NULL){
-        printf("\nbc node to be destroyed: [%p]\n", bc);
+        fprintf(stderr, "Bitcoin node to be destroyed: [%p]\n", bc);
     }
 }
 
