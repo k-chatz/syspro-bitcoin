@@ -8,32 +8,32 @@ typedef struct Params {
     unsigned long int bid;
     Wallet wallet;
     unsigned long int v;
-} ht_bitCoin_params;
+} ht_bitcoin_params;
 
-typedef struct BitCoin *bitCoin;
+typedef struct BitCoin *bitcoin;
 
 typedef struct Node *bcNode;
 
-bool bcInsert(bitCoin bc, bcNode l, bcNode r, Transaction transaction);
+bool bcInsert(bitcoin bc, bcNode l, bcNode r, Transaction transaction);
 
-long unsigned int bcGetId(bitCoin bc);
+long unsigned int bcGetId(bitcoin bc);
 
 void bcDestroyNode(bcNode bc);
 
 /* Create
  * Initialize & return a new wallet*/
-bitCoin bcCreate(ht_bitCoin_params *htBitCoinParams);
+bitcoin bcCreate(ht_bitcoin_params *htBitCoinParams);
 
 /* @Callback
- * Compare trees function for bitCoins hashtable*/
-int bcCompare(bitCoin bc1, bitCoin bc2);
+ * Compare trees function for bitcoins hashtable*/
+int bcCompare(bitcoin bc1, bitcoin bc2);
 
 /* @Callback
- * Hash function for bitCoins hashtable*/
-unsigned long int bitCoinHash(const long int *bid, unsigned long int capacity);
+ * Hash function for bitcoins hashtable*/
+unsigned long int bitcoinHash(const long int *bid, unsigned long int capacity);
 
 /* @Callback
  * Compare keys function for wallets hashtable*/
-void bcDestroy(bitCoin *bc);
+void bcDestroy(bitcoin *bc);
 
 #endif //BITCOIN_H

@@ -33,7 +33,7 @@ bcNode _createNode(bcNode parrent) {
 
 
 /***Public functions***/
-bool bcInsert(bitCoin bc, bcNode l, bcNode r, Transaction transaction) {
+bool bcInsert(bitcoin bc, bcNode l, bcNode r, Transaction transaction) {
     assert(bc != NULL);
     assert(transaction != NULL);
 
@@ -45,7 +45,7 @@ bool bcInsert(bitCoin bc, bcNode l, bcNode r, Transaction transaction) {
     return true;
 }
 
-long unsigned int bcGetId(bitCoin bc) {
+long unsigned int bcGetId(bitcoin bc) {
     return bc->bid;
 }
 
@@ -57,9 +57,9 @@ void bcDestroyNode(bcNode bc){
 
 /* @Callback
  * Initialize & return a new BitCoin*/
-bitCoin bcCreate(ht_bitCoin_params *htBitCoinParams) {
-    bitCoin bc = NULL;
-    bc = (bitCoin) malloc(sizeof(struct BitCoin));
+bitcoin bcCreate(ht_bitcoin_params *htBitCoinParams) {
+    bitcoin bc = NULL;
+    bc = (bitcoin) malloc(sizeof(struct BitCoin));
     if (bc != NULL) {
         bc->bid = htBitCoinParams->bid;
         bc->root = _createNode(NULL);
@@ -70,19 +70,19 @@ bitCoin bcCreate(ht_bitCoin_params *htBitCoinParams) {
 }
 
 /* @Callback
- * Compare trees function for bitCoins hashtable*/
-int bcCompare(bitCoin bc1, bitCoin bc2) {
+ * Compare trees function for bitcoins hashtable*/
+int bcCompare(bitcoin bc1, bitcoin bc2) {
     return bc1->bid != bc2->bid;
 }
 
 /* @Callback
- * Hash function for bitCoins hashtable*/
-unsigned long int bitCoinHash(const long int *bid, unsigned long int capacity) {
+ * Hash function for bitcoins hashtable*/
+unsigned long int bitcoinHash(const long int *bid, unsigned long int capacity) {
     return *bid % capacity;
 }
 
 /* @Callback
  * Compare keys function for wallets hashtable*/
-void bcDestroy(bitCoin *bc) {
+void bcDestroy(bitcoin *bc) {
     printf("[%p]", *bc);
 }

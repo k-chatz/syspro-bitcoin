@@ -11,13 +11,13 @@
 bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
              Transaction transaction, listPtr rollback) {
     bool error = false;
-    bitCoin bc = NULL;
+    bitcoin bc = NULL;
     printf("\n• • • E X E C U T E   T R A N S A C T I O N • • •\n");
 
-    /* Access each bitCoin of sender to perform transaction*/
+    /* Access each bitcoin of sender to perform transaction*/
     while ((bc = listNext(senderWallet->bitcoins)) != NULL) {
 
-        printf("Try with bitCoin %lu\n", bcGetId(bc));
+        printf("Try with bitcoin %lu\n", bcGetId(bc));
         bcNode l = NULL, r = NULL;
 
         bool done = bcInsert(bc, l, r, transaction);
@@ -32,7 +32,7 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *wallets, hashtable *bitCoins, hashtable *senderHashtable,
+bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
                         hashtable *receiverHashtable, hashtable *transactionsHashtable) {
     bool error = false;
     char *senderWalletId = NULL, *receiverWalletId = NULL, *line = NULL, *transactionId = NULL;
@@ -87,7 +87,7 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *bitCoins, ha
                 error = true;
             }
 
-            /* List that stores bitCoin nodes to restore the tree to its original format in case of failure to execute
+            /* List that stores bitcoin nodes to restore the tree to its original format in case of failure to execute
              * the transaction.*/
             listCreate(&rollback, &transaction);
 
@@ -105,7 +105,7 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *bitCoins, ha
                 fprintf(stderr, "\n!! The transaction was failed, now a rollback will be performed !!\n");
 
                 /* RollBack,
-                 * remove every new item from bitCoin tree in order to restore the tree to its original state.*/
+                 * remove every new item from bitcoin tree in order to restore the tree to its original state.*/
                 printf("Rollback");
                 while ((bn = listNext(rollback)) != NULL) {
                     printf("• ");
@@ -130,7 +130,7 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *bitCoins, ha
 
 /* Perform
  * transactions from input stream*/
-bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitCoins, hashtable *senderHashtable,
+bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
                          hashtable *receiverHashtable, hashtable *transactionsHashtable, char *delimiter) {
     bool error = false;
     char buf[BUF], *token = NULL;
@@ -139,7 +139,7 @@ bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitCoins, hash
         error = performTransaction(
                 token,
                 wallets,
-                bitCoins,
+                bitcoins,
                 senderHashtable,
                 receiverHashtable,
                 transactionsHashtable

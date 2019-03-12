@@ -14,54 +14,47 @@ typedef struct Transaction {
     time_t timestamp;
 } *Transaction;
 
-/*Create
- * Initialize & return a new transaction*/
-Transaction createTransaction(char *userId);
+/* Execute
+ * transaction*/
+bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
+             Transaction transaction, listPtr rollback);
 
-/*@Callback
+/* Perform
+ * transaction from input buffer*/
+bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
+                        hashtable *receiverHashtable, hashtable *transactionsHashtable);
+
+/* Perform
+ * transactions from input stream*/
+bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
+                         hashtable *receiverHashtable, hashtable *transactionsHashtable, char *delimiter);
+
+/* @Callback
+ * Initialize & return a new transaction*/
+Transaction createTransaction(char *token);
+
+/* @Callback
  * Compare transaction with userId field*/
 int cmpTransaction(Transaction transaction, char *transactionId);
 
-/*@Callback
+/* @Callback
  * Hash function for transactions hashtable*/
 unsigned long int transactionHash(char *key, unsigned long int capacity);
 
-/*Execute
- * Execute transaction from input buffer*/
-bool performTransaction(char *token,
-                        hashtable *wallets,
-                        hashtable *bitCoins,
-                        hashtable *senderHashtable,
-                        hashtable *receiverHashtable,
-                        hashtable *transactionsHashtable
-);
-
-/*Parse
- * Parse transactions from input stream*/
-bool performTransactions(
-        FILE *fp,
-        hashtable *wallets,
-        hashtable *bitCoins,
-        hashtable *senderHashtable,
-        hashtable *receiverHashtable,
-        hashtable *transactionsHashtable,
-        char *delimiter
-);
-
-/*@Callback
+/* @Callback
  * Destroy transaction*/
 void destroyTransaction(Transaction transaction);
 
-/*Create
+/* @Callback
  * Initialize & return a new transaction list*/
 listPtr createTransactionList(char *userId);
 
-/*@Callback
+/* @Callback
  * Compare keys function for transaction lists hashtable*/
 int cmpTransactionList(listPtr tr1, char *userId);
 
-/*@Callback
- * Compare keys function for wallets hashtable*/
+/* @Callback
+ * Destroy function for transaction hashtable*/
 void destroyTransactionList(listPtr list);
 
 #endif //TRANSACTION_H

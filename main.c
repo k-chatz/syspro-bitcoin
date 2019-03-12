@@ -22,9 +22,9 @@ void wrongOptionValue(char *opt, char *val) {
 void readOptions(
         int argc,
         char **argv,
-        char **a,                   /*bitCoinBalancesFile*/
+        char **a,                   /*bitcoinBalancesFile*/
         char **t,                   /*transactionsFile*/
-        unsigned long int *v,       /*bitCoinValue*/
+        unsigned long int *v,       /*bitcoinValue*/
         unsigned long int *h1,      /*senderHashtableNumOfEntries*/
         unsigned long int *h2,      /*receiverHashtableNumOfEntries*/
         unsigned long int *b        /*bucketSize*/
@@ -76,7 +76,7 @@ void readOptions(
 }
 
 void init(hashtable *wallets,
-          hashtable *bitCoins,
+          hashtable *bitcoins,
           char *a,
           unsigned long int v,
           unsigned long int b,
@@ -87,10 +87,10 @@ void init(hashtable *wallets,
     Wallet wallet = NULL;
     char buf[BUFFER_SIZE], *token = NULL;
     unsigned long int bid = 0;
-    bitCoin bc = NULL;
-    ht_bitCoin_params htBitCoinParams;
+    bitcoin bc = NULL;
+    ht_bitcoin_params htBitCoinParams;
 
-    /*Open bitCoinBalancesFile*/
+    /*Open bitcoinBalancesFile*/
     fp = fopen(a, "r");
     if (fp != NULL) {
 
@@ -105,18 +105,18 @@ void init(hashtable *wallets,
                 (unsigned long (*)(pointer)) destroyWallet
         );
 
-        /*Initialize BitCoins hashtable*/
+        /*Initialize bitcoins hashtable*/
         HT_Init(
-                bitCoins,
+                bitcoins,
                 h1 > h2 ? h1 : h2,
                 b,
                 (pointer (*)(pointer)) bcCreate,
                 (int (*)(pointer, pointer)) bcCompare,
-                (unsigned long (*)(pointer, unsigned long int)) bitCoinHash,
+                (unsigned long (*)(pointer, unsigned long int)) bitcoinHash,
                 (unsigned long (*)(pointer)) bcDestroy
         );
 
-        /*Read bitCoinBalancesFile*/
+        /*Read bitcoinBalancesFile*/
         while (fgets(buf, BUFFER_SIZE, fp) != NULL) {
             token = strtok(buf, "\n");
             token = strtok(token, " ");
@@ -125,33 +125,33 @@ void init(hashtable *wallets,
                 /*Insert wallet, check if the insertion fails*/
                 if (HT_Insert(*wallets, token, token, (void **) &wallet)) {
 
-                    /*Read BitCoins for current wallet*/
+                    /*Read bitcoins for current wallet*/
                     do {
                         token = strtok(NULL, " ");
                         if (token != NULL) {
                             bid = (unsigned long int) strtol(token, NULL, 10);
 
-                            /*Initialize parameters for bitCoin*/
+                            /*Initialize parameters for bitcoin*/
                             htBitCoinParams.wallet = wallet;
                             htBitCoinParams.bid = bid;
                             htBitCoinParams.v = v;
 
-                            /*Insert bitCoin into bitCoins hashtable*/
-                            if (HT_Insert(*bitCoins, &bid, &htBitCoinParams, (void **) &bc)) {
+                            /*Insert bitcoin into bitcoins hashtable*/
+                            if (HT_Insert(*bitcoins, &bid, &htBitCoinParams, (void **) &bc)) {
                                 //printf("[%lu] [%p] \n", bid, bc);
 
-                                /*Insert bitCoin in wallet's bitCoin list*/
+                                /*Insert bitcoin in wallet's bitcoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
                                     fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
                                     listDestroy(&wallet->bitcoins);
                                     HT_Destroy(wallets);
-                                    HT_Destroy(bitCoins);
+                                    HT_Destroy(bitcoins);
                                     exit(EXIT_FAILURE);
                                 };
                             } else {
                                 fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
                                 HT_Destroy(wallets);
-                                HT_Destroy(bitCoins);
+                                HT_Destroy(bitcoins);
                                 exit(EXIT_FAILURE);
                             }
                         }
@@ -160,7 +160,7 @@ void init(hashtable *wallets,
                     fprintf(stderr, "\nWallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
                     HT_Destroy(wallets);
-                    HT_Destroy(bitCoins);
+                    HT_Destroy(bitcoins);
                     exit(EXIT_FAILURE);
                 }
                 //printf("\n\n");
@@ -175,7 +175,7 @@ void init(hashtable *wallets,
 
 void initTransactions(
         hashtable *wallets,
-        hashtable *bitCoins,
+        hashtable *bitcoins,
         hashtable *senderHashtable,
         hashtable *receiverHashtable,
         hashtable *transactionsHashtable,
@@ -228,7 +228,7 @@ void initTransactions(
         error = performTransactions(
                 fp,
                 wallets,
-                bitCoins,
+                bitcoins,
                 senderHashtable,
                 receiverHashtable,
                 transactionsHashtable,
@@ -300,23 +300,23 @@ void cli() {
 int main(int argc, char *argv[]) {
     unsigned long int h1 = 0, h2 = 0, b = 0, v = 0;
     char *a = NULL, *t = NULL;
-    hashtable wallets, bitCoins, senderHashtable, receiverHashtable, transactionsHashtable;
+    hashtable wallets, bitcoins, senderHashtable, receiverHashtable, transactionsHashtable;
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
 
     /*Init structures*/
-    init(&wallets, &bitCoins, a, v, b, h1, h2);
+    init(&wallets, &bitcoins, a, v, b, h1, h2);
 
     /*Initialize with some transactions*/
-    initTransactions(&wallets, &bitCoins, &senderHashtable, &receiverHashtable, &transactionsHashtable, h1, h2, b, t,
+    initTransactions(&wallets, &bitcoins, &senderHashtable, &receiverHashtable, &transactionsHashtable, h1, h2, b, t,
                      v);
 
     /*Get input from user to perform various cli commands*/
     cli();
 
     HT_Destroy(&wallets);
-    HT_Destroy(&bitCoins);
+    HT_Destroy(&bitcoins);
     HT_Destroy(&senderHashtable);
     HT_Destroy(&receiverHashtable);
     HT_Destroy(&transactionsHashtable);
