@@ -2,8 +2,9 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
-#include "tree.h"
+#include "wallet.h"
 #include "transaction.h"
+#include "bitcoin.h"
 
 /*Create
  * Initialize & return a new transaction*/
@@ -81,6 +82,25 @@ void destroyTransaction(Transaction transaction) {
     free(transaction);
 }
 
+
+bool execute(
+        Wallet senderWallet,
+        listPtr senderTransactions,
+        Wallet receiverWallet,
+        listPtr receiverTransactions,
+        Transaction transaction
+) {
+    bitCoin bc = NULL;
+
+    /*Access each bitCoin of sender to perform transaction*/
+    while ((bc = listNext(senderWallet->bitcoins)) != NULL) {
+        printf("[%lu]\n", bcGetId(bc));
+
+
+    }
+
+}
+
 /*Execute
  * Execute transaction from input buffer*/
 bool performTransaction(char *token,
@@ -94,68 +114,67 @@ bool performTransaction(char *token,
     char *senderWalletId = NULL, *receiverWalletId = NULL, *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
     Wallet senderWallet = NULL, receiverWallet = NULL;
-    treePtr bc = NULL;
-    listPtr SenderTransactions = NULL, ReceiverTransactions = NULL;
+    listPtr senderTransactions = NULL, receiverTransactions = NULL;
 
     /*Allocate space for line string to save a copy of token.*/
     line = malloc(strlen(token) * sizeof(char) + 1);
-    if(line != NULL) {
+    if (line != NULL) {
         strcpy(line, token);
         transactionId = strtok(token, " ");
-        printf("Transaction: [%s]", line);
+        printf("Transaction string: [%s]", line);
 
-
-
-        /*Create a transaction through hashtable to ensure there is no other one with the same id.*/
+        /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
         if (HT_Insert(*transactionsHashtable, transactionId, line, (void **) &transaction)) {
 
             /*Get sender's wallet.*/
             senderWallet = HT_Get(*wallets, transaction->senderWalletId);
             if (senderWallet != NULL) {
-                printf("\nSender's wallet: [%p,'%s'] ", senderWallet, senderWallet->userId);
-
-                /*Access each bitCoin*/
-                while ((bc = listNext(senderWallet->bitcoins)) != NULL) {
-                    printf("[%lu] ", treeGetBid(bc));
-                }
+                printf("\nSender's wallet: [%p,'%s'] --> ", senderWallet, senderWallet->userId);
+            } else {
+                fprintf(stderr, "\nTransaction.c | performTransaction | Sender Wallet Hashtable GET error\n");
+                exit(EXIT_FAILURE);
             }
 
             /*Get receiver's wallet.*/
             receiverWallet = HT_Get(*wallets, transaction->receiverWalletId);
             if (receiverWallet != NULL) {
-                printf("\nReceiver's wallet: [%p,'%s'] ", receiverWallet, receiverWallet->userId);
-
-                /*Access each bitCoin*/
-                while ((bc = listNext(receiverWallet->bitcoins)) != NULL) {
-                    printf("[%lu] ", treeGetBid(bc));
-                }
+                printf("Receiver's wallet: [%p,'%s']\n", receiverWallet, receiverWallet->userId);
+            } else {
+                fprintf(stderr, "\nTransaction.c | performTransaction | Receiver Wallet Hashtable GET error\n");
+                exit(EXIT_FAILURE);
             }
 
+            /*Create/Get sender transactions list hashtable*/
             if (HT_Insert(*senderHashtable, transaction->senderWalletId, transaction->senderWalletId,
-                          (void **) &SenderTransactions)) {
-                printf("\nTransactions list of '%s': [%p] \n", transaction->senderWalletId, SenderTransactions);
+                          (void **) &senderTransactions)) {
+                printf("Transactions list of '%s': [%p]\n", transaction->senderWalletId, senderTransactions);
             } else {
                 fprintf(stderr, "\nTransaction.c | performTransaction | Sender Hashtable INSERT error\n");
                 exit(EXIT_FAILURE);
             }
 
+            /*Create/Get receiver transactions list hashtable*/
             if (HT_Insert(*receiverHashtable, transaction->senderWalletId, transaction->senderWalletId,
-                          (void **) &ReceiverTransactions)) {
-                printf("\nTransactions list of '%s': [%p] \n", transaction->receiverWalletId, ReceiverTransactions);
+                          (void **) &receiverTransactions)) {
+                printf("Transactions list of '%s': [%p]\n", transaction->receiverWalletId, receiverTransactions);
             } else {
                 fprintf(stderr, "\nTransaction.c | performTransaction | Receiver Hashtable INSERT error\n");
                 exit(EXIT_FAILURE);
             }
+
+            error = execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions, transaction);
+            if (error) {
+                //TODO: RollBack!!
+            }
+
+            printf("\n•\n");
         } else {
             fprintf(stderr, "\nTransaction.c | performTransaction | Transactions Hashtable INSERT error\n");
             error = true;
         }
-
-
-
         printf("\n\n");
         free(line);
-    }else{
+    } else {
         error = true;
     }
     return error;
@@ -170,12 +189,12 @@ bool performTransactions(
         hashtable *senderHashtable,
         hashtable *receiverHashtable,
         hashtable *transactionsHashtable,
-        char *delim
+        char *delimiter
 ) {
     bool error = false;
     char buf[BUF], *token = NULL;
     while (fgets(buf, BUF, fp) != NULL) {
-        token = strtok(buf, delim);
+        token = strtok(buf, delimiter);
         error = performTransaction(
                 token,
                 wallets,

@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "hash.h"
 #include "list.h"
-#include "tree.h"
 #include "wallet.h"
 #include "bitcoin.h"
 #include "transaction.h"
@@ -88,7 +87,7 @@ void init(hashtable *wallets,
     Wallet wallet = NULL;
     char buf[BUFFER_SIZE], *token = NULL;
     unsigned long int bid = 0;
-    treePtr bc = NULL;
+    bitCoin bc = NULL;
     ht_bitCoin_params htBitCoinParams;
 
     /*Open bitCoinBalancesFile*/
@@ -111,10 +110,10 @@ void init(hashtable *wallets,
                 bitCoins,
                 h1 > h2 ? h1 : h2,
                 b,
-                (pointer (*)(pointer)) createBitCoin,
-                (int (*)(pointer, pointer)) cmpBitCoin,
+                (pointer (*)(pointer)) bcCreate,
+                (int (*)(pointer, pointer)) bcCompare,
                 (unsigned long (*)(pointer, unsigned long int)) bitCoinHash,
-                (unsigned long (*)(pointer)) destroyBitCoin
+                (unsigned long (*)(pointer)) bcDestroy
         );
 
         /*Read bitCoinBalancesFile*/
@@ -151,7 +150,6 @@ void init(hashtable *wallets,
                                 };
                             } else {
                                 fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
-                                treeDestroy(&bc);
                                 HT_Destroy(wallets);
                                 HT_Destroy(bitCoins);
                                 exit(EXIT_FAILURE);
@@ -251,6 +249,52 @@ void initTransactions(
 
 void cli() {
 // TODO: Get input from user to perform various cli commands (switch case)
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    while ((read = getline(&line, &len, stdin)) != EOF) {
+        printf("[%s]", line);
+        putchar('>');
+        putchar(' ');
+    }
+
+    free(line);
+
+//    char line[256];
+//    char *pos;
+//    while (1) {
+//        fgets(line, sizeof(line), stdin);
+//
+//        // deleting the newline captured by fgets
+//        if ((pos = strchr(line, '\n')) != NULL)
+//            *pos = '\0';
+//
+//        putchar('>');
+//
+//    }
+
+/*    while ((read = getdelim(&s, &len, ';', stdin)) != EOF) {
+        if (s[strlen(s) - 1] == ';')
+            s[strlen(s) - 1] = '\0';
+        s[0] = '/';
+        printf("\n[%s]\n", s);
+    }*/
+
+//    while (getline(&cmd, &size, stdin) != EOF) {
+//        cmd = strtok(cmd, "\n");
+//        printf("\\033[<1>C");
+//        printf("\n[%s]\n>", cmd);
+//
+//    }
+
+    //scanf("%[^\n]%*c", buf);
+    //printf("[%s]\n", buf);
+
+    //while (fgets(buf, BUFFER_SIZE, stdin) != NULL) {
+    //cmd = strtok(buf, "\n");
+    //printf("[%s]", cmd);
+    //}
 }
 
 int main(int argc, char *argv[]) {

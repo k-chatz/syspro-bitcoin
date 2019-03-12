@@ -2,8 +2,8 @@
 #define TRANSACTION_H
 
 #include <bits/types/time_t.h>
-#include "tree.h"
 #include "hash.h"
+#include "bitcoin.h"
 
 #define BUF 256
 
@@ -11,7 +11,7 @@ typedef struct Transaction {
     char *transactionId;
     char *senderWalletId;
     char *receiverWalletId;
-    void *treeNode;
+    bitCoinNode treeNode;  //TODO: Maybe list
     unsigned long int value;
     time_t timestamp;
 } *Transaction;
@@ -47,7 +47,7 @@ bool performTransactions(
         hashtable *senderHashtable,
         hashtable *receiverHashtable,
         hashtable *transactionsHashtable,
-        char *delim
+        char *delimiter
 );
 
 /*Callback
