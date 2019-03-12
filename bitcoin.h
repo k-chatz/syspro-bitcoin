@@ -2,6 +2,7 @@
 #define BITCOIN_H
 
 #include "wallet.h"
+#include "transaction.h"
 
 typedef struct Params {
     unsigned long int bid;
@@ -11,25 +12,27 @@ typedef struct Params {
 
 typedef struct BitCoin *bitCoin;
 
-typedef struct Node *bitCoinNode;
+typedef struct Node *bcNode;
 
-bool bcInsert(bitCoin tree, void *data);
+bool bcInsert(bitCoin bc, bcNode l, bcNode r, Transaction transaction);
 
 long unsigned int bcGetId(bitCoin bc);
 
-/*Create
+void bcDestroyNode(bcNode bc);
+
+/* Create
  * Initialize & return a new wallet*/
 bitCoin bcCreate(ht_bitCoin_params *htBitCoinParams);
 
-/*Callback
+/* @Callback
  * Compare trees function for bitCoins hashtable*/
 int bcCompare(bitCoin bc1, bitCoin bc2);
 
-/*Callback
+/* @Callback
  * Hash function for bitCoins hashtable*/
 unsigned long int bitCoinHash(const long int *bid, unsigned long int capacity);
 
-/*Callback
+/* @Callback
  * Compare keys function for wallets hashtable*/
 void bcDestroy(bitCoin *bc);
 

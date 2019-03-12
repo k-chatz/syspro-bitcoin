@@ -140,7 +140,7 @@ void init(hashtable *wallets,
                             if (HT_Insert(*bitCoins, &bid, &htBitCoinParams, (void **) &bc)) {
                                 //printf("[%lu] [%p] \n", bid, bc);
 
-                                /*Insert bitCoin (pointer to tree) in wallet's bitCoin list*/
+                                /*Insert bitCoin in wallet's bitCoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
                                     fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
                                     listDestroy(&wallet->bitcoins);

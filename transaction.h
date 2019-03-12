@@ -3,7 +3,6 @@
 
 #include <bits/types/time_t.h>
 #include "hash.h"
-#include "bitcoin.h"
 
 #define BUF 256
 
@@ -11,7 +10,6 @@ typedef struct Transaction {
     char *transactionId;
     char *senderWalletId;
     char *receiverWalletId;
-    bitCoinNode treeNode;  //TODO: Maybe list
     unsigned long int value;
     time_t timestamp;
 } *Transaction;
@@ -20,11 +18,11 @@ typedef struct Transaction {
  * Initialize & return a new transaction*/
 Transaction createTransaction(char *userId);
 
-/*Callback
+/*@Callback
  * Compare transaction with userId field*/
 int cmpTransaction(Transaction transaction, char *transactionId);
 
-/*Callback
+/*@Callback
  * Hash function for transactions hashtable*/
 unsigned long int transactionHash(char *key, unsigned long int capacity);
 
@@ -50,7 +48,7 @@ bool performTransactions(
         char *delimiter
 );
 
-/*Callback
+/*@Callback
  * Destroy transaction*/
 void destroyTransaction(Transaction transaction);
 
@@ -58,11 +56,11 @@ void destroyTransaction(Transaction transaction);
  * Initialize & return a new transaction list*/
 listPtr createTransactionList(char *userId);
 
-/*Callback
+/*@Callback
  * Compare keys function for transaction lists hashtable*/
 int cmpTransactionList(listPtr tr1, char *userId);
 
-/*Callback
+/*@Callback
  * Compare keys function for wallets hashtable*/
 void destroyTransactionList(listPtr list);
 

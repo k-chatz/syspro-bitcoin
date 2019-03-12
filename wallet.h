@@ -8,19 +8,19 @@ typedef struct Wallet {
     listPtr bitcoins;
 } *Wallet;
 
-/*Create
+/* @Callback
  * Initialize & return a new wallet*/
 Wallet createWallet(char *userId);
 
-/*Callback
+/* @Callback
  * Compare wallet with userId field*/
 int cmpWallet(Wallet w1, char *userId);
 
-/*Callback
+/* @Callback
  * Hash function for wallets hashtable*/
 unsigned long int walletHash(char *key, unsigned long int capacity);
 
-/*Callback
+/* @Callback
  * Destroy wallet*/
 void destroyWallet(Wallet w);
 

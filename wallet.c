@@ -3,7 +3,7 @@
 #include "list.h"
 #include "wallet.h"
 
-/*Create
+/* @Callback
  * Initialize & return a new wallet*/
 Wallet createWallet(char *userId) {
     Wallet wallet = malloc(sizeof(struct Wallet));
@@ -20,13 +20,13 @@ Wallet createWallet(char *userId) {
     return wallet;
 }
 
-/*Callback
+/* @Callback
  * Compare wallet with userId field*/
 int cmpWallet(Wallet w1, char *userId) {
     return strcmp(w1->userId,  userId);
 }
 
-/*Callback
+/* @Callback
  * Hash function for wallets hashtable*/
 unsigned long int walletHash(char *key, unsigned long int capacity) {
     int i, sum = 0;
@@ -37,7 +37,7 @@ unsigned long int walletHash(char *key, unsigned long int capacity) {
     return sum % capacity;
 }
 
-/*Callback
+/* @Callback
  * Destroy wallet*/
 void destroyWallet(Wallet w) {
     free(w->userId);
