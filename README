@@ -1,0 +1,13 @@
+::: BITCOIN TRANSACTIONS SIMULATION :::
+
+compile: make
+
+clean: make clean
+
+compile manually: gcc -o bitcoin main.c bitcoin.c hash.c list.c transaction.c wallet.c
+
+run example:
+
+./bitcoin -a resources/bitCoinBalancesFile -v 50 -h1 10 -h2 10 -b 51 -t resources/transactionsFile
+
+documentation: open 'documentation.pdf' file 'resources' folder.
