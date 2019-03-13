@@ -10,7 +10,7 @@
 /* Execute
  * transaction*/
 bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
-             Transaction transaction, listPtr rollback) {
+             Transaction transaction) {
     assert(senderWallet != NULL);
     assert(senderTransactions != NULL);
     assert(receiverWallet != NULL);
@@ -18,140 +18,113 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
     assert(transaction != NULL);
     assert(transaction->value > 0);
 
-    bool error = false;
     unsigned long int rest = transaction->value;
     bitcoin bc = NULL;
     printf("\n• • • E X E C U T E   T R A N S A C T I O N • • •\n");
 
-
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
-        printf("Try with bitcoin [%lu]\n", bcGetId(bc));
-        if (bcInsert(bc, &rollback, &rest, transaction)) {
-            printf("\nNodes affected!\n");
-        }
-        printf("Rest: [%lu]\n", rest);
+        printf("Try with bitcoin [%lu] ", bcGetId(bc));
+        bcInsert(bc, &rest, transaction);
+        printf("rest: [%lu]\n", rest);
     }
 
     if (rest > 0) {
-        error = true;
+        // return false;
     }
 
     printf("\n• • • • • • • • • • • • • • • • • • • • • • • • •\n");
-    return error;
+    return true;
 }
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
-                        hashtable *receiverHashtable, hashtable *transactionsHashtable) {
+bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashtable, hashtable *receiverHashtable,
+                        hashtable *transactionsHashtable) {
     bool error = false;
     char *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
     Wallet senderWallet = NULL, receiverWallet = NULL;
-    listPtr rollback = NULL, senderTransactions = NULL, receiverTransactions = NULL;
-    bcNode bn;
+    listPtr senderTransactions = NULL, receiverTransactions = NULL;
 
     /* Allocate space for line string to save a copy of token.*/
     line = malloc(strlen(token) * sizeof(char) + 1);
     if (line != NULL) {
         strcpy(line, token);
         transactionId = strtok(token, " ");
-        printf("\nTransaction string: [%s]", line);
+        printf("Transaction: [%s]\n", line);
 
         /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
         if (HT_Insert(*transactionsHashtable, transactionId, line, (void **) &transaction)) {
+            assert(transaction != NULL);
 
             /* Get sender's wallet.*/
             senderWallet = HT_Get(*wallets, transaction->senderWalletId);
-            if (senderWallet != NULL) {
-                //printf("\nSender's wallet: [%p,'%s'] --> ", senderWallet, senderWallet->userId);
-            } else {
-                fprintf(stderr, "\nTransaction.c | performTransaction | Sender Wallet Hashtable GET error\n");
-                error = true;
-            }
+            assert(senderWallet != NULL);
 
             /* Get receiver's wallet.*/
             receiverWallet = HT_Get(*wallets, transaction->receiverWalletId);
-            if (receiverWallet != NULL) {
-                //printf("Receiver's wallet: [%p,'%s']\n", receiverWallet, receiverWallet->userId);
-            } else {
-                fprintf(stderr, "\nTransaction.c | performTransaction | Receiver Wallet Hashtable GET error\n");
-                error = true;
-            }
+            assert(receiverWallet != NULL);
 
             /* Create/Get sender transactions list hashtable*/
-            if (HT_Insert(*senderHashtable, transaction->senderWalletId, transaction->senderWalletId,
-                          (void **) &senderTransactions)) {
-                //printf("Transactions list of '%s': [%p]\n", transaction->senderWalletId, senderTransactions);
-            } else {
-                fprintf(stderr, "\nTransaction.c | performTransaction | Sender Hashtable INSERT error\n");
-                error = true;
-            }
+            assert(HT_Insert(*senderHashtable, transaction->senderWalletId, transaction->senderWalletId,
+                             (void **) &senderTransactions));
+
+            assert(senderTransactions != NULL);
 
             /*Create/Get receiver transactions list hashtable*/
-            if (HT_Insert(*receiverHashtable, transaction->senderWalletId, transaction->senderWalletId,
-                          (void **) &receiverTransactions)) {
-                //printf("Transactions list of '%s': [%p]\n", transaction->receiverWalletId, receiverTransactions);
-            } else {
-                fprintf(stderr, "\nTransaction.c | performTransaction | Receiver Hashtable INSERT error\n");
+            assert(HT_Insert(*receiverHashtable, transaction->senderWalletId, transaction->senderWalletId,
+                             (void **) &receiverTransactions));
+
+            assert(receiverTransactions != NULL);
+
+            if (transaction->timestamp < max_transaction_timestamp) {
                 error = true;
+                fprintf(stdout, "\nTransaction date is less than the current time!\n");
             }
-
-
-            //todo : dates check!!!
-
-
-            /* List that stores bitcoin nodes to restore the tree to its original format in case of failure to execute
-             * the transaction.*/
-            listCreate(&rollback, &transaction);
 
             if (!error) {
-                error = execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions, transaction,
-                                rollback);
-            }
-
-            if (error) {
-                fprintf(stderr, "\n!! The transaction was failed, now a rollback will be performed !!\n\n");
-
-                /* RollBack,
-                 * remove every new item from bitcoin tree in order to restore the tree to its original state.*/
-                while ((bn = listNext(rollback)) != NULL) {
-                    //printf("Rollback : [%p]\n", bn);
-                    bcDestroyNode(bn);
+                if (transaction->value > senderWallet->balance) {
+                    error = true;
+                    fprintf(stdout, "\nThe sender's money is not enough to complete the transaction!\n");
+                } else {
+                    if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
+                                transaction)) {
+                        if (transaction->timestamp > max_transaction_timestamp) {
+                            max_transaction_timestamp = transaction->timestamp;
+                        }
+                    } else {
+                        fprintf(stdout, "\nTransaction fail!\n");
+                        error = true;
+                    }
                 }
-                printf("\n");
             }
-
-            //listDestroy(&rollback);
         } else {
-            fprintf(stderr, "\nTransaction.c | performTransaction | Transactions Hashtable INSERT error\n");
+            fprintf(stdout, "\nTransaction '%s' is duplicate!\n", transaction->transactionId);
             error = true;
         }
         printf("\n");
         free(line);
     } else {
         error = true;
+        fprintf(stdout, "\nUnexpected error!\n");
     }
     return error;
 }
 
 /* Perform
  * transactions from input stream*/
-bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
-                         hashtable *receiverHashtable, hashtable *transactionsHashtable, char *delimiter) {
+bool performTransactions(FILE *fp, hashtable *walletsHT, hashtable *senderHT,
+                         hashtable *receiverHT, hashtable *transactionsHT, char *delimiter) {
     bool error = false;
     char buf[BUF], *token = NULL;
     while (fgets(buf, BUF, fp) != NULL) {
         token = strtok(buf, delimiter);
-        error = performTransaction(
-                token,
-                wallets,
-                bitcoins,
-                senderHashtable,
-                receiverHashtable,
-                transactionsHashtable
-        );
+        if (token != NULL) {
+            error = performTransaction(token, walletsHT, senderHT, receiverHT, transactionsHT);
+        } else {
+            break;
+        }
     }
     return error;
 }
@@ -160,7 +133,19 @@ bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitcoins, hash
  * Initialize & return a new transaction*/
 Transaction createTransaction(char *token) {
     Transaction transaction = NULL;
-    struct tm tmVar;
+    struct tm t;
+    int x = 0;
+
+    /*Initialize tm to avoid valgrind errors*/
+    t.tm_mday = 0;
+    t.tm_min = 0;
+    t.tm_hour = 0;
+    t.tm_mday = 0;
+    t.tm_mon = 0;
+    t.tm_year = 0;
+    t.tm_wday = 0;
+    t.tm_yday = 0;
+    t.tm_isdst = 0;
 
     transaction = (Transaction) malloc(sizeof(struct Transaction));
     if (transaction != NULL) {
@@ -186,20 +171,19 @@ Transaction createTransaction(char *token) {
         token = strtok(NULL, " "); // Amount
         transaction->value = (unsigned long int) strtol(token, NULL, 10);
 
-        token = strtok(NULL, "\0"); // Date time
-        if (sscanf(token, "%d-%d-%d %d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour,
-                   &tmVar.tm_min) ==
-            5) {
+        token = strtok(NULL, ""); // Date time
 
-            //todo: set to NULL
+        /*Parse date & time*/
+        x = sscanf(token, "%d-%d-%d %d:%d", &t.tm_mday, &t.tm_mon, &t.tm_year, &t.tm_hour, &t.tm_min);
 
-            transaction->timestamp = mktime(&tmVar);
+        if (x == 5) {
+            transaction->timestamp = mktime(&t);
             if (transaction->timestamp < 0) {
-                fprintf(stderr, "\nBad datetime!\n");
+                fprintf(stdout, "\nBad datetime!\n");
                 return NULL;
             }
         } else {
-            fprintf(stderr, "\nBad datetime format!\n");
+            fprintf(stdout, "\nBad datetime format!\n");
             return NULL;
         }
     }

@@ -14,7 +14,7 @@ typedef struct BitCoin *bitcoin;
 
 typedef struct Node *bcNode;
 
-bool bcInsert(bitcoin bc, listPtr *rollback,  unsigned long int *rest, Transaction transaction);
+bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction);
 
 long unsigned int bcGetId(bitcoin bc);
 

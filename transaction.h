@@ -7,6 +7,9 @@
 
 #define BUF 256
 
+extern time_t max_transaction_timestamp;
+extern bool init_complete;
+
 typedef struct Transaction {
     char *transactionId;
     char *senderWalletId;
@@ -18,17 +21,17 @@ typedef struct Transaction {
 /* Execute
  * transaction*/
 bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
-             Transaction transaction, listPtr rollback);
+             Transaction transaction);
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
-                        hashtable *receiverHashtable, hashtable *transactionsHashtable);
+bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashtable, hashtable *receiverHashtable,
+                        hashtable *transactionsHashtable);
 
 /* Perform
  * transactions from input stream*/
-bool performTransactions(FILE *fp, hashtable *wallets, hashtable *bitcoins, hashtable *senderHashtable,
-                         hashtable *receiverHashtable, hashtable *transactionsHashtable, char *delimiter);
+bool performTransactions(FILE *fp, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
+                         hashtable *transactionsHT, char *delimiter);
 
 /* @Callback
  * Initialize & return a new transaction*/

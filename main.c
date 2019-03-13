@@ -14,8 +14,14 @@
 
 typedef void *pointer;
 
+bool init_complete = false;
+
+time_t max_transaction_timestamp = 0;
+
+hashtable walletsHT = NULL, bitcoinsHT = NULL, senderHT = NULL, receiverHT = NULL, transactionsHT = NULL;
+
 void wrongOptionValue(char *opt, char *val) {
-    fprintf(stderr, "Wrong value [%s] for option '%s'\n", val, opt);
+    fprintf(stdout, "Wrong value [%s] for option '%s'\n", val, opt);
     exit(EXIT_FAILURE);
 }
 
@@ -119,6 +125,8 @@ void init(hashtable *wallets, hashtable *bitcoins, char *a, unsigned long int v,
                 /*Insert wallet, check if the insertion fails*/
                 if (HT_Insert(*wallets, token, token, (void **) &wallet)) {
 
+                    assert(wallet != NULL);
+
                     /*Read bitcoins for current wallet*/
                     do {
                         token = strtok(NULL, " ");
@@ -132,15 +140,18 @@ void init(hashtable *wallets, hashtable *bitcoins, char *a, unsigned long int v,
 
                             /*Insert bitcoin into bitcoins hashtable*/
                             if (HT_Insert(*bitcoins, &bid, &htBitCoinParams, (void **) &bc)) {
-                                //printf("[%lu] [%p] \n", bid, bc);
 
+                                assert(bc != NULL);
+
+                                //printf("[%lu] [%p] \n", bid, bc);
+                                wallet->balance += v;
                                 /*Insert user bitcoin entry in wallet's bitcoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
-                                    fprintf(stderr, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
+                                    fprintf(stdout, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
                                 };
 
                             } else {
-                                fprintf(stderr, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
+                                fprintf(stdout, "\nHT BitCoin [%p] was not inserted because is duplicate!\n", bc);
                                 HT_Destroy(wallets);
                                 HT_Destroy(bitcoins);
                                 exit(EXIT_FAILURE);
@@ -148,7 +159,7 @@ void init(hashtable *wallets, hashtable *bitcoins, char *a, unsigned long int v,
                         }
                     } while (token != NULL);
                 } else {
-                    fprintf(stderr, "\nWallet [%s] was not inserted because is duplicate!\n", token);
+                    fprintf(stdout, "\nWallet [%s] was not inserted because is duplicate!\n", token);
                     destroyWallet(wallet);
                     HT_Destroy(wallets);
                     HT_Destroy(bitcoins);
@@ -159,7 +170,7 @@ void init(hashtable *wallets, hashtable *bitcoins, char *a, unsigned long int v,
         }
         fclose(fp);
     } else {
-        fprintf(stderr, "\nFile '%s' doesn't exists!\n", a);
+        fprintf(stdout, "\nFile '%s' doesn't exists!\n", a);
         exit(EXIT_FAILURE);
     }
 }
@@ -169,13 +180,12 @@ void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *sender
                       unsigned long int b,
                       char *t, unsigned long int v) {
     FILE *fp = NULL;
-    bool error = false;
 
     /*Open transactionsFile*/
     fp = fopen(t, "r");
     if (fp != NULL) {
 
-        /* Initialize hashtable for sender transactions list hashtable*/
+        /* Initialize hashtable for sender transactions list hashtable.*/
         HT_Init(
                 senderHashtable,
                 h1,
@@ -186,7 +196,7 @@ void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *sender
                 (unsigned long (*)(pointer)) destroyTransactionList
         );
 
-        /* Initialize hashtable for receiver transactions list hashtable*/
+        /* Initialize hashtable for receiver transactions list hashtable.*/
         HT_Init(
                 receiverHashtable,
                 h2,
@@ -197,7 +207,7 @@ void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *sender
                 (unsigned long (*)(pointer)) destroyTransactionList
         );
 
-        /* Initialize hashtable for transactions hashtable*/
+        /* Initialize hashtable for transactions hashtable.*/
         HT_Init(
                 transactionsHashtable,
                 h1 > h2 ? h1 : h2,
@@ -208,60 +218,75 @@ void initTransactions(hashtable *wallets, hashtable *bitcoins, hashtable *sender
                 (unsigned long (*)(pointer)) destroyTransaction
         );
 
-        error = performTransactions(
-                fp,
-                wallets,
-                bitcoins,
-                senderHashtable,
-                receiverHashtable,
-                transactionsHashtable,
-                "\n"
-        );
-
-        if (error) {
-            fprintf(stderr, "Perform transactions function complete with errors!\n");
-        }
+        /* Run transactions from file in order to initialize the simulation.*/
+        performTransactions(fp, wallets, senderHashtable, receiverHashtable, transactionsHashtable, "\n");
 
         fclose(fp);
     } else {
-        fprintf(stderr, "File '%s' doesn't exists!\n", t);
+        fprintf(stdout, "File '%s' doesn't exists!\n", t);
         exit(EXIT_FAILURE);
     }
 }
 
-
-void requestTransaction(char *buf) {
-    printf("\n[%s]\n", buf);
+void requestTransaction(char *token) {
+    performTransaction(token, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
 }
 
-void requestTransactions(char *buf) {
-    /*TODO:
-          requestTransactions inputFile
-          requestTransactions senderWalletID receiverWalletID amount date time;
-                            senderWalletID2 receiverWalletID2 amount2 date2 time2;
-       */
+void requestTransactions(char *token) {
+    FILE *fp = NULL;
+    int q, s;
+    size_t len = 0;
+    char input[BUFFER_SIZE];
+    token = strtok(token, "\n");
+    if (token != NULL) {
+        /* Use this sscanf only for check the number of arguments to determine if the input is file of transactions
+         * or actual transactions.*/
+        s = sscanf(token, "%s %s %s %d %d-%d-%d %d:%d;", input, input, input, &q, &q, &q, &q, &q, &q);
+        if (s == 1) {
+            fp = fopen(token, "r");
+            if (fp != NULL) {
+                performTransactions(fp, &walletsHT, &senderHT, &receiverHT, &transactionsHT, ";\n");
+                fclose(fp);
+            } else {
+                fprintf(stdout, "\nFile '%s' not found!\n", token);
+            }
+        } else if (s == 9) {
+            performTransaction(token, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
+            performTransactions(stdin, &walletsHT, &senderHT, &receiverHT, &transactionsHT, ";\n");
+        } else {
+            fprintf(stdout, "~ error: bad input!\n");
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input!\n");
+    }
 }
 
-void findEarnings(char *buf) {
-
+void findEarnings(char *token) {
+    //TODO:
+    char *rest = token;
+    token = strtok_r(rest, " \n", &rest);
+    printf("\n[%s]\n", token);
 }
 
-void findPayments(char *buf) {
-
+void findPayments(char *token) {
+    //TODO:
+    printf("\n[%s]\n", token);
 }
 
-void walletStatus(char *buf) {
-
+void walletStatus(char *token) {
+    //TODO:
+    printf("\n[%s]\n", token);
 }
 
-void bitCoinStatus(char *buf) {
-
+void bitCoinStatus(char *token) {
+    //TODO:
+    printf("\n[%s]\n", token);
 }
 
-void traceCoin(char *buf) {
-
+void traceCoin(char *token) {
+    //TODO:
+    printf("\n[%s]\n", token);
 }
-
 
 /* Command line interface
  * Get input from user to perform various cli commands.*/
@@ -269,8 +294,7 @@ void cli() {
     int fd;
     char *rest = NULL, *token = NULL;
     size_t len = 0;
-    ssize_t read = NULL;
-
+    ssize_t read;
     printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
     putchar('>');
     while ((read = getline(&token, &len, stdin)) != EOF) {
@@ -279,7 +303,6 @@ void cli() {
         if (token != NULL) {
             if (strcmp(token, "requestTransaction") == 0) {
                 requestTransaction(rest);
-                printf("[%s]\n", token);
             } else if (strcmp(token, "requestTransactions") == 0) {
                 requestTransactions(rest);
             } else if (strcmp(token, "findEarnings") == 0) {
@@ -299,7 +322,7 @@ void cli() {
                 close(fd);
                 break;
             } else {
-                fprintf(stderr, "Command not found!\n");
+                fprintf(stdout, "~ error: command not found!\n");
             }
         }
         putchar('>');
@@ -310,26 +333,28 @@ void cli() {
 int main(int argc, char *argv[]) {
     unsigned long int h1 = 0, h2 = 0, b = 0, v = 0;
     char *a = NULL, *t = NULL;
-    hashtable wallets, bitcoins, senderHashtable, receiverHashtable, transactionsHashtable;
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
 
     /*Init structures*/
-    init(&wallets, &bitcoins, a, v, b, h1, h2);
+    init(&walletsHT, &bitcoinsHT, a, v, b, h1, h2);
 
     /*Initialize with some transactions*/
-    initTransactions(&wallets, &bitcoins, &senderHashtable, &receiverHashtable, &transactionsHashtable, h1, h2, b, t,
+    initTransactions(&walletsHT, &bitcoinsHT, &senderHT, &receiverHT, &transactionsHT, h1, h2, b, t,
                      v);
+
+    /*Set init flag to true*/
+    init_complete = true;
 
     /*Get input from user to perform various cli commands*/
     cli();
 
     /*Deallocate previously allocated memory.*/
-    HT_Destroy(&wallets);
-    HT_Destroy(&bitcoins);
-    HT_Destroy(&senderHashtable);
-    HT_Destroy(&receiverHashtable);
-    HT_Destroy(&transactionsHashtable);
+    HT_Destroy(&walletsHT);
+    HT_Destroy(&bitcoinsHT);
+    HT_Destroy(&senderHT);
+    HT_Destroy(&receiverHT);
+    HT_Destroy(&transactionsHT);
     return EXIT_SUCCESS;
 }

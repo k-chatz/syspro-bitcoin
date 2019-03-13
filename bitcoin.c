@@ -67,11 +67,11 @@ void printLevelOrder(struct node* root)
 
 
 /***Public functions***/
-bool bcInsert(bitcoin bc, listPtr *rollback, unsigned long int *rest, Transaction transaction) {
+bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction) {
     assert(bc != NULL);
-    assert(*rollback != NULL);
-    //assert(*rest != NULL);
-    //assert(transaction != NULL);
+    assert(*rest > 0);
+    assert(transaction != NULL);
+
 
    // *p = _createNode(NULL);
     return true;
@@ -83,7 +83,7 @@ long unsigned int bcGetId(bitcoin bc) {
 
 void bcDestroyNode(bcNode bc){
     if(bc !=NULL){
-        fprintf(stderr, "Bitcoin node to be destroyed: [%p]\n", bc);
+        fprintf(stdout, "Bitcoin node to be destroyed: [%p]\n", bc);
     }
 }
 
@@ -102,19 +102,20 @@ bitcoin bcCreate(ht_bitcoin_params *htBitCoinParams) {
 }
 
 /* @Callback
- * Compare trees function for bitcoins hashtable*/
+ * Compare bitcoins*/
 int bcCompare(bitcoin bc1, bitcoin bc2) {
     return bc1->bid != bc2->bid;
 }
 
 /* @Callback
- * Hash function for bitcoins hashtable*/
+ * Hash bitcoin*/
 unsigned long int bitcoinHash(const long int *bid, unsigned long int capacity) {
     return *bid % capacity;
 }
 
 /* @Callback
- * Compare keys function for wallets hashtable*/
+ * Destroy bitcoin*/
 void bcDestroy(bitcoin *bc) {
-    printf("[%p]", *bc);
+    printf("\nbcDestroy: [%p]", *bc);
+    //TODO: DESTROY BITCOIN TREE (ALL NODES ETC)
 }

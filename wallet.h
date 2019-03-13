@@ -6,6 +6,7 @@
 typedef struct Wallet {
     char *userId;
     listPtr bitcoins;
+    unsigned long int balance;
 } *Wallet;
 
 /* @Callback

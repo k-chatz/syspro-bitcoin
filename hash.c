@@ -92,12 +92,7 @@ bool HT_Init(hashtable *ht,
     return false;
 }
 
-int HT_Insert(
-        hashtable ht,
-        pointer key,
-        pointer valueParams,
-        pointer *value
-) {
+int HT_Insert(hashtable ht, pointer key, pointer valueParams, pointer *value) {
     unsigned long int index = 0, count = 0, slots = 0, slot = 0;
     pointer bucket = NULL, b = NULL, next = NULL, slotValue = NULL;
     assert(ht != NULL);
@@ -179,10 +174,7 @@ int HT_Insert(
     return true;
 }
 
-pointer HT_Get(
-        hashtable ht,
-        pointer key
-) {
+pointer HT_Get(hashtable ht, pointer key) {
     unsigned long int index = 0, count = 0, slot = 0;
     pointer bucket = NULL, v = NULL, next = NULL;
     assert(ht != NULL);
@@ -216,9 +208,7 @@ pointer HT_Get(
     return NULL;
 }
 
-void HT_Destroy(
-        hashtable *ht
-) {
+void HT_Destroy(hashtable *ht) {
     assert((*ht) != NULL);
     pointer next = NULL, v = NULL, bucket = NULL;
     unsigned long int count = 0, i, slot;

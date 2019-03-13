@@ -95,9 +95,11 @@ void listDestroy(listPtr *list) {
     assert(*list != NULL);
     nodePtr next = NULL;
     nodePtr point = (*list)->start;
-    do {
-        next = point->right;  //TODO: fix Segmentation fault!!
-        free(point);
-    } while ((point = next) != NULL);
+    if (point != NULL) {
+        do {
+            next = point->right;
+            free(point);
+        } while ((point = next) != NULL);
+    }
     free(*list);
 }

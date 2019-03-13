@@ -7,13 +7,13 @@
  * Initialize & return a new wallet*/
 Wallet createWallet(char *userId) {
     Wallet wallet = malloc(sizeof(struct Wallet));
-    if(wallet != NULL){
+    if (wallet != NULL) {
         wallet->userId = malloc(sizeof(char *) * strlen(userId) + 1);
-        if(wallet->userId !=NULL){
-            listCreate(&wallet->bitcoins, userId);
+        if (wallet->userId != NULL) {
             strcpy(wallet->userId, userId);
-        }
-        else{
+            wallet->balance = 0;
+            listCreate(&wallet->bitcoins, userId);
+        } else {
             return NULL;
         }
     }
@@ -23,7 +23,7 @@ Wallet createWallet(char *userId) {
 /* @Callback
  * Compare wallet with userId field*/
 int cmpWallet(Wallet w1, char *userId) {
-    return strcmp(w1->userId,  userId);
+    return strcmp(w1->userId, userId);
 }
 
 /* @Callback
