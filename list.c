@@ -80,6 +80,11 @@ bool listInsert(listPtr list, pointer data) {
     return false;
 }
 
+void listSetCurrentToStart(listPtr list) {
+    assert(list != NULL);
+    list->current = list->start;
+}
+
 pointer listNext(listPtr list) {
     assert(list != NULL);
     nodePtr tmp = NULL;
@@ -88,6 +93,7 @@ pointer listNext(listPtr list) {
         list->current = list->current->right;
         return tmp->data;
     }
+    list->current = list->start;
     return NULL;
 }
 

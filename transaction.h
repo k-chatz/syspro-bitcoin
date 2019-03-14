@@ -25,13 +25,13 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
-                        hashtable *transactionsHT);
+bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
+                        Hashtable *transactionsHT);
 
 /* Perform
  * transactions from input stream*/
-bool performTransactions(FILE *fp, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
-                         hashtable *transactionsHT, char *delimiter);
+bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
+                         Hashtable *transactionsHT, char *delimiter);
 
 /* @Callback
  * Initialize & return a new transaction*/

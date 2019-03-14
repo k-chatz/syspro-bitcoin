@@ -12,6 +12,7 @@ Wallet createWallet(char *userId) {
         if (wallet->userId != NULL) {
             strcpy(wallet->userId, userId);
             wallet->balance = 0;
+            wallet->bitcoins = NULL;
             listCreate(&wallet->bitcoins, userId);
         } else {
             return NULL;

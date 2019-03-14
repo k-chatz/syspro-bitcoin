@@ -20,10 +20,10 @@ struct Node {
 
 /***Private functions***/
 
-bcNode _createNode(bcNode parrent) {
+bcNode _createNode() {
     bcNode node = (bcNode) malloc(sizeof(struct Node));
     if (node != NULL) {
-        node->parrent = parrent;
+        node->parrent = NULL;
         node->right = NULL;
         node->left = NULL;
         return node;
@@ -31,6 +31,12 @@ bcNode _createNode(bcNode parrent) {
         return NULL;
 }
 
+void _destroyNode(bcNode bc) {
+    if (bc != NULL) {
+        fprintf(stdout, "Bitcoin node to be destroyed: [%p]\n", bc);
+        free(bc);
+    }
+}
 
 /* Given a binary tree, print its nodes in level order
    using array for implementing queue *//*
@@ -73,18 +79,12 @@ bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction) {
     assert(transaction != NULL);
 
 
-   // *p = _createNode(NULL);
+    // *p = _createNode(NULL);
     return true;
 }
 
 long unsigned int bcGetId(bitcoin bc) {
     return bc->bid;
-}
-
-void bcDestroyNode(bcNode bc){
-    if(bc !=NULL){
-        fprintf(stdout, "Bitcoin node to be destroyed: [%p]\n", bc);
-    }
 }
 
 /* @Callback
@@ -94,9 +94,12 @@ bitcoin bcCreate(ht_bitcoin_params *htBitCoinParams) {
     bc = (bitcoin) malloc(sizeof(struct BitCoin));
     if (bc != NULL) {
         bc->bid = htBitCoinParams->bid;
-        bc->root = _createNode(NULL);
-        bc->root->wallet = htBitCoinParams->wallet;
-        bc->root->balance = htBitCoinParams->v;
+        bc->root = _createNode();
+        if (bc->root != NULL) {
+            bc->root->transaction = NULL;
+            bc->root->wallet = htBitCoinParams->wallet;
+            bc->root->balance = htBitCoinParams->v;
+        }
     }
     return bc;
 }
@@ -115,7 +118,13 @@ unsigned long int bitcoinHash(const long int *bid, unsigned long int capacity) {
 
 /* @Callback
  * Destroy bitcoin*/
-void bcDestroy(bitcoin *bc) {
-    printf("\nbcDestroy: [%p]", *bc);
-    //TODO: DESTROY BITCOIN TREE (ALL NODES ETC)
+void bcDestroy(bitcoin bc) {
+    assert(bc != NULL);
+    printf("\nbcDestroy: [%p] ", bc);
+
+    //TODO: BFS to destroy all nodes!
+    _destroyNode(bc->root);
+
+    
+    free(bc);
 }

@@ -62,7 +62,7 @@ const pointer _allocBucket(unsigned long int size) {
 
 /***Public functions***/
 
-bool HT_Init(hashtable *ht,
+bool HT_Init(Hashtable *ht,
              unsigned long int capacity,
              unsigned long int bucketSize,
              pointer (*createValue)(pointer),
@@ -73,7 +73,7 @@ bool HT_Init(hashtable *ht,
     assert(bucketSize >= sizeof(pointer) * 2 + sizeof(unsigned long int));
     assert(capacity > 0);
     int i;
-    *ht = (hashtable) malloc(sizeof(struct Hashtable));
+    *ht = (Hashtable) malloc(sizeof(struct Hashtable));
     if ((*ht) != NULL) {
         (*ht)->bucketSize = bucketSize;
         (*ht)->capacity = capacity;
@@ -92,7 +92,7 @@ bool HT_Init(hashtable *ht,
     return false;
 }
 
-int HT_Insert(hashtable ht, pointer key, pointer valueParams, pointer *value) {
+int HT_Insert(Hashtable ht, pointer key, pointer valueParams, pointer *value) {
     unsigned long int index = 0, count = 0, slots = 0, slot = 0;
     pointer bucket = NULL, b = NULL, next = NULL, slotValue = NULL;
     assert(ht != NULL);
@@ -174,7 +174,7 @@ int HT_Insert(hashtable ht, pointer key, pointer valueParams, pointer *value) {
     return true;
 }
 
-pointer HT_Get(hashtable ht, pointer key) {
+pointer HT_Get(Hashtable ht, pointer key) {
     unsigned long int index = 0, count = 0, slot = 0;
     pointer bucket = NULL, v = NULL, next = NULL;
     assert(ht != NULL);
@@ -208,7 +208,7 @@ pointer HT_Get(hashtable ht, pointer key) {
     return NULL;
 }
 
-int HT_Remove(hashtable ht, pointer key, pointer valueParams, bool forceDestroyItem) {
+int HT_Remove(Hashtable ht, pointer key, pointer valueParams, bool forceDestroyItem) {
     unsigned long int index = 0, count = 0, slot = 0, targetSlot = 0;
     pointer bucket = NULL, targetBucket = NULL, b = NULL, next = NULL, slotValue = NULL;
     assert(ht != NULL);
@@ -265,7 +265,7 @@ int HT_Remove(hashtable ht, pointer key, pointer valueParams, bool forceDestroyI
     return true;
 }
 
-void HT_Destroy(hashtable *ht, bool forceDestroyItem) {
+void HT_Destroy(Hashtable *ht, bool forceDestroyItem) {
     assert((*ht) != NULL);
     pointer next = NULL, slotValue = NULL, bucket = NULL;
     unsigned long int count = 0, i, slot;

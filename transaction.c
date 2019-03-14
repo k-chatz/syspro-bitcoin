@@ -39,8 +39,8 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
-                        hashtable *transactionsHT) {
+bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
+                        Hashtable *transactionsHT) {
     bool error = false;
     char *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
@@ -122,8 +122,8 @@ bool performTransaction(char *token, hashtable *walletsHT, hashtable *senderHT, 
 
 /* Perform
  * transactions from input stream*/
-bool performTransactions(FILE *fp, hashtable *walletsHT, hashtable *senderHT,
-                         hashtable *receiverHT, hashtable *transactionsHT, char *delimiter) {
+bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT,
+                         Hashtable *receiverHT, Hashtable *transactionsHT, char *delimiter) {
     bool error = false;
     char buf[BUF], *token = NULL;
     while (fgets(buf, BUF, fp) != NULL) {
@@ -141,19 +141,13 @@ bool performTransactions(FILE *fp, hashtable *walletsHT, hashtable *senderHT,
  * Initialize & return a new transaction*/
 Transaction createTransaction(char *token) {
     Transaction transaction = NULL;
-    struct tm t;
-    int x = 0;
+    // struct tm t;
 
-    /*Initialize tm to avoid valgrind errors*/
-    t.tm_mday = 0;
-    t.tm_min = 0;
-    t.tm_hour = 0;
-    t.tm_mday = 0;
-    t.tm_mon = 0;
-    t.tm_year = 0;
-    t.tm_wday = 0;
-    t.tm_yday = 0;
-    t.tm_isdst = 0;
+    /* Initialize tm to avoid valgrind errors as described here:
+     * https://stackoverflow.com/questions/9037631/valgrind-complaining-about-mktime-is-that-my-fault
+     * by freitass's comment.*/
+    struct tm t = {0};
+    int x = 0;
 
     transaction = (Transaction) malloc(sizeof(struct Transaction));
     if (transaction != NULL && token != NULL) {

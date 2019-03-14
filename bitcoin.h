@@ -6,6 +6,7 @@
 
 typedef struct Params {
     unsigned long int bid;
+    Transaction transaction;
     Wallet wallet;
     unsigned long int v;
 } ht_bitcoin_params;
@@ -17,8 +18,6 @@ typedef struct Node *bcNode;
 bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction);
 
 long unsigned int bcGetId(bitcoin bc);
-
-void bcDestroyNode(bcNode bc);
 
 /* Create
  * Initialize & return a new wallet*/
@@ -34,6 +33,6 @@ unsigned long int bitcoinHash(const long int *bid, unsigned long int capacity);
 
 /* @Callback
  * Compare keys function for wallets hashtable*/
-void bcDestroy(bitcoin *bc);
+void bcDestroy(bitcoin bc);
 
 #endif //BITCOIN_H

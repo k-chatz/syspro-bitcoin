@@ -18,7 +18,7 @@ bool init_complete = false;
 
 time_t max_transaction_timestamp = 0;
 
-hashtable walletsHT = NULL, bitcoinsHT = NULL, senderHT = NULL, receiverHT = NULL, transactionsHT = NULL;
+Hashtable walletsHT = NULL, bitcoinsHT = NULL, senderHT = NULL, receiverHT = NULL, transactionsHT = NULL;
 
 void wrongOptionValue(char *opt, char *val) {
     fprintf(stdout, "Wrong value [%s] for option '%s'\n", val, opt);
@@ -81,7 +81,7 @@ void readOptions(
     }
 }
 
-void init(hashtable *walletsHT, hashtable *bitcoinsHT, char *a, unsigned long int v, unsigned long int b,
+void init(Hashtable *walletsHT, Hashtable *bitcoinsHT, char *a, unsigned long int v, unsigned long int b,
           const unsigned long int h1, const unsigned long int h2) {
     FILE *fp = NULL;
     Wallet wallet = NULL;
@@ -175,8 +175,8 @@ void init(hashtable *walletsHT, hashtable *bitcoinsHT, char *a, unsigned long in
     }
 }
 
-void initTransactions(hashtable *walletsHT, hashtable *bitcoins, hashtable *senderHT, hashtable *receiverHT,
-                      hashtable *transactionsHT, const unsigned long int h1, const unsigned long int h2,
+void initTransactions(Hashtable *walletsHT, Hashtable *bitcoins, Hashtable *senderHT, Hashtable *receiverHT,
+                      Hashtable *transactionsHT, const unsigned long int h1, const unsigned long int h2,
                       unsigned long int b,
                       char *t, unsigned long int v) {
     FILE *fp = NULL;
@@ -292,42 +292,42 @@ void traceCoin(char *token) {
  * Get input from user to perform various cli commands.*/
 void cli() {
     int fd;
-    char *rest = NULL, *token = NULL;
+    char *rest = NULL, *line = NULL, *cmd = NULL;
     size_t len = 0;
     ssize_t read;
     printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
     putchar('>');
-    while ((read = getline(&token, &len, stdin)) != EOF) {
-        rest = token;
-        token = strtok_r(rest, " \n", &rest);
-        if (token != NULL) {
-            if (strcmp(token, "requestTransaction") == 0) {
+    while ((read = getline(&line, &len, stdin)) != EOF) {
+        rest = line;
+        cmd = strtok_r(rest, " \n", &rest);
+        if (cmd != NULL) {
+            if (strcmp(cmd, "requestTransaction") == 0) {
                 requestTransaction(rest);
-            } else if (strcmp(token, "requestTransactions") == 0) {
+            } else if (strcmp(cmd, "requestTransactions") == 0) {
                 requestTransactions(rest);
-            } else if (strcmp(token, "findEarnings") == 0) {
+            } else if (strcmp(cmd, "findEarnings") == 0) {
                 findEarnings(rest);
-            } else if (strcmp(token, "findPayments") == 0) {
+            } else if (strcmp(cmd, "findPayments") == 0) {
                 findPayments(rest);
-            } else if (strcmp(token, "walletStatus") == 0) {
+            } else if (strcmp(cmd, "walletStatus") == 0) {
                 walletStatus(rest);
-            } else if (strcmp(token, "bitCoinStatus") == 0) {
+            } else if (strcmp(cmd, "bitCoinStatus") == 0) {
                 bitCoinStatus(rest);
-            } else if (strcmp(token, "traceCoin") == 0) {
+            } else if (strcmp(cmd, "traceCoin") == 0) {
                 traceCoin(rest);
-            } else if (strcmp(token, "exit") == 0) {
+            } else if (strcmp(cmd, "exit") == 0) {
                 fd = open("/dev/null", O_WRONLY);
                 dup2(fd, 0);
-                free(token);
                 close(fd);
                 break;
             } else {
-                fprintf(stdout, "~ error: %s: command not found!\n", token);
+                fprintf(stdout, "~ error: %s: command not found!\n", cmd);
             }
         }
         putchar('>');
         putchar(' ');
     }
+    free(line);
 }
 
 int main(int argc, char *argv[]) {

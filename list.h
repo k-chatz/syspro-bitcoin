@@ -12,6 +12,8 @@ void *listGetIdentifier(listPtr);
 
 bool listInsert(listPtr, void *);
 
+void listSetCurrentToStart(listPtr list);
+
 void *listNext(listPtr);
 
 void listDestroy(listPtr *list);

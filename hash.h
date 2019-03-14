@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-typedef struct Hashtable *hashtable;
+typedef struct Hashtable *Hashtable;
 
 bool HT_Init(
-        hashtable *ht,
+        Hashtable *ht,
         unsigned long capacity,
         unsigned long int bucketSize,
         void *(*createValue)(void *),
@@ -16,12 +16,12 @@ bool HT_Init(
         unsigned long (*destroy)(void *)
 );
 
-int HT_Insert(hashtable ht, void *key, void *valueParams, void **value);
+int HT_Insert(Hashtable ht, void *key, void *valueParams, void **value);
 
-void *HT_Get(hashtable ht, void *key);
+void *HT_Get(Hashtable ht, void *key);
 
-int HT_Remove(hashtable ht, void *key, void* valueParams, bool forceDestroyItem);
+int HT_Remove(Hashtable ht, void *key, void* valueParams, bool forceDestroyItem);
 
-void HT_Destroy(hashtable *ht, bool forceDestroyItems);
+void HT_Destroy(Hashtable *ht, bool forceDestroyItems);
 
 #endif
