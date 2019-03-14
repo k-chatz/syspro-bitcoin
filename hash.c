@@ -210,7 +210,7 @@ pointer HT_Get(Hashtable ht, pointer key) {
 
 int HT_Remove(Hashtable ht, pointer key, pointer valueParams, bool forceDestroyItem) {
     unsigned long int index = 0, count = 0, slot = 0, targetSlot = 0;
-    pointer bucket = NULL, targetBucket = NULL, b = NULL, next = NULL, slotValue = NULL;
+    pointer bucket = NULL, targetBucket = NULL, next = NULL, slotValue = NULL;
     assert(ht != NULL);
     assert(key != NULL);
 

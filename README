@@ -6,8 +6,10 @@ clean: make clean
 
 compile manually: gcc -o bitcoin main.c bitcoin.c hash.c list.c transaction.c wallet.c
 
-run example:
+run examples:
 
 ./bitcoin -a resources/bitCoinBalancesFile -v 50 -h1 10 -h2 10 -b 51 -t resources/transactionsFile
+
+./bitcoin -a resources/SimplebitCoinBalanciesFIle -v 50 -h1 10 -h2 10 -b 51 -t resources/transactionsFile
 
 documentation: open 'documentation.pdf' file 'resources' folder.

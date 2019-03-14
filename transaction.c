@@ -22,9 +22,11 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
     bitcoin bc = NULL;
     printf("\n• • • E X E C U T E   T R A N S A C T I O N • • •\n");
 
+    printf("Transaction '%s'\n", transaction->transactionId);
+
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
-        printf("Try with bitcoin [%lu] ", bcGetId(bc));
+        printf("\nTry with bitcoin [%lu] ", bcGetId(bc));
         bcInsert(bc, &rest, transaction);
         printf("rest: [%lu]\n", rest);
     }
@@ -33,7 +35,7 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
         // return false;
     }
 
-    printf("\n• • • • • • • • • • • • • • • • • • • • • • • • •\n");
+    printf("\n• • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
     return true;
 }
 
@@ -52,7 +54,7 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
     if (line != NULL) {
         strcpy(line, token);
         transactionId = strtok(token, " ");
-        printf("Transaction: [%s]\n", line);
+        //printf("Transaction: [%s]\n", line);
 
         /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
         if (HT_Insert(*transactionsHT, transactionId, line, (void **) &transaction)) {
@@ -67,27 +69,29 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
             assert(receiverWallet != NULL);
 
             /* Create/Get sender transactions list hashtable*/
-            assert(HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
-                             (void **) &senderTransactions));
+            HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
+                      (void **) &senderTransactions);
 
             assert(senderTransactions != NULL);
 
             /*Create/Get receiver transactions list hashtable*/
-            assert(HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
-                             (void **) &receiverTransactions));
+            HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
+                      (void **) &receiverTransactions);
 
             assert(receiverTransactions != NULL);
 
             if (transaction->timestamp < max_transaction_timestamp) {
                 error = true;
-                fprintf(stdout, "\nUnacceptable transaction: date is less than the current time!\n");
+                fprintf(stdout, "Unacceptable transaction '%s': Date is less than the current time!\n",
+                        transaction->transactionId);
             }
 
             if (!error) {
                 if (transaction->value > senderWallet->balance) {
                     error = true;
                     fprintf(stdout,
-                            "\nUnacceptable transaction: The sender's money is not enough to complete the transaction!\n");
+                            "Unacceptable transaction '%s': Sender's money is not enough!\n",
+                            transaction->transactionId);
                 } else {
                     if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
                                 transaction)) {
@@ -95,7 +99,7 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
                             max_transaction_timestamp = transaction->timestamp;
                         }
                     } else {
-                        fprintf(stdout, "\nTransaction fail!\n");
+                        fprintf(stdout, "Transaction '%s' was fail!\n", transaction->transactionId);
                         error = true;
                     }
                 }
@@ -105,17 +109,17 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
             }
         } else {
             if (transaction != NULL) {
-                fprintf(stdout, "\nUnacceptable transaction: Duplicate!\n");
+                fprintf(stdout, "Unacceptable transaction '%s': Transaction is duplicate!\n",
+                        transaction->transactionId);
             } else {
-                fprintf(stdout, "\nUnacceptable transaction: Bad format!\n");
+                fprintf(stdout, "Unacceptable transaction: Bad format!\n");
             }
             error = true;
         }
-        printf("\n");
         free(line);
     } else {
         error = true;
-        fprintf(stdout, "\nUnexpected error!\n");
+        fprintf(stdout, "Unexpected error!\n");
     }
     return error;
 }
@@ -141,14 +145,12 @@ bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT,
  * Initialize & return a new transaction*/
 Transaction createTransaction(char *token) {
     Transaction transaction = NULL;
-    // struct tm t;
 
-    /* Initialize tm to avoid valgrind errors as described here:
+    /* Initialize t to avoid valgrind errors as described here:
      * https://stackoverflow.com/questions/9037631/valgrind-complaining-about-mktime-is-that-my-fault
      * by freitass's comment.*/
     struct tm t = {0};
     int x = 0;
-
     transaction = (Transaction) malloc(sizeof(struct Transaction));
     if (transaction != NULL && token != NULL) {
 
@@ -173,20 +175,27 @@ Transaction createTransaction(char *token) {
         token = strtok(NULL, " "); // Amount
         transaction->value = (unsigned long int) strtol(token, NULL, 10);
 
-        token = strtok(NULL, ""); // Date time
+        token = strtok(NULL, "\n"); // Date time
 
-        /*Parse date & time*/
-        x = sscanf(token, "%d-%d-%d %d:%d", &t.tm_mday, &t.tm_mon, &t.tm_year, &t.tm_hour, &t.tm_min);
-
-        if (x == 5) {
-            transaction->timestamp = mktime(&t);
-            if (transaction->timestamp < 0) {
-                fprintf(stdout, "\nBad datetime!\n");
-                return NULL;
+        if (token != NULL) {
+            /*Parse date & time*/
+            x = sscanf(token, "%d-%d-%d %d:%d",
+                       &t.tm_mday, &t.tm_mon, &t.tm_year, &t.tm_hour, &t.tm_min
+            );
+            if (x == 5) {
+                t.tm_year = t.tm_year - 1900;
+                t.tm_mon = t.tm_mon - 1;
+                t.tm_isdst = -1;
+                transaction->timestamp = mktime(&t);
+                if (transaction->timestamp < 0) {
+                    fprintf(stdout, "\nBad datetime!\n");
+                    return NULL;
+                }
+            } else {
+                time(&transaction->timestamp);
             }
         } else {
-            fprintf(stdout, "\nBad datetime format!\n");
-            return NULL;
+            time(&transaction->timestamp);
         }
     }
     return transaction;

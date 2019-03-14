@@ -235,7 +235,6 @@ void requestTransaction(char *token) {
 void requestTransactions(char *token) {
     FILE *fp = NULL;
     int q, s;
-    size_t len = 0;
     char input[BUFFER_SIZE];
     token = strtok(token, "\n");
     if (token != NULL) {
