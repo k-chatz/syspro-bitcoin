@@ -25,8 +25,8 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashtable, hashtable *receiverHashtable,
-                        hashtable *transactionsHashtable);
+bool performTransaction(char *token, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
+                        hashtable *transactionsHT);
 
 /* Perform
  * transactions from input stream*/
@@ -39,7 +39,7 @@ Transaction createTransaction(char *token);
 
 /* @Callback
  * Compare transaction with userId field*/
-int cmpTransaction(Transaction transaction, char *transactionId);
+int cmpTransaction(Transaction transaction, char *transactionStr);
 
 /* @Callback
  * Hash function for transactions hashtable*/

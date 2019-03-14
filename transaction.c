@@ -39,8 +39,8 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashtable, hashtable *receiverHashtable,
-                        hashtable *transactionsHashtable) {
+bool performTransaction(char *token, hashtable *walletsHT, hashtable *senderHT, hashtable *receiverHT,
+                        hashtable *transactionsHT) {
     bool error = false;
     char *line = NULL, *transactionId = NULL;
     Transaction transaction = NULL;
@@ -55,38 +55,39 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashta
         printf("Transaction: [%s]\n", line);
 
         /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
-        if (HT_Insert(*transactionsHashtable, transactionId, line, (void **) &transaction)) {
+        if (HT_Insert(*transactionsHT, transactionId, line, (void **) &transaction)) {
             assert(transaction != NULL);
 
             /* Get sender's wallet.*/
-            senderWallet = HT_Get(*wallets, transaction->senderWalletId);
+            senderWallet = HT_Get(*walletsHT, transaction->senderWalletId);
             assert(senderWallet != NULL);
 
             /* Get receiver's wallet.*/
-            receiverWallet = HT_Get(*wallets, transaction->receiverWalletId);
+            receiverWallet = HT_Get(*walletsHT, transaction->receiverWalletId);
             assert(receiverWallet != NULL);
 
             /* Create/Get sender transactions list hashtable*/
-            assert(HT_Insert(*senderHashtable, transaction->senderWalletId, transaction->senderWalletId,
+            assert(HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
                              (void **) &senderTransactions));
 
             assert(senderTransactions != NULL);
 
             /*Create/Get receiver transactions list hashtable*/
-            assert(HT_Insert(*receiverHashtable, transaction->senderWalletId, transaction->senderWalletId,
+            assert(HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
                              (void **) &receiverTransactions));
 
             assert(receiverTransactions != NULL);
 
             if (transaction->timestamp < max_transaction_timestamp) {
                 error = true;
-                fprintf(stdout, "\nTransaction date is less than the current time!\n");
+                fprintf(stdout, "\nUnacceptable transaction: date is less than the current time!\n");
             }
 
             if (!error) {
                 if (transaction->value > senderWallet->balance) {
                     error = true;
-                    fprintf(stdout, "\nThe sender's money is not enough to complete the transaction!\n");
+                    fprintf(stdout,
+                            "\nUnacceptable transaction: The sender's money is not enough to complete the transaction!\n");
                 } else {
                     if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
                                 transaction)) {
@@ -98,9 +99,16 @@ bool performTransaction(char *token, hashtable *wallets, hashtable *senderHashta
                         error = true;
                     }
                 }
+            } else {
+                /* Remove transaction from hashtable in order to normally inserted the next time.*/
+                HT_Remove(*transactionsHT, transaction->transactionId, transaction->transactionId, true);
             }
         } else {
-            fprintf(stdout, "\nTransaction '%s' is duplicate!\n", transaction->transactionId);
+            if (transaction != NULL) {
+                fprintf(stdout, "\nUnacceptable transaction: Duplicate!\n");
+            } else {
+                fprintf(stdout, "\nUnacceptable transaction: Bad format!\n");
+            }
             error = true;
         }
         printf("\n");
@@ -148,7 +156,7 @@ Transaction createTransaction(char *token) {
     t.tm_isdst = 0;
 
     transaction = (Transaction) malloc(sizeof(struct Transaction));
-    if (transaction != NULL) {
+    if (transaction != NULL && token != NULL) {
 
         token = strtok(token, " "); // TransactionId
         transaction->transactionId = malloc(strlen(token) * sizeof(char *) + 1);
@@ -191,13 +199,19 @@ Transaction createTransaction(char *token) {
 }
 
 /* @Callback
- * Compare transaction with userId field*/
-int cmpTransaction(Transaction transaction, char *transactionId) {
-    return strcmp(transaction->transactionId, transactionId);
+ * Compare transaction*/
+int cmpTransaction(Transaction transaction, char *transactionStr) {
+    int result = 0;
+    char *token = malloc(strlen(transactionStr) * sizeof(char *) + 1);
+    strcpy(token, transactionStr);
+    token = strtok(token, " ");
+    result = strcmp(transaction->transactionId, token);
+    free(token);
+    return result;
 }
 
 /* @Callback
- * Hash function for transactions hashtable*/
+ * Hash function for transactions*/
 unsigned long int transactionHash(char *key, unsigned long int capacity) {
     int i, sum = 0;
     size_t keyLength = strlen(key);

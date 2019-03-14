@@ -208,9 +208,66 @@ pointer HT_Get(hashtable ht, pointer key) {
     return NULL;
 }
 
-void HT_Destroy(hashtable *ht) {
+int HT_Remove(hashtable ht, pointer key, pointer valueParams, bool forceDestroyItem) {
+    unsigned long int index = 0, count = 0, slot = 0, targetSlot = 0;
+    pointer bucket = NULL, targetBucket = NULL, b = NULL, next = NULL, slotValue = NULL;
+    assert(ht != NULL);
+    assert(key != NULL);
+
+    index = ht->hash(key, ht->capacity);
+    //printf("[%.3lu] ", index);
+    bucket = ht->table[index];
+
+    /* Check if current bucket exists */
+    if (bucket == NULL) {
+        return false; /* Nothing to remove*/
+    } else {
+        next = bucket;
+
+        /* Check each bucket to detect target value, resume until last bucket.*/
+        while (next != NULL) {
+            _getCount(bucket, ht->bucketSize, &count);
+
+            /* Get value for each slot of bucket*/
+            for (slot = 0; slot < count; slot++) {
+                _getValue(bucket, slot, &slotValue);
+                /* Check for target slot*/
+                if (!ht->cmp(slotValue, valueParams)) {
+                    targetBucket = bucket;
+                    targetSlot = slot;
+                    if (forceDestroyItem) {
+                        ht->destroy(slotValue);
+                    }
+                    _setValue(bucket, slot, NULL);
+                    slotValue = NULL;
+                }
+            }
+
+            /* Get next pointer to determine if this bucket has an overflow bucket*/
+            _getNext(bucket, ht->bucketSize, &next);
+
+            if (next != NULL) {
+                bucket = next;
+            }
+        };
+
+        /* Move last found slotValue in targetSlotValue*/
+        if (targetBucket != NULL) {
+            _setValue(targetBucket, targetSlot, slotValue);
+            _setValue(bucket, slot, NULL);
+            _getCount(bucket, ht->bucketSize, &count);
+            if (count > 0) {
+                _setCount(bucket, ht->bucketSize, --count);
+            }
+        }
+    }
+    //printf("\n");
+    return true;
+}
+
+void HT_Destroy(hashtable *ht, bool forceDestroyItem) {
     assert((*ht) != NULL);
-    pointer next = NULL, v = NULL, bucket = NULL;
+    pointer next = NULL, slotValue = NULL, bucket = NULL;
     unsigned long int count = 0, i, slot;
     //printf("\n");
     for (i = 0; i < (*ht)->capacity; i++) {
@@ -222,10 +279,12 @@ void HT_Destroy(hashtable *ht) {
                 _getCount(bucket, (*ht)->bucketSize, &count);
 
                 /*Get value for each slot of bucket to destroy it.*/
-                for (slot = 0; slot < count; slot++) {
-                    _getValue(bucket, slot, &v);
-                    (*ht)->destroy(v);
-                    //printf("[%p] ", v);
+                if (forceDestroyItem) {
+                    for (slot = 0; slot < count; slot++) {
+                        _getValue(bucket, slot, &slotValue);
+                        (*ht)->destroy(slotValue);
+                        //printf("[%p] ", slotValue);
+                    }
                 }
 
                 /*Get next pointer to determine if this bucket has an overflow bucket.*/
@@ -237,9 +296,7 @@ void HT_Destroy(hashtable *ht) {
                     bucket = next;
                 }
             };
-
             //printf("\n");
-
         }
     }
     free((*ht)->table);

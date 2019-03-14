@@ -20,6 +20,8 @@ int HT_Insert(hashtable ht, void *key, void *valueParams, void **value);
 
 void *HT_Get(hashtable ht, void *key);
 
-void HT_Destroy(hashtable *ht);
+int HT_Remove(hashtable ht, void *key, void* valueParams, bool forceDestroyItem);
+
+void HT_Destroy(hashtable *ht, bool forceDestroyItems);
 
 #endif
