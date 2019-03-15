@@ -16,18 +16,42 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
     assert(receiverWallet != NULL);
     assert(transaction != NULL);
     assert(transaction->value > 0);
+    unsigned long int rest = 0, x = 0;
+    bitcoin bc = NULL, wbc = NULL;
     bool success = true;
-    unsigned long int rest = transaction->value;
-    bitcoin bc = NULL;
+
+    rest = transaction->value;
+
     printf("\n• • • • • • • • E X E C U T E   T R A N S A C T I O N • • • • • • • •\n");
 
-    printf("Transaction %s: %s --> %s %lu$\n", transaction->transactionId, transaction->senderWalletId,
+    printf("• Transaction %s: %s --> %s %lu$ •\n", transaction->transactionId, transaction->senderWalletId,
            transaction->receiverWalletId, transaction->value);
+
+    listSetCurrentToStart(senderWallet->bitcoins);
 
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
         printf("\n-Rest amount of transaction before the use of bitcoin %lu is: %lu$-\n", bcGetId(bc), rest);
+        x = rest;
+
+        /* Execute transaction.*/
         bcInsert(bc, &rest, transaction);
+
+        if (x == rest) {
+            /* The sender does not share any more this bitcoin with others because he spent all the amount of it for
+             * this transaction. Bitcoin is about to be removed from sender list!*/
+
+            listRemove(senderWallet->bitcoins, bc);
+        } else {
+
+            /* Try to insert current bitcoin into receiver's wallet list of bitcoins.*/
+            while ((wbc = listNext(receiverWallet->bitcoins)) != NULL) {
+                if (wbc != bc) {
+                    listInsert(receiverWallet->bitcoins, bc);
+                }
+            }
+        }
+
         printf("-Rest amount of transaction after the use of bitcoin %lu is: %lu$-\n", bcGetId(bc), rest);
     }
 
@@ -81,10 +105,7 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
         if (!init_complete) {
             strcpy(line, input);
             transactionId = strtok(input, " ");
-        } else {
-            printf("Request for transaction: [%s]\n", line);
         }
-
         /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
         if (HT_Insert(*transactionsHT, transactionId, line, (void **) &transaction)) {
             assert(transaction != NULL);

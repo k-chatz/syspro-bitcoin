@@ -80,6 +80,11 @@ bool listInsert(List list, pointer data) {
     return false;
 }
 
+bool listRemove(List list, pointer data) {
+    list->current = list->start;
+    printf("List Remove");
+}
+
 void listSetCurrentToStart(List list) {
     assert(list != NULL);
     list->current = list->start;

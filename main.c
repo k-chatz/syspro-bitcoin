@@ -146,6 +146,7 @@ void init(Hashtable *walletsHT, Hashtable *bitcoinsHT, char *a, unsigned long in
 
                                 //printf("[%lu] [%p] \n", bid, bc);
                                 wallet->balance += v;
+
                                 /*Insert user bitcoin entry in wallet's bitcoin list*/
                                 if (!listInsert(wallet->bitcoins, bc)) {
                                     fprintf(stdout, "\nBitCoin [%lu] was not inserted in wallet list!\n", bid);
@@ -231,7 +232,9 @@ void initTransactions(Hashtable *walletsHT, Hashtable *bitcoins, Hashtable *send
 
 /* Cli command*/
 void requestTransaction(char *input) {
-    performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
+    if (!performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT)) {
+        fprintf(stdout, "~ success: The transaction was executed successfully.\n");
+    }
 }
 
 /* Cli command*/
@@ -263,47 +266,117 @@ void requestTransactions(char *input) {
 }
 
 /* TODO Cli command*/
+
+/*
+* ​/findEarnings walletID [time1][year1][time2][year2]
+*  HASHTABLE!!!
+Η εφαρμογή πρώτα επιστρέφει το συνολικό ποσόν που έχει λάβει μέσω συναλλαγών ο χρηστής με userID
+walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
+
+Αν υπάρχει ορισμός για [time1] θα πρέπει να υφίσταται και ορισμός για [time2].
+
+Επίσης το ίδιο ισχύει και για την χρήση των μη υποχρεωτικών παραμέτρων ​[year1] και [year2]​.
+
+Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως παραλήπτης) που εκτελέστηκαν επιτυχώς
+μέσα στο συγκεκριμένο διάστημα. Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη
+ιστορία συναλλαγών όπου το ​walletID ​είναι παραλήπτης.
+*/
 void findEarnings(char *input) {
-    /*
-     * ​/findEarnings walletID [time1][year1][time2][year2]
-     *  HASHTABLE!!!
-        Η εφαρμογή πρώτα επιστρέφει το συνολικό ποσόν που έχει λάβει μέσω συναλλαγών ο χρηστής με userID
-        walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
-
-        Αν υπάρχει ορισμός για [time1] θα πρέπει να υφίσταται και ορισμός για [time2].
-
-        Επίσης το ίδιο ισχύει και για την χρήση των μη υποχρεωτικών παραμέτρων ​[year1] και [year2]​.
-
-        Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως παραλήπτης) που εκτελέστηκαν επιτυχώς
-        μέσα στο συγκεκριμένο διάστημα. Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη
-        ιστορία συναλλαγών όπου το ​walletID ​είναι παραλήπτης.
-     */
-    printf("\n[%s]\n", input);
+    List list = NULL;
+    Transaction transaction = NULL;
+    Wallet wallet = HT_Get(walletsHT, input);
+    if (input != NULL) {
+        if (wallet != NULL) {
+            printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+            list = HT_Get(receiverHT, wallet->userId);
+            if (list != NULL) {
+                while ((transaction = listNext(list)) != NULL) {
+                    transactionPrint(transaction);
+                }
+            } else {
+                fprintf(stdout, "~ error: earnings list for wallet '%s' not found!\n", input);
+            }
+        } else {
+            fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input\n");
+    }
 }
 
 /* TODO Cli command*/
 void findPayments(char *input) {
-    /*- ​/findPayments walletID [time1][year1][time2][year2]
-     *  HASHTABLE!!!
-        Η εφαρμογή επιστρέφει το συνολικό ποσόν που έχει στείλει επιτυχώς μέσω συναλλαγών ο χρηστής με userID
-        walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
+    List list = NULL;
+    Transaction transaction = NULL;
+    char *rest = NULL, *walletId = NULL;
+    int x;
+    Wallet wallet = NULL;
+    time_t start = 0, end = 0;
 
-        Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως αποστολέας) που εκτελέστηκαν επιτυχώς
-        μέσα στο διάστημα που έχει δοθεί στη γραμμή εντολής.
+    struct tm s = {0}, e = {0};
 
-        Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη ιστορία συναλλαγών όπου το ​walletID ​είναι
-        αποστολέας.
-     */
-    printf("\n[%s]\n", input);
+    if (input != NULL) {
+
+        walletId = strtok_r(input, " \n", &rest);
+        if (rest != NULL) {
+            /*Parse date & time*/
+            x = sscanf(rest, "%d-%d-%d %d:%d", &s.tm_mday, &s.tm_mon, &s.tm_year, &s.tm_hour, &s.tm_min);
+
+            if (x == 5) {
+                s.tm_year = s.tm_year - 1900;
+                s.tm_mon = s.tm_mon - 1;
+                s.tm_isdst = -1;
+                start = mktime(&s);
+          /*      if (transaction->timestamp < 0) {
+                    fprintf(stdout, "\nBad datetime!\n");
+                }*/
+            }
+        }
+
+        wallet = HT_Get(walletsHT, walletId);
+        if (wallet != NULL) {
+            printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+            list = HT_Get(senderHT, wallet->userId);
+            if (list != NULL) {
+                while ((transaction = listNext(list)) != NULL) {
+
+                    transactionPrint(transaction);
+
+                    /*- ​/findPayments walletID [time1][year1][time2][year2]
+                   *  HASHTABLE!!!
+                   Η εφαρμογή επιστρέφει το συνολικό ποσόν που έχει στείλει επιτυχώς μέσω συναλλαγών ο χρηστής με userID
+                   walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
+
+                   Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως αποστολέας) που εκτελέστηκαν επιτυχώς
+                   μέσα στο διάστημα που έχει δοθεί στη γραμμή εντολής.
+
+                   Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη ιστορία συναλλαγών όπου το ​walletID ​είναι
+                   αποστολέας.
+                   */
+
+                }
+            } else {
+                fprintf(stdout, "~ error: earnings list for wallet '%s' not found!\n", input);
+            }
+        } else {
+            fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input\n");
+    }
 }
 
 /* Cli command*/
 void walletStatus(char *input) {
-    Wallet wallet = HT_Get(walletsHT, input);
-    if (wallet != NULL) {
-        printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+    if (input != NULL) {
+        Wallet wallet = HT_Get(walletsHT, input);
+        if (wallet != NULL) {
+            printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+        } else {
+            fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
+        }
     } else {
-        fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
+        fprintf(stdout, "~ error: bad input!\n");
     }
 }
 

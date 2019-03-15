@@ -12,6 +12,8 @@ void *listGetIdentifier(List);
 
 bool listInsert(List, void *);
 
+bool listRemove(List, void *);
+
 void listSetCurrentToStart(List list);
 
 void *listNext(List);
