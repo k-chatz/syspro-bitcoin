@@ -7,14 +7,13 @@
 #include "transaction.h"
 #include "bitcoin.h"
 
+#define BUFFER_SIZE 256
+
 /* Execute
  * transaction*/
-bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
-             Transaction transaction) {
+bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction) {
     assert(senderWallet != NULL);
-    assert(senderTransactions != NULL);
     assert(receiverWallet != NULL);
-    assert(receiverTransactions != NULL);
     assert(transaction != NULL);
     assert(transaction->value > 0);
     bool success = true;
@@ -22,31 +21,29 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
     bitcoin bc = NULL;
     printf("\n• • • • • • • • E X E C U T E   T R A N S A C T I O N • • • • • • • •\n");
 
-    printf("Transaction %s: %s --> %s %lu\n",
-           transaction->transactionId,
-           transaction->senderWalletId,
-           transaction->receiverWalletId,
-           transaction->value
-    );
+    printf("Transaction %s: %s --> %s %lu$\n", transaction->transactionId, transaction->senderWalletId,
+           transaction->receiverWalletId, transaction->value);
 
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
-        printf("\nTry with bitcoin [%lu] ", bcGetId(bc));
+        printf("\n\nRest amount of transaction before the use of bitcoin %lu is: %lu$\n", bcGetId(bc), rest);
         bcInsert(bc, &rest, transaction);
-        printf("rest: [%lu]\n", rest);
+        printf("Rest amount of transaction after the use of bitcoin %lu is: %lu$\n", bcGetId(bc), rest);
     }
+
+    printf("\n---Rest amount of transaction after the use of all available bitcoins is: %lu$---\n", rest);
 
     if (rest == 0) {
         senderWallet->balance -= transaction->value;
         receiverWallet->balance += transaction->value;
     } else {
-        printf("Summary rest: [%lu]", rest);
         success = false;
     }
 
     printf("\n• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
     return success;
 }
+
 
 /* Perform
  * transaction from input buffer*/
@@ -57,13 +54,18 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
     int i;
     Transaction transaction = NULL;
     Wallet senderWallet = NULL, receiverWallet = NULL;
-    listPtr senderTransactions = NULL, receiverTransactions = NULL;
+    List senderTransactions = NULL, receiverTransactions = NULL;
 
     if (init_complete) {
-        transactionId = malloc(sizeof(char) * 51);
-        for (i = 0; i < 50; i++) {
+
+        /* Generate random id for transaction*/
+        transactionId = malloc(sizeof(char) * 10 + 1);
+        for (i = 0; i < 10; i++) {
             transactionId[i] = (char) (rand() % 26 + 65);
         }
+        transactionId[i] = '\0';
+
+        /* Build transaction string*/
         line = (char *) malloc(strlen(transactionId) + 1 * sizeof(char) + 1 + strlen(input) * sizeof(char) + 1);
         char *tmp = strdup(input);
         strcpy(line, transactionId);
@@ -129,8 +131,15 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
                                 "Unacceptable transaction '%s': Sender's money is not enough!\n",
                                 transaction->transactionId);
                     } else {
-                        if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
-                                    transaction)) {
+                        if (execute(senderWallet, receiverWallet, transaction)) {
+
+                            /* Add transaction in sender's list of transactions.*/
+                            listInsert(senderTransactions, transaction);
+
+                            /* Add transaction in receiver's list of transactions.*/
+                            listInsert(receiverTransactions, transaction);
+
+                            /* Update max transaction timestamp for use later.*/
                             if (transaction->timestamp > max_transaction_timestamp) {
                                 max_transaction_timestamp = transaction->timestamp;
                             }
@@ -181,61 +190,81 @@ bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT,
     return error;
 }
 
+void transactionPrint(Transaction transaction) {
+    //889 Maria Ronaldo 50 25-12-2018 20:08
+    char buffer[26];
+    struct tm *tm_info;
+    if (transaction != NULL) {
+        tm_info = localtime(&transaction->timestamp);
+        strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+        puts(buffer);
+        printf("%s %s %s %lu %s", transaction->transactionId,
+               transaction->senderWalletId,
+               transaction->receiverWalletId,
+               transaction->value,
+               buffer
+        );
+    }
+}
+
 /* @Callback
  * Initialize & return a new transaction*/
-Transaction createTransaction(char *token) {
+Transaction createTransaction(char *transactionStr) {
     Transaction transaction = NULL;
 
     /* Initialize t to avoid valgrind errors as described here:
      * https://stackoverflow.com/questions/9037631/valgrind-complaining-about-mktime-is-that-my-fault
      * by freitass's comment.*/
     struct tm t = {0};
-    int x = 0;
-    transaction = (Transaction) malloc(sizeof(struct Transaction));
-    if (transaction != NULL && token != NULL) {
+    int x = 0, q = 0, s = 0;
+    char buf[BUFFER_SIZE];
+    s = sscanf(transactionStr, "%s %s %s %d %d-%d-%d %d:%d;", buf, buf, buf, &q, &q, &q, &q, &q, &q);
+    if (s >= 4 && s <= 9) {
+        transaction = (Transaction) malloc(sizeof(struct Transaction));
+        if (transaction != NULL) {
+            transactionStr = strtok(transactionStr, " "); // TransactionId
+            transaction->transactionId = malloc(strlen(transactionStr) * sizeof(char *) + 1);
+            if (transaction->transactionId) {
+                strcpy(transaction->transactionId, transactionStr);
+            }
 
-        token = strtok(token, " "); // TransactionId
-        transaction->transactionId = malloc(strlen(token) * sizeof(char *) + 1);
-        if (transaction->transactionId) {
-            strcpy(transaction->transactionId, token);
-        }
+            transactionStr = strtok(NULL, " "); // SenderWalletId
+            transaction->senderWalletId = malloc(strlen(transactionStr) * sizeof(char *) + 1);
+            if (transaction->senderWalletId != NULL) {
+                strcpy(transaction->senderWalletId, transactionStr);
+            }
 
-        token = strtok(NULL, " "); // SenderWalletId
-        transaction->senderWalletId = malloc(strlen(token) * sizeof(char *) + 1);
-        if (transaction->senderWalletId != NULL) {
-            strcpy(transaction->senderWalletId, token);
-        }
+            transactionStr = strtok(NULL, " "); // RecieverWalletId
+            transaction->receiverWalletId = malloc(strlen(transactionStr) * sizeof(char *) + 1);
+            if (transaction->receiverWalletId != NULL) {
+                strcpy(transaction->receiverWalletId, transactionStr);
+            }
 
-        token = strtok(NULL, " "); // RecieverWalletId
-        transaction->receiverWalletId = malloc(strlen(token) * sizeof(char *) + 1);
-        if (transaction->receiverWalletId != NULL) {
-            strcpy(transaction->receiverWalletId, token);
-        }
+            transactionStr = strtok(NULL, " "); // Amount
+            transaction->value = (unsigned long int) strtol(transactionStr, NULL, 10);
 
-        token = strtok(NULL, " "); // Amount
-        transaction->value = (unsigned long int) strtol(token, NULL, 10);
+            transactionStr = strtok(NULL, "\n"); // Date time
 
-        token = strtok(NULL, "\n"); // Date time
-
-        if (token != NULL) {
-            /*Parse date & time*/
-            x = sscanf(token, "%d-%d-%d %d:%d",
-                       &t.tm_mday, &t.tm_mon, &t.tm_year, &t.tm_hour, &t.tm_min
-            );
-            if (x == 5) {
-                t.tm_year = t.tm_year - 1900;
-                t.tm_mon = t.tm_mon - 1;
-                t.tm_isdst = -1;
-                transaction->timestamp = mktime(&t);
-                if (transaction->timestamp < 0) {
-                    fprintf(stdout, "\nBad datetime!\n");
-                    return NULL;
+            if (transactionStr != NULL) {
+                /*Parse date & time*/
+                x = sscanf(transactionStr, "%d-%d-%d %d:%d",
+                           &t.tm_mday, &t.tm_mon, &t.tm_year, &t.tm_hour, &t.tm_min
+                );
+                if (x == 5) {
+                    t.tm_year = t.tm_year - 1900;
+                    t.tm_mon = t.tm_mon - 1;
+                    t.tm_isdst = -1;
+                    transaction->timestamp = mktime(&t);
+                    if (transaction->timestamp < 0) {
+                        fprintf(stdout, "\nBad datetime!\n");
+                        return NULL;
+                    }
+                } else {
+                    time(&transaction->timestamp);
                 }
             } else {
                 time(&transaction->timestamp);
             }
-        } else {
-            time(&transaction->timestamp);
         }
     }
     return transaction;
@@ -275,20 +304,20 @@ void destroyTransaction(Transaction transaction) {
 
 /* @Callback
  * Initialize & return a new transaction list*/
-listPtr createTransactionList(char *userId) {
-    listPtr list = NULL;
+List createTransactionList(char *userId) {
+    List list = NULL;
     listCreate(&list, userId);
     return list;
 }
 
 /* @Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(listPtr tr1, char *userId) {
+int cmpTransactionList(List tr1, char *userId) {
     return listGetIdentifier(tr1) != userId;
 }
 
 /* @Callback
  * Destroy function for transaction hashtable*/
-void destroyTransactionList(listPtr list) {
+void destroyTransactionList(List list) {
     listDestroy(&list);
 }

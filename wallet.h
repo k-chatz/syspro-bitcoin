@@ -5,7 +5,7 @@
 
 typedef struct Wallet {
     char *userId;
-    listPtr bitcoins;
+    List bitcoins;
     unsigned long int balance;
 } *Wallet;
 

@@ -29,7 +29,7 @@ int l_isFirst(nodePtr target) {
     return target->left == NULL;
 }
 
-int l_isEmpty(listPtr list) {
+int l_isEmpty(List list) {
     return list->start == NULL;
 }
 
@@ -43,16 +43,16 @@ nodePtr l_createNode() {
         return NULL;
 }
 
-bool listExists(listPtr *list) {
+bool listExists(List *list) {
     return (*list != NULL);
 }
 
 
 /***Public functions***/
 
-void listCreate(listPtr *list, pointer identifier) {
+void listCreate(List *list, pointer identifier) {
     assert(*list == NULL);
-    *list = (listPtr) malloc(sizeof(struct List));
+    *list = (List) malloc(sizeof(struct List));
     if ((*list) != NULL) {
         (*list)->identifier = identifier;
         (*list)->start = NULL;
@@ -60,11 +60,11 @@ void listCreate(listPtr *list, pointer identifier) {
     }
 }
 
-pointer listGetIdentifier(listPtr list) {
+pointer listGetIdentifier(List list) {
     return list->identifier;
 }
 
-bool listInsert(listPtr list, pointer data) {
+bool listInsert(List list, pointer data) {
     assert(list != NULL);
     assert(data != NULL);
     nodePtr newNode = l_createNode();
@@ -80,12 +80,12 @@ bool listInsert(listPtr list, pointer data) {
     return false;
 }
 
-void listSetCurrentToStart(listPtr list) {
+void listSetCurrentToStart(List list) {
     assert(list != NULL);
     list->current = list->start;
 }
 
-pointer listNext(listPtr list) {
+pointer listNext(List list) {
     assert(list != NULL);
     nodePtr tmp = NULL;
     if (list->current != NULL) {
@@ -97,7 +97,7 @@ pointer listNext(listPtr list) {
     return NULL;
 }
 
-void listDestroy(listPtr *list) {
+void listDestroy(List *list) {
     assert(*list != NULL);
     nodePtr next = NULL;
     nodePtr point = (*list)->start;

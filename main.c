@@ -264,7 +264,7 @@ void requestTransactions(char *input) {
 
 
 /* TODO Cli command*/
-void findEarnings(char *token) {
+void findEarnings(char *input) {
     /*
      * ​/findEarnings walletID [time1][year1][time2][year2]
      *  HASHTABLE!!!
@@ -279,11 +279,11 @@ void findEarnings(char *token) {
         μέσα στο συγκεκριμένο διάστημα. Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη
         ιστορία συναλλαγών όπου το ​walletID ​είναι παραλήπτης.
      */
-    printf("\n[%s]\n", token);
+    printf("\n[%s]\n", input);
 }
 
 /* TODO Cli command*/
-void findPayments(char *token) {
+void findPayments(char *input) {
     /*- ​/findPayments walletID [time1][year1][time2][year2]
      *  HASHTABLE!!!
         Η εφαρμογή επιστρέφει το συνολικό ποσόν που έχει στείλει επιτυχώς μέσω συναλλαγών ο χρηστής με userID
@@ -295,14 +295,14 @@ void findPayments(char *token) {
         Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη ιστορία συναλλαγών όπου το ​walletID ​είναι
         αποστολέας.
      */
-    printf("\n[%s]\n", token);
+    printf("\n[%s]\n", input);
 }
 
 /* Cli command*/
 void walletStatus(char *token) {
     Wallet wallet = HT_Get(walletsHT, token);
     if (wallet != NULL) {
-        printf("Wallet status for '%s' is: %lu\n", wallet->userId, wallet->balance);
+        printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
     }
 }
 
@@ -318,22 +318,35 @@ void bitCoinStatus(char *token) {
         σημαίνει πως το bitcoin 124 έχει χρησιμοποιηθεί σε 10 transactions ενώ 50 μονάδες της αξίας του δεν έχει
         χρησιμοποιηθεί ακόμα σε συναλλαγή.
      */
+
+
+
     printf("\n[%s]\n", token);
 }
 
 /* TODO Cli command*/
 void traceCoin(char *token) {
-    /*
-     * - /traceCoin bitCoinID
-        Η εφαρμογή επιστρέφει την ιστορία συναλλαγών στο οποίο εμπλέκεται το bitcoin ​bitCoinID.
-        Παράδειγμα output:
-        /tracecoin 124
-        889 Maria Ronaldo 50 25-12-2018 20:08
-        776 Lionel Antonella 150 14-02-2019 10:05
-        Η Maria έδωσε στον Ronaldo 50 μονάδες στις 25/12/2018 (μέσω συναλλαγής #889) και ο Lionel 150 μονάδες
-        στην Antonella στις 14/2/2019 (μέσω συναλλαγής #776).
-     */
-    printf("\n[%s]\n", token);
+    unsigned long int bitcoinId = (unsigned long int) strtol(token, NULL, 10);
+    if (bitcoinId > 0) {
+        /*
+ * - /traceCoin bitCoinID
+    Η εφαρμογή επιστρέφει την ιστορία συναλλαγών στο οποίο εμπλέκεται το bitcoin ​bitCoinID.
+    Παράδειγμα output:
+    /tracecoin 124
+    889 Maria Ronaldo 50 25-12-2018 20:08
+    776 Lionel Antonella 150 14-02-2019 10:05
+    Η Maria έδωσε στον Ronaldo 50 μονάδες στις 25/12/2018 (μέσω συναλλαγής #889) και ο Lionel 150 μονάδες
+    στην Antonella στις 14/2/2019 (μέσω συναλλαγής #776).
+ */
+        bitcoin bc = HT_Get(bitcoinsHT, &bitcoinId);
+        if (bc != NULL) {
+            bcTrace(bc);
+        } else {
+            fprintf(stdout, "~ error: bitcoin %lu doesn't exists!\n", bitcoinId);
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input!\n");
+    }
 }
 
 /* Command line interface
@@ -350,9 +363,9 @@ void cli() {
         cmd = strtok_r(rest, " \n", &rest);
         rest = strtok(rest, "\n");
         if (cmd != NULL) {
-            if (strcmp(cmd, "requestTransaction") == 0) {
+            if (strcmp(cmd, "requestTransaction") == 0 || strcmp(cmd, "rt") == 0 || strcmp(cmd, "RT") == 0) {
                 requestTransaction(rest);
-            } else if (strcmp(cmd, "requestTransactions") == 0) {
+            } else if (strcmp(cmd, "requestTransactions") == 0 || strcmp(cmd, "rts") == 0 || strcmp(cmd, "RTS") == 0) {
                 requestTransactions(rest);
             } else if (strcmp(cmd, "findEarnings") == 0) {
                 findEarnings(rest);

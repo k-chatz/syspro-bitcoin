@@ -14,6 +14,8 @@ typedef struct BitCoin *bitcoin;
 
 typedef struct Node *bcNode;
 
+void bcTrace(bitcoin bc);
+
 bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction);
 
 long unsigned int bcGetId(bitcoin bc);

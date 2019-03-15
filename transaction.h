@@ -20,8 +20,7 @@ typedef struct Transaction {
 
 /* Execute
  * transaction*/
-bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWallet, listPtr receiverTransactions,
-             Transaction transaction);
+bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction);
 
 /* Perform
  * transaction from input buffer*/
@@ -33,9 +32,11 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
 bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
                          Hashtable *transactionsHT, char *delimiter);
 
+void transactionPrint(Transaction transaction);
+
 /* @Callback
  * Initialize & return a new transaction*/
-Transaction createTransaction(char *token);
+Transaction createTransaction(char *transactionStr);
 
 /* @Callback
  * Compare transaction with userId field*/
@@ -51,14 +52,14 @@ void destroyTransaction(Transaction transaction);
 
 /* @Callback
  * Initialize & return a new transaction list*/
-listPtr createTransactionList(char *userId);
+List createTransactionList(char *userId);
 
 /* @Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(listPtr tr1, char *userId);
+int cmpTransactionList(List tr1, char *userId);
 
 /* @Callback
  * Destroy function for transaction hashtable*/
-void destroyTransactionList(listPtr list);
+void destroyTransactionList(List list);
 
 #endif //TRANSACTION_H

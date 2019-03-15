@@ -4,18 +4,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-typedef struct List *listPtr;
+typedef struct List *List;
 
-void listCreate(listPtr *list, void *identifier);
+void listCreate(List *list, void *identifier);
 
-void *listGetIdentifier(listPtr);
+void *listGetIdentifier(List);
 
-bool listInsert(listPtr, void *);
+bool listInsert(List, void *);
 
-void listSetCurrentToStart(listPtr list);
+void listSetCurrentToStart(List list);
 
-void *listNext(listPtr);
+void *listNext(List);
 
-void listDestroy(listPtr *list);
+void listDestroy(List *list);
 
 #endif
