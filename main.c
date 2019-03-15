@@ -141,7 +141,6 @@ void init(Hashtable *walletsHT, Hashtable *bitcoinsHT, char *a, unsigned long in
 
                             /*Insert bitcoin into bitcoins hashtable*/
                             if (HT_Insert(*bitcoinsHT, &bid, &htBitCoinParams, (void **) &bc)) {
-
                                 assert(bc != NULL);
 
                                 //printf("[%lu] [%p] \n", bid, bc);
@@ -265,23 +264,9 @@ void requestTransactions(char *input) {
     }
 }
 
-/* TODO Cli command*/
-
-/*
-* ​/findEarnings walletID [time1][year1][time2][year2]
-*  HASHTABLE!!!
-Η εφαρμογή πρώτα επιστρέφει το συνολικό ποσόν που έχει λάβει μέσω συναλλαγών ο χρηστής με userID
-walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
-
-Αν υπάρχει ορισμός για [time1] θα πρέπει να υφίσταται και ορισμός για [time2].
-
-Επίσης το ίδιο ισχύει και για την χρήση των μη υποχρεωτικών παραμέτρων ​[year1] και [year2]​.
-
-Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως παραλήπτης) που εκτελέστηκαν επιτυχώς
-μέσα στο συγκεκριμένο διάστημα. Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη
-ιστορία συναλλαγών όπου το ​walletID ​είναι παραλήπτης.
-*/
+/* Cli command*/
 void findEarnings(char *input) {
+    //todo: date times
     List list = NULL;
     Transaction transaction = NULL;
     Wallet wallet = HT_Get(walletsHT, input);
@@ -304,8 +289,9 @@ void findEarnings(char *input) {
     }
 }
 
-/* TODO Cli command*/
+/* Cli command*/
 void findPayments(char *input) {
+    //date times
     List list = NULL;
     Transaction transaction = NULL;
     char *rest = NULL, *walletId = NULL;
@@ -327,33 +313,18 @@ void findPayments(char *input) {
                 s.tm_mon = s.tm_mon - 1;
                 s.tm_isdst = -1;
                 start = mktime(&s);
-          /*      if (transaction->timestamp < 0) {
-                    fprintf(stdout, "\nBad datetime!\n");
-                }*/
+                /*      if (transaction->timestamp < 0) {
+                          fprintf(stdout, "\nBad datetime!\n");
+                      }*/
             }
         }
-
         wallet = HT_Get(walletsHT, walletId);
         if (wallet != NULL) {
             printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
             list = HT_Get(senderHT, wallet->userId);
             if (list != NULL) {
                 while ((transaction = listNext(list)) != NULL) {
-
                     transactionPrint(transaction);
-
-                    /*- ​/findPayments walletID [time1][year1][time2][year2]
-                   *  HASHTABLE!!!
-                   Η εφαρμογή επιστρέφει το συνολικό ποσόν που έχει στείλει επιτυχώς μέσω συναλλαγών ο χρηστής με userID
-                   walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
-
-                   Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως αποστολέας) που εκτελέστηκαν επιτυχώς
-                   μέσα στο διάστημα που έχει δοθεί στη γραμμή εντολής.
-
-                   Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη ιστορία συναλλαγών όπου το ​walletID ​είναι
-                   αποστολέας.
-                   */
-
                 }
             } else {
                 fprintf(stdout, "~ error: earnings list for wallet '%s' not found!\n", input);

@@ -81,8 +81,32 @@ bool listInsert(List list, pointer data) {
 }
 
 bool listRemove(List list, pointer data) {
+    assert(list != NULL);
     list->current = list->start;
-    printf("List Remove");
+    nodePtr next = NULL;
+    nodePtr point = list->start;
+    if (point != NULL) {
+        do {
+            next = point->right;
+            if (point->data == data) {
+                printf("found!\n");
+                if (point->left == NULL) {
+                    //First element
+                    list->start = list->current = point->right;
+                    if (point->right != NULL) {
+                        point->right->left = NULL;
+                    }
+                } else {
+                    //Others
+                    point->left->right = point->right;
+                    if (point->right != NULL) {
+                        point->right->left = point->left;
+                    }
+                }
+                free(point);
+            }
+        } while ((point = next) != NULL);
+    }
 }
 
 void listSetCurrentToStart(List list) {

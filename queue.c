@@ -66,5 +66,6 @@ pointer deQueue(Queue q) {
 
 void queueDestroy(Queue *queue) {
     assert(*queue != NULL);
+    free((*queue)->queue);
     free(*queue);
 }

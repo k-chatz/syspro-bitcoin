@@ -18,7 +18,7 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
     assert(transaction->value > 0);
     unsigned long int rest = 0, x = 0;
     bitcoin bc = NULL, wbc = NULL;
-    bool success = true;
+    bool success = true, duplicate;
 
     rest = transaction->value;
 
@@ -40,19 +40,27 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
         if (x == rest) {
             /* The sender does not share any more this bitcoin with others because he spent all the amount of it for
              * this transaction. Bitcoin is about to be removed from sender list!*/
-
             listRemove(senderWallet->bitcoins, bc);
-        } else {
+        }
+
+        if (rest == 0) {
+            listSetCurrentToStart(receiverWallet->bitcoins);
+            duplicate = false;
 
             /* Try to insert current bitcoin into receiver's wallet list of bitcoins.*/
             while ((wbc = listNext(receiverWallet->bitcoins)) != NULL) {
                 if (wbc != bc) {
-                    listInsert(receiverWallet->bitcoins, bc);
+                    duplicate = true;
                 }
             }
-        }
 
+            if (!duplicate) {
+                listInsert(receiverWallet->bitcoins, bc);
+            }
+        }
         printf("-Rest amount of transaction after the use of bitcoin %lu is: %lu$-\n", bcGetId(bc), rest);
+
+        bcPrint(bc);
     }
 
     printf("\n---Rest amount of transaction after the use of all available bitcoins is: %lu$---\n", rest);
@@ -119,7 +127,7 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
             } else {
 
                 /* Create/Get sender transactions list hashtable.*/
-                HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
+                HT_Insert(*senderHT, transaction->senderWalletId, &transaction->senderWalletId,
                           (void **) &senderTransactions);
 
                 assert(senderTransactions != NULL);
@@ -133,7 +141,7 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
                 } else {
 
                     /*Create/Get receiver transactions list hashtable.*/
-                    HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
+                    HT_Insert(*receiverHT, transaction->senderWalletId, &transaction->senderWalletId,
                               (void **) &receiverTransactions);
 
                     assert(receiverTransactions != NULL);
@@ -335,7 +343,7 @@ void destroyTransaction(Transaction transaction) {
 
 /* @Callback
  * Initialize & return a new transaction list*/
-List createTransactionList(char *userId) {
+List createTransactionList(char **userId) {
     List list = NULL;
     listCreate(&list, userId);
     return list;
@@ -343,7 +351,7 @@ List createTransactionList(char *userId) {
 
 /* @Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(List tr1, char *userId) {
+int cmpTransactionList(List tr1, char **userId) {
     return listGetIdentifier(tr1) != userId;
 }
 
