@@ -262,7 +262,6 @@ void requestTransactions(char *input) {
     }
 }
 
-
 /* TODO Cli command*/
 void findEarnings(char *input) {
     /*
@@ -299,53 +298,53 @@ void findPayments(char *input) {
 }
 
 /* Cli command*/
-void walletStatus(char *token) {
-    Wallet wallet = HT_Get(walletsHT, token);
+void walletStatus(char *input) {
+    Wallet wallet = HT_Get(walletsHT, input);
     if (wallet != NULL) {
         printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+    } else {
+        fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
     }
 }
 
-/* TODO Cli command*/
-void bitCoinStatus(char *token) {
-    /*
-     * -​/bitCoinStatus bitCoinID
-        Η εφαρμογή επιστρέφει την αρχική αξία του bitcoin me ID ​bitCoinID, ​τον αριθμό των συναλλαγών στις
-        οποίες έχει χρησιμοποιηθεί, και το ποσόν του ​bitCoinID που έχει μείνει ​unspent
-        (δηλαδή δεν έχει χρησιμοποιηθεί ακόμα σε συναλλαγή)​.
-
-        Παράδειγμα output: ​124 10 50
-        σημαίνει πως το bitcoin 124 έχει χρησιμοποιηθεί σε 10 transactions ενώ 50 μονάδες της αξίας του δεν έχει
-        χρησιμοποιηθεί ακόμα σε συναλλαγή.
-     */
-
-
-
-    printf("\n[%s]\n", token);
-}
-
-/* TODO Cli command*/
-void traceCoin(char *token) {
-    unsigned long int bitcoinId = (unsigned long int) strtol(token, NULL, 10);
-    if (bitcoinId > 0) {
-        /*
- * - /traceCoin bitCoinID
-    Η εφαρμογή επιστρέφει την ιστορία συναλλαγών στο οποίο εμπλέκεται το bitcoin ​bitCoinID.
-    Παράδειγμα output:
-    /tracecoin 124
-    889 Maria Ronaldo 50 25-12-2018 20:08
-    776 Lionel Antonella 150 14-02-2019 10:05
-    Η Maria έδωσε στον Ronaldo 50 μονάδες στις 25/12/2018 (μέσω συναλλαγής #889) και ο Lionel 150 μονάδες
-    στην Antonella στις 14/2/2019 (μέσω συναλλαγής #776).
- */
-        bitcoin bc = HT_Get(bitcoinsHT, &bitcoinId);
-        if (bc != NULL) {
-            bcTrace(bc);
+/* Cli command*/
+void bitCoinStatus(char *input) {
+    unsigned long int bitcoinId = 0, value = 0, transactions = 0, unspent = 0;
+    if (input != NULL) {
+        bitcoinId = (unsigned long int) strtol(input, NULL, 10);
+        if (bitcoinId > 0) {
+            bitcoin bc = HT_Get(bitcoinsHT, &bitcoinId);
+            if (bc != NULL) {
+                bcTrace(bc, &value, &transactions, &unspent, true, false);
+                printf("%lu %lu %lu %lu\n", bitcoinId, value, transactions, unspent);
+            } else {
+                fprintf(stdout, "~ error: bitcoin %lu doesn't exists!\n", bitcoinId);
+            }
         } else {
-            fprintf(stdout, "~ error: bitcoin %lu doesn't exists!\n", bitcoinId);
+            fprintf(stdout, "~ error: bad input, not a number!\n");
         }
     } else {
-        fprintf(stdout, "~ error: bad input!\n");
+        fprintf(stdout, "~ error: bad input, expected bitcoin number!\n");
+    }
+}
+
+/* Cli command*/
+void traceCoin(char *input) {
+    unsigned long int bitcoinId = 0, value = 0, transactions = 0, unspent = 0;
+    bitcoinId = (unsigned long int) strtol(input, NULL, 10);
+    if (input != NULL) {
+        if (bitcoinId > 0) {
+            bitcoin bc = HT_Get(bitcoinsHT, &bitcoinId);
+            if (bc != NULL) {
+                bcTrace(bc, &value, &transactions, &unspent, true, true);
+            } else {
+                fprintf(stdout, "~ error: bitcoin %lu doesn't exists!\n", bitcoinId);
+            }
+        } else {
+            fprintf(stdout, "~ error: bad input, not a number!\n");
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input, expected bitcoin number!\n");
     }
 }
 
@@ -353,30 +352,30 @@ void traceCoin(char *token) {
  * Get input from user to perform various cli commands.*/
 void cli() {
     int fd;
-    char *rest = NULL, *line = NULL, *cmd = NULL;
+    char *input = NULL, *line = NULL, *cmd = NULL;
     size_t len = 0;
     ssize_t read;
     printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
     putchar('>');
     while ((read = getline(&line, &len, stdin)) != EOF) {
-        rest = line;
-        cmd = strtok_r(rest, " \n", &rest);
-        rest = strtok(rest, "\n");
+        input = line;
+        cmd = strtok_r(input, " \n", &input);
+        input = strtok(input, "\n");
         if (cmd != NULL) {
             if (strcmp(cmd, "requestTransaction") == 0 || strcmp(cmd, "rt") == 0 || strcmp(cmd, "RT") == 0) {
-                requestTransaction(rest);
+                requestTransaction(input);
             } else if (strcmp(cmd, "requestTransactions") == 0 || strcmp(cmd, "rts") == 0 || strcmp(cmd, "RTS") == 0) {
-                requestTransactions(rest);
+                requestTransactions(input);
             } else if (strcmp(cmd, "findEarnings") == 0) {
-                findEarnings(rest);
+                findEarnings(input);
             } else if (strcmp(cmd, "findPayments") == 0) {
-                findPayments(rest);
+                findPayments(input);
             } else if (strcmp(cmd, "walletStatus") == 0) {
-                walletStatus(rest);
+                walletStatus(input);
             } else if (strcmp(cmd, "bitCoinStatus") == 0) {
-                bitCoinStatus(rest);
+                bitCoinStatus(input);
             } else if (strcmp(cmd, "traceCoin") == 0) {
-                traceCoin(rest);
+                traceCoin(input);
             } else if (strcmp(cmd, "exit") == 0) {
                 fd = open("/dev/null", O_WRONLY);
                 dup2(fd, 0);

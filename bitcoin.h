@@ -6,7 +6,7 @@
 
 typedef struct Params {
     unsigned long int bid;
-    char * walletId;
+    char *walletId;
     unsigned long int v;
 } ht_bitcoin_params;
 
@@ -14,7 +14,8 @@ typedef struct BitCoin *bitcoin;
 
 typedef struct Node *bcNode;
 
-void bcTrace(bitcoin bc);
+void bcTrace(bitcoin bc, unsigned long int *value, unsigned long int *transactions, unsigned long int *unspent,
+             bool traceTransaction, bool printTransactions);
 
 bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction);
 
