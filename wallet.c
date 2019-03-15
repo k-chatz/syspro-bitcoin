@@ -44,7 +44,5 @@ void destroyWallet(Wallet w) {
     free(w->userId);
     listDestroy(&w->bitcoins);
     free(w);
-    //TODO: Fix this!!! doesn't work !!!
-
     printf(" ");
 }

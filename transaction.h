@@ -25,7 +25,7 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
+bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
                         Hashtable *transactionsHT);
 
 /* Perform

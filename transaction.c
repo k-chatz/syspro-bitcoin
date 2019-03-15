@@ -17,12 +17,17 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
     assert(receiverTransactions != NULL);
     assert(transaction != NULL);
     assert(transaction->value > 0);
-
+    bool success = true;
     unsigned long int rest = transaction->value;
     bitcoin bc = NULL;
-    printf("\n• • • E X E C U T E   T R A N S A C T I O N • • •\n");
+    printf("\n• • • • • • • • E X E C U T E   T R A N S A C T I O N • • • • • • • •\n");
 
-    printf("Transaction '%s'\n", transaction->transactionId);
+    printf("Transaction %s: %s --> %s %lu\n",
+           transaction->transactionId,
+           transaction->senderWalletId,
+           transaction->receiverWalletId,
+           transaction->value
+    );
 
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
@@ -31,30 +36,52 @@ bool execute(Wallet senderWallet, listPtr senderTransactions, Wallet receiverWal
         printf("rest: [%lu]\n", rest);
     }
 
-    if (rest > 0) {
-        // return false;
+    if (rest == 0) {
+        senderWallet->balance -= transaction->value;
+        receiverWallet->balance += transaction->value;
+    } else {
+        printf("Summary rest: [%lu]", rest);
+        success = false;
     }
 
-    printf("\n• • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
-    return true;
+    printf("\n• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
+    return success;
 }
 
 /* Perform
  * transaction from input buffer*/
-bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
+bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, Hashtable *receiverHT,
                         Hashtable *transactionsHT) {
     bool error = false;
     char *line = NULL, *transactionId = NULL;
+    int i;
     Transaction transaction = NULL;
     Wallet senderWallet = NULL, receiverWallet = NULL;
     listPtr senderTransactions = NULL, receiverTransactions = NULL;
 
-    /* Allocate space for line string to save a copy of token.*/
-    line = malloc(strlen(token) * sizeof(char) + 1);
+    if (init_complete) {
+        transactionId = malloc(sizeof(char) * 51);
+        for (i = 0; i < 50; i++) {
+            transactionId[i] = (char) (rand() % 26 + 65);
+        }
+        line = (char *) malloc(strlen(transactionId) + 1 * sizeof(char) + 1 + strlen(input) * sizeof(char) + 1);
+        char *tmp = strdup(input);
+        strcpy(line, transactionId);
+        strcat(line, " ");
+        strcat(line, tmp);
+        free(tmp);
+    } else {
+        /* Allocate space for line string to save a copy of token.*/
+        line = malloc(strlen(input) * sizeof(char) + 1);
+    }
+
     if (line != NULL) {
-        strcpy(line, token);
-        transactionId = strtok(token, " ");
-        //printf("Transaction: [%s]\n", line);
+        if (!init_complete) {
+            strcpy(line, input);
+            transactionId = strtok(input, " ");
+        } else {
+            printf("Request for transaction: [%s]\n", line);
+        }
 
         /*Create a transaction through hashtable from parsed line to ensure there is no other one with the same id.*/
         if (HT_Insert(*transactionsHT, transactionId, line, (void **) &transaction)) {
@@ -62,45 +89,55 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
 
             /* Get sender's wallet.*/
             senderWallet = HT_Get(*walletsHT, transaction->senderWalletId);
-            assert(senderWallet != NULL);
+            if (senderWallet == NULL) {
+                fprintf(stdout, "Unacceptable transaction '%s': Sender's wallet '%s' doesn't exists!\n",
+                        transaction->transactionId, transaction->senderWalletId);
+                error = true;
+            } else {
+
+                /* Create/Get sender transactions list hashtable*/
+                HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
+                          (void **) &senderTransactions);
+
+                assert(senderTransactions != NULL);
+            }
 
             /* Get receiver's wallet.*/
             receiverWallet = HT_Get(*walletsHT, transaction->receiverWalletId);
-            assert(receiverWallet != NULL);
-
-            /* Create/Get sender transactions list hashtable*/
-            HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
-                      (void **) &senderTransactions);
-
-            assert(senderTransactions != NULL);
-
-            /*Create/Get receiver transactions list hashtable*/
-            HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
-                      (void **) &receiverTransactions);
-
-            assert(receiverTransactions != NULL);
-
-            if (transaction->timestamp < max_transaction_timestamp) {
+            if (receiverWallet == NULL) {
+                fprintf(stdout, "Unacceptable transaction '%s': Receivers's wallet '%s' doesn't exists!\n",
+                        transaction->transactionId, transaction->receiverWalletId);
                 error = true;
-                fprintf(stdout, "Unacceptable transaction '%s': Date is less than the current time!\n",
-                        transaction->transactionId);
+            } else {
+
+                /*Create/Get receiver transactions list hashtable*/
+                HT_Insert(*receiverHT, transaction->senderWalletId, transaction->senderWalletId,
+                          (void **) &receiverTransactions);
+
+                assert(receiverTransactions != NULL);
             }
 
             if (!error) {
-                if (transaction->value > senderWallet->balance) {
+                if (transaction->timestamp < max_transaction_timestamp) {
                     error = true;
-                    fprintf(stdout,
-                            "Unacceptable transaction '%s': Sender's money is not enough!\n",
+                    fprintf(stdout, "Unacceptable transaction '%s': Date is less than the current time!\n",
                             transaction->transactionId);
                 } else {
-                    if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
-                                transaction)) {
-                        if (transaction->timestamp > max_transaction_timestamp) {
-                            max_transaction_timestamp = transaction->timestamp;
-                        }
-                    } else {
-                        fprintf(stdout, "Transaction '%s' was fail!\n", transaction->transactionId);
+                    if (transaction->value > senderWallet->balance) {
                         error = true;
+                        fprintf(stdout,
+                                "Unacceptable transaction '%s': Sender's money is not enough!\n",
+                                transaction->transactionId);
+                    } else {
+                        if (execute(senderWallet, senderTransactions, receiverWallet, receiverTransactions,
+                                    transaction)) {
+                            if (transaction->timestamp > max_transaction_timestamp) {
+                                max_transaction_timestamp = transaction->timestamp;
+                            }
+                        } else {
+                            fprintf(stdout, "Transaction '%s' was fail!\n", transaction->transactionId);
+                            error = true;
+                        }
                     }
                 }
             } else {
@@ -112,14 +149,17 @@ bool performTransaction(char *token, Hashtable *walletsHT, Hashtable *senderHT, 
                 fprintf(stdout, "Unacceptable transaction '%s': Transaction is duplicate!\n",
                         transaction->transactionId);
             } else {
-                fprintf(stdout, "Unacceptable transaction: Bad format!\n");
+                fprintf(stdout, "Unacceptable transaction '%s': Bad format!\n", transactionId);
             }
             error = true;
+        }
+        if (init_complete) {
+            free(transactionId);
         }
         free(line);
     } else {
         error = true;
-        fprintf(stdout, "Unexpected error!\n");
+        fprintf(stdout, "Bad transaction format!\n");
     }
     return error;
 }

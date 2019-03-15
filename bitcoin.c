@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
+#include "queue.h"
 
 typedef void *pointer;
 
@@ -13,12 +15,21 @@ struct BitCoin {
 
 struct Node {
     struct Transaction *transaction;
-    Wallet wallet;
+    char *walletId;
     unsigned long int balance;
     bcNode parrent, left, right;
 };
 
+
 /***Private functions***/
+
+bool _isLeaf(bcNode node) {
+    return node->left == NULL && node->right == NULL;
+}
+
+bool _isTarget(bcNode node, char *walletId) {
+    return !strcmp(node->walletId, walletId);
+}
 
 bcNode _createNode() {
     bcNode node = (bcNode) malloc(sizeof(struct Node));
@@ -32,56 +43,30 @@ bcNode _createNode() {
 }
 
 void _destroyNode(bcNode bc) {
-    if (bc != NULL) {
-        fprintf(stdout, "Bitcoin node to be destroyed: [%p]\n", bc);
-        free(bc);
-    }
+    fprintf(stdout, "Bitcoin node to be destroyed: [%p]\n", bc);
+
+
+    free(bc);
+
 }
-
-/* Given a binary tree, print its nodes in level order
-   using array for implementing queue *//*
-
-void printLevelOrder(struct node* root)
-{
-    int rear, front;
-    struct node **queue = createQueue(&front, &rear);
-    struct node *temp_node = root;
-
-    while (temp_node)
-    {
-        printf("%d ", temp_node->data);
-
-        */
-/*Enqueue left child *//*
-
-        if (temp_node->left)
-            enQueue(queue, &rear, temp_node->left);
-
-        */
-/*Enqueue right child *//*
-
-        if (temp_node->right)
-            enQueue(queue, &rear, temp_node->right);
-
-        */
-/*Dequeue node and make it temp_node*//*
-
-        temp_node = deQueue(queue, &front);
-    }
-}
-*/
-
 
 /***Public functions***/
+
 bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction) {
     assert(bc != NULL);
     assert(*rest > 0);
     assert(transaction != NULL);
 
+            printf(" ");
+        }
 
-    // *p = _createNode(NULL);
+        r = deQueue((pointer) queue, &front);
+    }
+
+    printf("\n");
     return true;
 }
+
 
 long unsigned int bcGetId(bitcoin bc) {
     return bc->bid;
@@ -97,7 +82,8 @@ bitcoin bcCreate(ht_bitcoin_params *htBitCoinParams) {
         bc->root = _createNode();
         if (bc->root != NULL) {
             bc->root->transaction = NULL;
-            bc->root->wallet = htBitCoinParams->wallet;
+            bc->root->walletId = malloc(strlen(htBitCoinParams->walletId) * sizeof(char) + 1);
+            strcpy(bc->root->walletId, htBitCoinParams->walletId);
             bc->root->balance = htBitCoinParams->v;
         }
     }

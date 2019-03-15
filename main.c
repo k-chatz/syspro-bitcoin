@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <zconf.h>
+#include <time.h>
 #include "hash.h"
 #include "list.h"
 #include "wallet.h"
@@ -134,7 +135,7 @@ void init(Hashtable *walletsHT, Hashtable *bitcoinsHT, char *a, unsigned long in
                             bid = (unsigned long int) strtol(token, NULL, 10);
 
                             /*Initialize parameters for bitcoin*/
-                            htBitCoinParams.wallet = wallet;
+                            htBitCoinParams.walletId = wallet->userId;
                             htBitCoinParams.bid = bid;
                             htBitCoinParams.v = v;
 
@@ -228,29 +229,30 @@ void initTransactions(Hashtable *walletsHT, Hashtable *bitcoins, Hashtable *send
     }
 }
 
-void requestTransaction(char *token) {
-    performTransaction(token, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
+/* Cli command*/
+void requestTransaction(char *input) {
+    performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
 }
 
-void requestTransactions(char *token) {
+/* Cli command*/
+void requestTransactions(char *input) {
     FILE *fp = NULL;
     int q, s;
-    char input[BUFFER_SIZE];
-    token = strtok(token, "\n");
-    if (token != NULL) {
+    char buf[BUFFER_SIZE];
+    if (input != NULL) {
         /* Use this sscanf only for check the number of arguments to determine if the input is file of transactions
          * or actual transactions.*/
-        s = sscanf(token, "%s %s %s %d %d-%d-%d %d:%d;", input, input, input, &q, &q, &q, &q, &q, &q);
+        s = sscanf(input, "%s %s %d %d-%d-%d %d:%d;", buf, buf, &q, &q, &q, &q, &q, &q);
         if (s == 1) {
-            fp = fopen(token, "r");
+            fp = fopen(input, "r");
             if (fp != NULL) {
                 performTransactions(fp, &walletsHT, &senderHT, &receiverHT, &transactionsHT, ";\n");
                 fclose(fp);
             } else {
-                fprintf(stdout, "\nFile '%s' not found!\n", token);
+                fprintf(stdout, "\nFile '%s' not found!\n", input);
             }
-        } else if (s == 9) {
-            performTransaction(token, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
+        } else if (s == 8) {
+            performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT);
             performTransactions(stdin, &walletsHT, &senderHT, &receiverHT, &transactionsHT, ";\n");
         } else {
             fprintf(stdout, "~ error: bad input!\n");
@@ -260,30 +262,77 @@ void requestTransactions(char *token) {
     }
 }
 
+
+/* TODO Cli command*/
 void findEarnings(char *token) {
-    //TODO:
-    char *rest = token;
-    token = strtok_r(rest, " \n", &rest);
+    /*
+     * ​/findEarnings walletID [time1][year1][time2][year2]
+     *  HASHTABLE!!!
+        Η εφαρμογή πρώτα επιστρέφει το συνολικό ποσόν που έχει λάβει μέσω συναλλαγών ο χρηστής με userID
+        walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
+
+        Αν υπάρχει ορισμός για [time1] θα πρέπει να υφίσταται και ορισμός για [time2].
+
+        Επίσης το ίδιο ισχύει και για την χρήση των μη υποχρεωτικών παραμέτρων ​[year1] και [year2]​.
+
+        Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως παραλήπτης) που εκτελέστηκαν επιτυχώς
+        μέσα στο συγκεκριμένο διάστημα. Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη
+        ιστορία συναλλαγών όπου το ​walletID ​είναι παραλήπτης.
+     */
     printf("\n[%s]\n", token);
 }
 
+/* TODO Cli command*/
 void findPayments(char *token) {
-    //TODO:
+    /*- ​/findPayments walletID [time1][year1][time2][year2]
+     *  HASHTABLE!!!
+        Η εφαρμογή επιστρέφει το συνολικό ποσόν που έχει στείλει επιτυχώς μέσω συναλλαγών ο χρηστής με userID
+        walletID ​(με επιλογή στο εύρος χρόνου ή/και ημερομηνίας).
+
+        Στη συνεχεία, παρουσιάζει όλες τις εγγραφές συναλλαγών του χρήστη (ως αποστολέας) που εκτελέστηκαν επιτυχώς
+        μέσα στο διάστημα που έχει δοθεί στη γραμμή εντολής.
+
+        Αν δεν ορίζεται διάστημα, τότε η εφαρμογή θα παρουσιάζει την πλήρη ιστορία συναλλαγών όπου το ​walletID ​είναι
+        αποστολέας.
+     */
     printf("\n[%s]\n", token);
 }
 
+/* Cli command*/
 void walletStatus(char *token) {
-    //TODO:
-    printf("\n[%s]\n", token);
+    Wallet wallet = HT_Get(walletsHT, token);
+    if (wallet != NULL) {
+        printf("Wallet status for '%s' is: %lu\n", wallet->userId, wallet->balance);
+    }
 }
 
+/* TODO Cli command*/
 void bitCoinStatus(char *token) {
-    //TODO:
+    /*
+     * -​/bitCoinStatus bitCoinID
+        Η εφαρμογή επιστρέφει την αρχική αξία του bitcoin me ID ​bitCoinID, ​τον αριθμό των συναλλαγών στις
+        οποίες έχει χρησιμοποιηθεί, και το ποσόν του ​bitCoinID που έχει μείνει ​unspent
+        (δηλαδή δεν έχει χρησιμοποιηθεί ακόμα σε συναλλαγή)​.
+
+        Παράδειγμα output: ​124 10 50
+        σημαίνει πως το bitcoin 124 έχει χρησιμοποιηθεί σε 10 transactions ενώ 50 μονάδες της αξίας του δεν έχει
+        χρησιμοποιηθεί ακόμα σε συναλλαγή.
+     */
     printf("\n[%s]\n", token);
 }
 
+/* TODO Cli command*/
 void traceCoin(char *token) {
-    //TODO:
+    /*
+     * - /traceCoin bitCoinID
+        Η εφαρμογή επιστρέφει την ιστορία συναλλαγών στο οποίο εμπλέκεται το bitcoin ​bitCoinID.
+        Παράδειγμα output:
+        /tracecoin 124
+        889 Maria Ronaldo 50 25-12-2018 20:08
+        776 Lionel Antonella 150 14-02-2019 10:05
+        Η Maria έδωσε στον Ronaldo 50 μονάδες στις 25/12/2018 (μέσω συναλλαγής #889) και ο Lionel 150 μονάδες
+        στην Antonella στις 14/2/2019 (μέσω συναλλαγής #776).
+     */
     printf("\n[%s]\n", token);
 }
 
@@ -299,6 +348,7 @@ void cli() {
     while ((read = getline(&line, &len, stdin)) != EOF) {
         rest = line;
         cmd = strtok_r(rest, " \n", &rest);
+        rest = strtok(rest, "\n");
         if (cmd != NULL) {
             if (strcmp(cmd, "requestTransaction") == 0) {
                 requestTransaction(rest);
@@ -332,6 +382,8 @@ void cli() {
 int main(int argc, char *argv[]) {
     unsigned long int h1 = 0, h2 = 0, b = 0, v = 0;
     char *a = NULL, *t = NULL;
+
+    srand((unsigned int) time(NULL));
 
     /*Read argument options from command line*/
     readOptions(argc, argv, &a, &t, &v, &h1, &h2, &b);
