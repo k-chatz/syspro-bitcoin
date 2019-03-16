@@ -239,47 +239,43 @@ unsigned long int findTransactions(char *input, Hashtable ht, Wallet *wallet, Li
     Transaction transaction = NULL;
     time_t start = 0, end = 0;
     rest = input;
-    if (input != NULL) {
-        walletId = strtok_r(input, " ", &rest);
-        if (walletId != NULL) {
-            read = sscanf(rest, "%d-%d-%d %d:%d %d-%d-%d %d:%d",
-                          &s.tm_mday, &s.tm_mon, &s.tm_year, &s.tm_hour, &s.tm_min,
-                          &e.tm_mday, &e.tm_mon, &e.tm_year, &e.tm_hour, &e.tm_min
-            );
-            if (read == 10) {
-                s.tm_year = s.tm_year - 1900;
-                s.tm_mon = s.tm_mon - 1;
-                s.tm_isdst = -1;
-                start = mktime(&s);
+    walletId = strtok_r(input, " ", &rest);
+    if (walletId != NULL) {
+        read = sscanf(rest, "%d-%d-%d %d:%d %d-%d-%d %d:%d",
+                      &s.tm_mday, &s.tm_mon, &s.tm_year, &s.tm_hour, &s.tm_min,
+                      &e.tm_mday, &e.tm_mon, &e.tm_year, &e.tm_hour, &e.tm_min
+        );
+        if (read == 10) {
+            s.tm_year = s.tm_year - 1900;
+            s.tm_mon = s.tm_mon - 1;
+            s.tm_isdst = -1;
+            start = mktime(&s);
 
-                e.tm_year = e.tm_year - 1900;
-                e.tm_mon = e.tm_mon - 1;
-                e.tm_isdst = -1;
-                end = mktime(&e);
-            }
-            *wallet = HT_Get(walletsHT, input);
-            if (*wallet != NULL) {
-                *transactions = HT_Get(ht, (*wallet)->userId);
-                if (*transactions != NULL) {
-                    printf("Transactions of user '%s'\n", (*wallet)->userId);
-                    listSetCurrentToStart(*transactions);
-                    while ((transaction = listNext(*transactions)) != NULL) {
-                        if (read == 10) {
-                            if (transaction->timestamp >= start && transaction->timestamp <= end) {
-                                amount += transaction->value;
-                                transactionPrint(transaction);
-                            }
-                        } else {
+            e.tm_year = e.tm_year - 1900;
+            e.tm_mon = e.tm_mon - 1;
+            e.tm_isdst = -1;
+            end = mktime(&e);
+        }
+        *wallet = HT_Get(walletsHT, input);
+        if (*wallet != NULL) {
+            *transactions = HT_Get(ht, (*wallet)->userId);
+            if (*transactions != NULL) {
+                printf("Transactions of user '%s'\n", (*wallet)->userId);
+                listSetCurrentToStart(*transactions);
+                while ((transaction = listNext(*transactions)) != NULL) {
+                    if (read == 10) {
+                        if (transaction->timestamp >= start && transaction->timestamp <= end) {
                             amount += transaction->value;
                             transactionPrint(transaction);
                         }
+                    } else {
+                        amount += transaction->value;
+                        transactionPrint(transaction);
                     }
                 }
-            } else {
-                fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
             }
         } else {
-            fprintf(stdout, "~ error: bad input\n");
+            fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
         }
     } else {
         fprintf(stdout, "~ error: bad input\n");
@@ -289,8 +285,12 @@ unsigned long int findTransactions(char *input, Hashtable ht, Wallet *wallet, Li
 
 /* Cli command*/
 void requestTransaction(char *input) {
-    if (!performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT)) {
-        fprintf(stdout, "~ success: The transaction was executed successfully.\n");
+    if (input != NULL) {
+        if (!performTransaction(input, &walletsHT, &senderHT, &receiverHT, &transactionsHT)) {
+            fprintf(stdout, "~ success: The transaction was executed successfully.\n");
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input!\n");
     }
 }
 
@@ -326,9 +326,14 @@ void requestTransactions(char *input) {
 void findEarnings(char *input) {
     Wallet wallet = NULL;
     List transactions = NULL;
-    unsigned long int amount = findTransactions(input, receiverHT, &wallet, &transactions);
-    if (wallet != NULL) {
-        printf("User '%s' has received %lu$ in his wallet.\n", wallet->userId, amount);
+    unsigned long int amount = 0;
+    if (input) {
+        amount = findTransactions(input, receiverHT, &wallet, &transactions);
+        if (wallet != NULL) {
+            printf("User '%s' has received %lu$ in his wallet.\n", wallet->userId, amount);
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input\n");
     }
 }
 
@@ -336,9 +341,13 @@ void findEarnings(char *input) {
 void findPayments(char *input) {
     Wallet wallet = NULL;
     List transactions = NULL;
-    unsigned long int amount = findTransactions(input, senderHT, &wallet, &transactions);
-    if (wallet != NULL) {
-        printf("User '%s' has send %lu$ from his wallet.\n", wallet->userId, amount);
+    if (input) {
+        unsigned long int amount = findTransactions(input, senderHT, &wallet, &transactions);
+        if (wallet != NULL) {
+            printf("User '%s' has send %lu$ from his wallet.\n", wallet->userId, amount);
+        }
+    } else {
+        fprintf(stdout, "~ error: bad input\n");
     }
 }
 
@@ -389,8 +398,8 @@ void bitCoinStatus(char *input) {
 /* Cli command*/
 void traceCoin(char *input) {
     unsigned long int bitcoinId = 0, value = 0, transactions = 0, unspent = 0;
-    bitcoinId = (unsigned long int) strtol(input, NULL, 10);
     if (input != NULL) {
+        bitcoinId = (unsigned long int) strtol(input, NULL, 10);
         if (bitcoinId > 0) {
             bitcoin bc = HT_Get(bitcoinsHT, &bitcoinId);
             if (bc != NULL) {
@@ -413,7 +422,15 @@ void cli() {
     char *input = NULL, *line = NULL, *cmd = NULL;
     size_t len = 0;
     ssize_t read;
-    printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use default commands.\n\n");
+    printf("Welcome to bitcoin transactions simulator, write 'exit' to quit from cli or use the available commands "\
+           "described below:\n\n\t• rt OR requestTransaction\t\t\t\t\t\t\t--> Request transaction from cli.\n"\
+           "\t• rts [filename] OR requestTransactions [filename]\t--> Request multiple transactions from file.\n"\
+           "\t• rts OR requestTransactions\t\t\t\t\t\t--> Request multiple transactions from cli with semicolon as delimiter.\n"\
+           "\t• fe [WalletId] OR findEarnings [WalletId]\t\t\t--> Find all earnings for a specific wallet id.\n"\
+           "\t• fp [WalletId] OR findPayments [WalletId]\t\t\t--> Find all payments for a specific wallet id.\n"\
+           "\t• ws [WalletId] OR walletStatus [WalletId]\t\t\t--> Get current status for a specific wallet id.\n"\
+           "\t• bcs [BitcoinId] OR bitCoinStatus [BitcoinId]\t\t--> Get current status for a specific bitcoin id. \n"\
+           "\t• trc [BitcoinId] OR traceCoin [BitcoinId]\t\t\t--> Get all transactions that is involved with this bitcoin.\n\n");
     putchar('>');
     while ((read = getline(&line, &len, stdin)) != EOF) {
         input = line;
@@ -432,7 +449,7 @@ void cli() {
                 walletStatus(input);
             } else if (strcmp(cmd, "bitCoinStatus") == 0 || strcmp(cmd, "bcs") == 0 || strcmp(cmd, "BCS") == 0) {
                 bitCoinStatus(input);
-            } else if (strcmp(cmd, "traceCoin") == 0 || strcmp(cmd, "tr") == 0 || strcmp(cmd, "TR") == 0) {
+            } else if (strcmp(cmd, "traceCoin") == 0 || strcmp(cmd, "trc") == 0 || strcmp(cmd, "TRC") == 0) {
                 traceCoin(input);
             } else if (strcmp(cmd, "exit") == 0) {
                 fd = open("/dev/null", O_WRONLY);
