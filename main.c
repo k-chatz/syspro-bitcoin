@@ -354,7 +354,7 @@ void walletStatus(char *input) {
 
             /* Access each bitcoin of sender to perform transaction*/
             while ((bc = listNext(wallet->bitcoins)) != NULL) {
-                printf("[%lu] ", bcGetId(bc));
+                printf("[%lu|%lu$] ", bcGetId(bc), bcGetAmount(bc, wallet->userId));
             }
             putchar('\n');
         } else {

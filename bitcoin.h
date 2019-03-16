@@ -19,6 +19,8 @@ void bcTrace(bitcoin bc, unsigned long int *value, unsigned long int *transactio
 
 bool bcInsert(bitcoin bc, unsigned long int *rest, unsigned long int *amount, Transaction transaction);
 
+unsigned long int bcGetAmount(bitcoin bc, char *walletId);
+
 bool bcPrint(bitcoin bc);
 
 long unsigned int bcGetId(bitcoin bc);

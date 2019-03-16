@@ -124,7 +124,6 @@ bool bcInsert(bitcoin bc, unsigned long int *rest, unsigned long int *amount, Tr
     unsigned long int balance = 0;
 
     while (r != NULL) {
-        //printf("BID: '%lu'\tNODE: [%p]\tBalance: %lu$\n", bc->bid, sender, sender->balance);
         printf("Visit: [%p][%s|%lu$]\n", r, r->walletId, r->balance);
 
         balance = r->balance;
@@ -175,6 +174,40 @@ bool bcInsert(bitcoin bc, unsigned long int *rest, unsigned long int *amount, Tr
     }
     queueDestroy(&queue);
     return true;
+}
+
+unsigned long int bcGetAmount(bitcoin bc, char *walletId) {
+    assert(bc != NULL);
+    assert(walletId != NULL);
+    Queue queue = NULL;
+    queueCreate(&queue, bc->nodes);
+    bcNode r = bc->root;
+    unsigned long int balance = 0, amount = 0;
+
+    while (r != NULL) {
+        //printf("Visit: [%p][%s|%lu$]\n", r, r->walletId, r->balance);
+        balance = r->balance;
+
+        if (r->left != NULL) {
+            enQueue(queue, r->left);
+        }
+        if (r->right != NULL) {
+            enQueue(queue, r->right);
+        }
+
+        /* Check if this node is target*/
+        if (_isTarget(r, walletId)) {
+
+            /* Is current node a leaf ?*/
+            if (_isLeaf(r)) {
+                amount += balance;
+                //printf("Target leaf: [%p][%s|%lu$]", r, r->walletId, r->balance);
+            }
+        }
+        r = deQueue(queue);
+    }
+    queueDestroy(&queue);
+    return amount;
 }
 
 bool bcPrint(bitcoin bc) {

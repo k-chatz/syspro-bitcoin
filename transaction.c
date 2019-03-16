@@ -30,7 +30,6 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
         printf("\n-USE BITCOIN %lu REST: %lu$\n", bcGetId(bc), rest);
-        x = rest;
 
         /* Execute transaction.*/
         bcInsert(bc, &rest, &amount, transaction);
@@ -57,10 +56,9 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
         }
 
         bcPrint(bc);
-        printf("-AFTER USE BITCOIN %lu REST: %lu$ AMOUNT: %lu$\n", bcGetId(bc), rest, amount);
-    }
 
-    printf("-Rest amount of transaction after the use of all available bitcoins is: %lu$\n", rest);
+        printf("-AFTER USE BITCOIN %lu REST: %lu$ WALLET AMOUNT: %lu$\n", bcGetId(bc), rest, amount);
+    }
 
     if (rest == 0) {
         senderWallet->balance -= transaction->value;
