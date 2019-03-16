@@ -114,18 +114,18 @@ void bcTrace(bitcoin bc, unsigned long int *value, unsigned long int *transactio
     queueDestroy(&queue);
 }
 
-bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction) {
+bool bcInsert(bitcoin bc, unsigned long int *rest, unsigned long int *amount, Transaction transaction) {
     assert(bc != NULL);
     assert(*rest > 0);
     assert(transaction != NULL);
     Queue queue = NULL;
     queueCreate(&queue, bc->nodes);
     bcNode r = bc->root;
-    unsigned long int amount = 0, balance = 0;
+    unsigned long int balance = 0;
 
     while (r != NULL) {
         //printf("BID: '%lu'\tNODE: [%p]\tBalance: %lu$\n", bc->bid, sender, sender->balance);
-        printf("Visit:[%p]\tBalance: %lu$\n", r, r->balance);
+        printf("Visit: [%p][%s|%lu$]\n", r, r->walletId, r->balance);
 
         balance = r->balance;
 
@@ -141,37 +141,37 @@ bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction) {
 
             /* Is current node a leaf ?*/
             if (_isLeaf(r)) {
+                *amount += balance;
 
-                amount += balance;
-
-                printf("Target leaf for walletId '%s' is [%p]\n", r->walletId, r);
+                printf("Target leaf: [%p][%s|%lu$]\n", r, r->walletId, r->balance);
 
                 if (*rest >= balance) {
+
                     /* Left node for receiver*/
                     r->left = _createNode(r, balance, transaction->receiverWalletId, transaction);
                     bc->nodes++;
-                    printf("Create left child [%p] with amount %lu$\n", r->left, *rest);
+                    printf("New left child: [%p][%s|%lu$]\n", r->left, transaction->receiverWalletId, balance);
                     *rest -= balance;
-                }
+                    *amount -= balance;
 
-                if (*rest < balance) {
+                } else if (*rest < balance) {
+
                     /* Left node for receiver*/
                     r->left = _createNode(r, *rest, transaction->receiverWalletId, transaction);
                     bc->nodes++;
-                    printf("Create left child [%p] with amount %lu$\n", r->left, *rest);
+                    printf("New left child: [%p][%s|%lu$] | ", r->left, transaction->receiverWalletId, *rest);
+                    *amount -= *rest;
 
                     /* Right node for sender's rest*/
                     r->right = _createNode(r, r->balance - *rest, transaction->senderWalletId, transaction);
                     bc->nodes++;
-                    printf("Create right child [%p] with amount %lu$\n", r->right, r->balance - *rest);
+                    printf("New right child: [%p][%s|%lu$]\n", r->right, transaction->senderWalletId,
+                           r->balance - *rest);
                     *rest = 0;
                 }
             }
         }
         r = deQueue(queue);
-        if (r != NULL) {
-            printf(" ");
-        }
     }
     queueDestroy(&queue);
     return true;
@@ -182,9 +182,9 @@ bool bcPrint(bitcoin bc) {
     Queue queue = NULL;
     queueCreate(&queue, bc->nodes);
     bcNode r = bc->root;
-    printf("\n\nPrint bitcoin %lu nodes:\n", bc->bid);
+    printf("\nPrint bitcoin %lu nodes:\n", bc->bid);
     while (r != NULL) {
-        printf("[%s|%lu]\n", r->walletId, r->balance);
+        printf("[%s|%lu$]\n", r->walletId, r->balance);
         if (r->left != NULL) {
             enQueue(queue, r->left);
         }

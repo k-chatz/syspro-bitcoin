@@ -349,6 +349,9 @@ void walletStatus(char *input) {
         Wallet wallet = HT_Get(walletsHT, input);
         if (wallet != NULL) {
             printf("Wallet status for '%s' is: %lu$\nBitcoins: ", wallet->userId, wallet->balance);
+
+            listSetCurrentToStart(wallet->bitcoins);
+
             /* Access each bitcoin of sender to perform transaction*/
             while ((bc = listNext(wallet->bitcoins)) != NULL) {
                 printf("[%lu] ", bcGetId(bc));

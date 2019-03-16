@@ -16,7 +16,7 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
     assert(receiverWallet != NULL);
     assert(transaction != NULL);
     assert(transaction->value > 0);
-    unsigned long int rest = 0, x = 0;
+    unsigned long int amount = 0, rest = 0;
     bitcoin bc = NULL, wbc = NULL;
     bool success = true, duplicate;
 
@@ -29,39 +29,38 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
 
     /* Access each bitcoin of sender to perform transaction*/
     while (rest > 0 && (bc = listNext(senderWallet->bitcoins)) != NULL) {
-        printf("\n-Rest amount of transaction before the use of bitcoin %lu is: %lu$-\n", bcGetId(bc), rest);
+        printf("\n-USE BITCOIN %lu REST: %lu$\n", bcGetId(bc), rest);
         x = rest;
 
         /* Execute transaction.*/
-        bcInsert(bc, &rest, transaction);
+        bcInsert(bc, &rest, &amount, transaction);
 
-        if (x == rest) {
-            /* The sender does not share any more this bitcoin with others because he spent all the amount of it for
-             * this transaction. Bitcoin is about to be removed from sender list!*/
+        /* The sender does not share any more this bitcoin with others because he spent all the amount of it for
+         * this transaction. Bitcoin is about to be removed from sender list!*/
+        if (amount == 0) {
+            /* Remove node of this bitcoin for this wallet*/
             listRemove(senderWallet->bitcoins, bc);
         }
 
-        if (rest == 0) {
-            listSetCurrentToStart(receiverWallet->bitcoins);
-            duplicate = false;
+        listSetCurrentToStart(receiverWallet->bitcoins);
 
-            /* Try to insert current bitcoin into receiver's wallet list of bitcoins.*/
-            while ((wbc = listNext(receiverWallet->bitcoins)) != NULL) {
-                if (wbc != bc) {
-                    duplicate = true;
-                }
-            }
+        duplicate = false;
 
-            if (!duplicate) {
-                listInsert(receiverWallet->bitcoins, bc);
+        while ((wbc = listNext(receiverWallet->bitcoins)) != NULL) {
+            if (bcGetId(wbc) == bcGetId(bc)) {
+                duplicate = true;
             }
         }
-        printf("-Rest amount of transaction after the use of bitcoin %lu is: %lu$-\n", bcGetId(bc), rest);
+
+        if (!duplicate) {
+            listInsert(receiverWallet->bitcoins, bc);
+        }
 
         bcPrint(bc);
+        printf("-AFTER USE BITCOIN %lu REST: %lu$ AMOUNT: %lu$\n", bcGetId(bc), rest, amount);
     }
 
-    printf("\n---Rest amount of transaction after the use of all available bitcoins is: %lu$---\n", rest);
+    printf("-Rest amount of transaction after the use of all available bitcoins is: %lu$\n", rest);
 
     if (rest == 0) {
         senderWallet->balance -= transaction->value;

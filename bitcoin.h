@@ -17,7 +17,7 @@ typedef struct Node *bcNode;
 void bcTrace(bitcoin bc, unsigned long int *value, unsigned long int *transactions, unsigned long int *unspent,
              bool traceTransaction, bool printTransactions);
 
-bool bcInsert(bitcoin bc, unsigned long int *rest, Transaction transaction);
+bool bcInsert(bitcoin bc, unsigned long int *rest, unsigned long int *amount, Transaction transaction);
 
 bool bcPrint(bitcoin bc);
 

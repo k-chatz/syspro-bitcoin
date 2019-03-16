@@ -71,6 +71,7 @@ bool listInsert(List list, pointer data) {
     if (newNode != NULL) {
         newNode->data = data;
         newNode->right = list->start;
+        newNode->left = NULL;
         if (!l_isEmpty(list))
             list->start->left = newNode;
         list->start = newNode;
@@ -89,7 +90,6 @@ bool listRemove(List list, pointer data) {
         do {
             next = point->right;
             if (point->data == data) {
-                printf("found!\n");
                 if (point->left == NULL) {
                     //First element
                     list->start = list->current = point->right;
