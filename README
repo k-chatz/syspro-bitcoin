@@ -1,4 +1,4 @@
-::: BITCOIN TRANSACTIONS SIMULATION :::
+::: TRANSACTIONS SIMULATION WITH BITCOINS :::
 
 compile: make
 
@@ -12,4 +12,4 @@ run examples:
 
 ./bitcoin -a resources/SimplebitCoinBalanciesFIle -v 50 -h1 10 -h2 10 -b 51 -t resources/transactionsFile
 
-documentation: open 'documentation.pdf' file at 'resources' folder.
+documentation: open 'documentation.pdf' file.

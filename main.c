@@ -344,10 +344,16 @@ void findPayments(char *input) {
 
 /* Cli command*/
 void walletStatus(char *input) {
+    bitcoin bc = NULL;
     if (input != NULL) {
         Wallet wallet = HT_Get(walletsHT, input);
         if (wallet != NULL) {
-            printf("Wallet status for '%s' is: %lu$\n", wallet->userId, wallet->balance);
+            printf("Wallet status for '%s' is: %lu$\nBitcoins: ", wallet->userId, wallet->balance);
+            /* Access each bitcoin of sender to perform transaction*/
+            while ((bc = listNext(wallet->bitcoins)) != NULL) {
+                printf("[%lu] ", bcGetId(bc));
+            }
+            putchar('\n');
         } else {
             fprintf(stdout, "~ error: wallet '%s' not found!\n", input);
         }
