@@ -22,9 +22,7 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
 
     rest = transaction->value;
 
-    printf("\n• • • • • • • • E X E C U T E   T R A N S A C T I O N • • • • • • • •\n");
-
-    printf("• Transaction %s: %s --> %s %lu$ •\n", transaction->transactionId, transaction->senderWalletId,
+    printf("Transaction %s: %s --> %s %lu$\n", transaction->transactionId, transaction->senderWalletId,
            transaction->receiverWalletId, transaction->value);
 
     listSetCurrentToStart(senderWallet->bitcoins);
@@ -72,7 +70,6 @@ bool execute(Wallet senderWallet, Wallet receiverWallet, Transaction transaction
         success = false;
     }
 
-    printf("\n• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
     return success;
 }
 
@@ -124,55 +121,66 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
                 fprintf(stdout, "Unacceptable transaction '%s': Sender's wallet '%s' doesn't exists!\n",
                         transaction->transactionId, transaction->senderWalletId);
                 error = true;
-            } else {
+            }
 
-                /* Create/Get sender transactions list hashtable.*/
-                HT_Insert(*senderHT, transaction->senderWalletId, &transaction->senderWalletId,
+            /* Create/Get sender transactions list hashtable.*/
+            if (!error) {
+                HT_Insert(*senderHT, transaction->senderWalletId, transaction->senderWalletId,
                           (void **) &senderTransactions);
+                error = senderTransactions == NULL;
+            }
 
-                assert(senderTransactions != NULL);
-
-                /* Get receiver's wallet.*/
+            /* Get receiver's wallet.*/
+            if (!error) {
                 receiverWallet = HT_Get(*walletsHT, transaction->receiverWalletId);
                 if (receiverWallet == NULL) {
                     fprintf(stdout, "Unacceptable transaction '%s': Receivers's wallet '%s' doesn't exists!\n",
                             transaction->transactionId, transaction->receiverWalletId);
                     error = true;
-                } else {
-
-                    /*Create/Get receiver transactions list hashtable.*/
-                    HT_Insert(*receiverHT, transaction->senderWalletId, &transaction->senderWalletId,
-                              (void **) &receiverTransactions);
-
-                    assert(receiverTransactions != NULL);
-
-                    /* Check the case where the money is not enough.*/
-                    if (transaction->value > senderWallet->balance) {
-                        error = true;
-                        fprintf(stdout,
-                                "Unacceptable transaction '%s': Sender's money is not enough!\n",
-                                transaction->transactionId);
-                    }
-
-                    /* Check case of transfer money to the same person.*/
-                    if (!strcmp(transaction->senderWalletId, transaction->receiverWalletId)) {
-                        error = true;
-                        fprintf(stdout,
-                                "Unacceptable transaction '%s': Ιt's not possible to transfer money to the same person!\n",
-                                transaction->transactionId);
-                    }
-
-                    /* Check if transaction is old*/
-                    if (transaction->timestamp < max_transaction_timestamp) {
-                        error = true;
-                        fprintf(stdout, "Unacceptable transaction '%s': Date is less than the current time!\n",
-                                transaction->transactionId);
-                    }
                 }
-
             }
 
+            /*Create/Get receiver transactions list hashtable.*/
             if (!error) {
+                HT_Insert(*receiverHT, transaction->receiverWalletId, transaction->receiverWalletId,
+                          (void **) &receiverTransactions);
+                error = receiverTransactions == NULL;
+            }
+
+            /* Check the case where the money is not enough.*/
+            if (!error) {
+                if (transaction->value > senderWallet->balance) {
+                    error = true;
+                    fprintf(stdout,
+                            "Unacceptable transaction '%s': Sender's money is not enough!\n",
+                            transaction->transactionId);
+                }
+            }
+
+            /* Check case of transfer money to the same person.*/
+            if (!error) {
+                if (!strcmp(transaction->senderWalletId, transaction->receiverWalletId)) {
+                    error = true;
+                    fprintf(stdout,
+                            "Unacceptable transaction '%s': Ιt's not possible to transfer money to the same person!\n",
+                            transaction->transactionId);
+                }
+            }
+
+            /* Check if transaction is old.*/
+            if (!error) {
+                if (transaction->timestamp < max_transaction_timestamp) {
+                    error = true;
+                    fprintf(stdout, "Unacceptable transaction '%s': Date is less than the current time!\n",
+                            transaction->transactionId);
+                }
+            }
+
+            /* Finally all is ok, now try to execute the transaction!*/
+            if (!error) {
+
+                printf("\n• • • • • • • • E X E C U T E   T R A N S A C T I O N • • • • • • • •\n");
+
                 if (execute(senderWallet, receiverWallet, transaction)) {
 
                     /* Add transaction in sender's list of transactions.*/
@@ -190,7 +198,12 @@ bool performTransaction(char *input, Hashtable *walletsHT, Hashtable *senderHT, 
                     error = true;
                 }
 
-            } else {
+                printf("\n• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •\n\n");
+
+            }
+
+            /* And if the execute of this transaction fails, then it is necessary to delete it*/
+            if (error) {
                 /* Remove transaction from hashtable in order to normally inserted the next time.*/
                 HT_Remove(*transactionsHT, transaction->transactionId, transaction->transactionId, true);
             }
@@ -233,10 +246,10 @@ bool performTransactions(FILE *fp, Hashtable *walletsHT, Hashtable *senderHT,
 
 void transactionPrint(Transaction transaction) {
     char buffer[26];
-    struct tm *tm_info;
+    struct tm *time;
     if (transaction != NULL) {
-        tm_info = localtime(&transaction->timestamp);
-        strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+        time = localtime(&transaction->timestamp);
+        strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time);
         printf("%s %s %s %lu %s\n", transaction->transactionId,
                transaction->senderWalletId,
                transaction->receiverWalletId,
@@ -343,7 +356,7 @@ void destroyTransaction(Transaction transaction) {
 
 /* @Callback
  * Initialize & return a new transaction list*/
-List createTransactionList(char **userId) {
+List createTransactionList(char *userId) {
     List list = NULL;
     listCreate(&list, userId);
     return list;
@@ -351,8 +364,8 @@ List createTransactionList(char **userId) {
 
 /* @Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(List tr1, char **userId) {
-    return listGetIdentifier(tr1) != userId;
+int cmpTransactionList(List tr1, char *userId) {
+    return strcmp(listGetIdentifier(tr1), userId);
 }
 
 /* @Callback
@@ -360,3 +373,8 @@ int cmpTransactionList(List tr1, char **userId) {
 void destroyTransactionList(List list) {
     listDestroy(&list);
 }
+
+
+
+
+

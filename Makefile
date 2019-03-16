@@ -1,6 +1,6 @@
-OBJS	= main.o bitcoin.o hash.o list.o transaction.o wallet.o
-SOURCE	= main.c bitcoin.c hash.c list.c transaction.c wallet.c
-HEADER	= bitcoin.h hash.h list.h transaction.h wallet.h
+OBJS	= main.o bitcoin.o hash.o list.o transaction.o wallet.o queue.o
+SOURCE	= main.c bitcoin.c hash.c list.c transaction.c wallet.c queue.c
+HEADER	= bitcoin.h hash.h list.h transaction.h wallet.h queue.h
 OUT	= bitcoin
 CC	 = gcc
 FLAGS	 = -c -Wall
@@ -25,6 +25,9 @@ transaction.o: transaction.c
 
 wallet.o: wallet.c
 	$(CC) $(FLAGS) wallet.c
+
+queue.o: queue.c
+	$(CC) $(FLAGS) queue.c
 
 clean:
 	rm -f $(OBJS) $(OUT)

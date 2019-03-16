@@ -104,9 +104,11 @@ bool listRemove(List list, pointer data) {
                     }
                 }
                 free(point);
+                return true;
             }
         } while ((point = next) != NULL);
     }
+    return false;
 }
 
 void listSetCurrentToStart(List list) {

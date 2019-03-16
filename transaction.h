@@ -52,11 +52,11 @@ void destroyTransaction(Transaction transaction);
 
 /* @Callback
  * Initialize & return a new transaction list*/
-List createTransactionList(char**userId);
+List createTransactionList(char *userId);
 
 /* @Callback
  * Compare keys function for transaction lists hashtable*/
-int cmpTransactionList(List tr1, char **userId);
+int cmpTransactionList(List tr1, char *userId);
 
 /* @Callback
  * Destroy function for transaction hashtable*/
