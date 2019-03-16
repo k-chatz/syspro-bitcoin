@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/wallet.c" line="25" />
+  </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="bitcoin" targetName="bitcoin" />
@@ -11,28 +14,44 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c4cb903-1494-40c4-af42-8ec79143ba6f" name="Default Changelist" comment="create resources folder">
+    <list default="true" id="2c4cb903-1494-40c4-af42-8ec79143ba6f" name="Default Changelist" comment="Wallet typedef pointer, Transaction typedef pointer, createTransaction">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/C.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/C.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/main.c.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/main.c.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bitcoin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/bitcoin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bitcoin.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/bitcoin.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hash.c" beforeDir="false" afterPath="$PROJECT_DIR$/hash.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hash.h" beforeDir="false" afterPath="$PROJECT_DIR$/hash.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bitcoin.c" beforeDir="false" afterPath="$PROJECT_DIR$/bitcoin.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bitcoin.h" beforeDir="false" afterPath="$PROJECT_DIR$/bitcoin.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.13.2/CMakeCCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.13.2/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.13.2/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.13.2/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.13.2/CompilerIdC/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/C.includecache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.internal" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/main.c.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/bitcoin.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cmake.check_cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bitcoin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bitcoin.cbp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionsFile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/wallet.c" beforeDir="false" afterPath="$PROJECT_DIR$/wallet.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wallet.h" beforeDir="false" afterPath="$PROJECT_DIR$/wallet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/documentation.odt" beforeDir="false" afterPath="$PROJECT_DIR$/resources/documentation.odt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transaction.c" beforeDir="false" afterPath="$PROJECT_DIR$/transaction.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,38 +63,20 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/transactionsFile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="20" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/main.c">
+        <entry file="file://$PROJECT_DIR$/resources/SimplebitCoinBalanciesFIle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="64" column="5" lean-forward="true" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="5" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hash.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="196" column="61" lean-forward="true" selection-start-line="196" selection-start-column="61" selection-end-line="196" selection-end-column="61" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/wallet.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="567">
-              <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="210">
+              <caret line="14" column="13" lean-forward="true" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -84,46 +85,52 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>listPtr</find>
-      <find>wallets</find>
-      <find>bc</find>
-      <find>0x562e6d3f7630</find>
-      <find>587</find>
-      <find>walletHash</find>
-      <find>malloc</find>
-      <find>void *</find>
-      <find>unsigned int</find>
-      <find>0x5601ad4b3030</find>
-      <find>fflush(stdout);</find>
-      <find>0x561c807bcf10</find>
-      <find>235</find>
-      <find>_attachNode</find>
-      <find>0x5561479582f0</find>
-      <find>was not inserted</find>
-      <find>0x561ca29172f0</find>
-      <find>0x55ed1d44a2f0</find>
-      <find>0x55edf5e662f0</find>
-      <find>0x55faa340d030</find>
-      <find>0x55f733ee5650</find>
-      <find>(*ht)</find>
-      <find>i</find>
-      <find>params</find>
-      <find>destroyBitCoin</find>
-      <find>0x5598f7f33180</find>
-      <find>printf</find>
-      <find>rec</find>
-      <find>cmp</find>
-      <find>dd</find>
+      <find>_createNode</find>
+      <find>transactionId</find>
+      <find>0x522f400</find>
+      <find>is duplicate</find>
+      <find>Unacceptable</find>
+      <find>0x55d534a11110</find>
+      <find>walletsHT</find>
+      <find>Transaction</find>
+      <find>ssca</find>
+      <find>senderTransactions</find>
+      <find>670</find>
+      <find>0x555680246030</find>
+      <find>REQ</find>
+      <find>request for</find>
+      <find>DUPLIC</find>
+      <find>senderHT</find>
+      <find>scanf</find>
+      <find>0x55711ce72ab0</find>
+      <find>rest</find>
+      <find>0x55f13f68e330</find>
+      <find>Rest</find>
+      <find>0x561ef059db10</find>
+      <find>0x561c51ef6b10</find>
+      <find>0x5623e92a1f20</find>
+      <find>0x55fc3e049f20</find>
+      <find>newNode</find>
+      <find>432</find>
+      <find>0x56457e200870</find>
+      <find>duplicate</find>
+      <find>453</find>
     </findStrings>
     <replaceStrings>
       <replace>'</replace>
       <replace>J</replace>
       <replace>O</replace>
-      <replace>pointer</replace>
       <replace>treePtr</replace>
       <replace>//printf</replace>
       <replace>unsigned long int</replace>
       <replace>ht</replace>
+      <replace>pointer</replace>
+      <replace>Wallet</replace>
+      <replace>@Callback</replace>
+      <replace>Bitcoins</replace>
+      <replace>bitcoin</replace>
+      <replace>void *</replace>
+      <replace>stdout</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -133,33 +140,43 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/List.h" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/bitCoinBalancesFile" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/list.h" />
-        <option value="$PROJECT_DIR$/tree.h" />
-        <option value="$PROJECT_DIR$/list.c" />
-        <option value="$PROJECT_DIR$/tree.c" />
         <option value="$PROJECT_DIR$/SimplebitCoinBalanciesFIle" />
         <option value="$PROJECT_DIR$/transactionsFile" />
+        <option value="$PROJECT_DIR$/tree.h" />
+        <option value="$PROJECT_DIR$/tree.c" />
+        <option value="$PROJECT_DIR$/stack.h" />
+        <option value="$PROJECT_DIR$/stack.c" />
+        <option value="$PROJECT_DIR$/resources/bitCoinBalancesFile" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/hash.h" />
+        <option value="$PROJECT_DIR$/hash.c" />
+        <option value="$PROJECT_DIR$/wallet.h" />
+        <option value="$PROJECT_DIR$/queue.h" />
+        <option value="$PROJECT_DIR$/list.h" />
+        <option value="$PROJECT_DIR$/resources/transactionsFileStdin" />
+        <option value="$PROJECT_DIR$/queue.c" />
+        <option value="$PROJECT_DIR$/Makefile" />
+        <option value="$PROJECT_DIR$/README" />
+        <option value="$PROJECT_DIR$/resources/input" />
+        <option value="$PROJECT_DIR$/wallet.c" />
+        <option value="$PROJECT_DIR$/transaction.h" />
+        <option value="$PROJECT_DIR$/resources/transactionsFile" />
+        <option value="$PROJECT_DIR$/resources/SimplebitCoinBalanciesFIle" />
+        <option value="$PROJECT_DIR$/list.c" />
+        <option value="$PROJECT_DIR$/main.c" />
         <option value="$PROJECT_DIR$/bitcoin.h" />
         <option value="$PROJECT_DIR$/bitcoin.c" />
         <option value="$PROJECT_DIR$/transaction.c" />
-        <option value="$PROJECT_DIR$/transaction.h" />
-        <option value="$PROJECT_DIR$/wallet.h" />
-        <option value="$PROJECT_DIR$/hash.c" />
-        <option value="$PROJECT_DIR$/hash.h" />
-        <option value="$PROJECT_DIR$/main.c" />
-        <option value="$PROJECT_DIR$/wallet.c" />
       </list>
     </option>
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="138" />
-    <option name="y" value="675" />
-    <option name="width" value="1717" />
-    <option name="height" value="1017" />
+    <option name="y" value="646" />
+    <option name="width" value="1920" />
+    <option name="height" value="1082" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -206,12 +223,13 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/resources" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/resources" />
       <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/resources" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -232,7 +250,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="bitcoin" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-a ../resources/SimplebitCoinBalanciesFIle  -v 587 -h1 5 -h2 5 -b 52 -t ../resources/transactionsFile" PASS_PARENT_ENVS_2="true" PROJECT_NAME="bitcoin" TARGET_NAME="bitcoin" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="bitcoin" RUN_TARGET_NAME="bitcoin">
+    <configuration name="bitcoin" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-a ../resources/SimplebitCoinBalanciesFIle -v 50 -h1 10 -h2 10 -b 512 -t ../resources/transactionsFile" PASS_PARENT_ENVS_2="true" PROJECT_NAME="bitcoin" TARGET_NAME="bitcoin" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="bitcoin" RUN_TARGET_NAME="bitcoin">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -301,6 +319,31 @@
       <workItem from="1552076770476" duration="26961000" />
       <workItem from="1552135802701" duration="5736000" />
       <workItem from="1552147449312" duration="5367000" />
+      <workItem from="1552174945923" duration="18513000" />
+      <workItem from="1552227763717" duration="4343000" />
+      <workItem from="1552237158851" duration="10397000" />
+      <workItem from="1552252398515" duration="24757000" />
+      <workItem from="1552290677489" duration="18115000" />
+      <workItem from="1552321372017" duration="910000" />
+      <workItem from="1552348332828" duration="19917000" />
+      <workItem from="1552403848688" duration="3826000" />
+      <workItem from="1552400884389" duration="19362000" />
+      <workItem from="1552426348650" duration="5434000" />
+      <workItem from="1552431947730" duration="8777000" />
+      <workItem from="1552476125463" duration="1040000" />
+      <workItem from="1552494153036" duration="1286000" />
+      <workItem from="1552495777413" duration="1290000" />
+      <workItem from="1552499958430" duration="1524000" />
+      <workItem from="1552504198515" duration="28052000" />
+      <workItem from="1552534196502" duration="11789000" />
+      <workItem from="1552580237043" duration="368000" />
+      <workItem from="1552583428229" duration="6624000" />
+      <workItem from="1552590070425" duration="4492000" />
+      <workItem from="1552598890709" duration="41287000" />
+      <workItem from="1552642860245" duration="3500000" />
+      <workItem from="1552653394437" duration="31905000" />
+      <workItem from="1552742420604" duration="8478000" />
+      <workItem from="1552752112474" duration="16878000" />
     </task>
     <task id="LOCAL-00001" summary="gitignore file">
       <created>1550997360924</created>
@@ -456,36 +499,220 @@
       <option name="project" value="LOCAL" />
       <updated>1552101196142</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="create functions for ht, hash params was removed, comment corrections, function parameter changes">
+      <created>1552182371681</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1552182371681</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Create transactions list function, list identifier field,">
+      <created>1552190636986</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1552190636986</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Wallet typedef pointer, Transaction typedef pointer, createTransaction">
+      <created>1552248005337</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1552248005337</updated>
+    </task>
+    <task id="LOCAL-00026" summary="cli function to prompt input from user, hashtable for transactions, performTransactions function, transaction helper hashtable functions, ht_insert: return false if created value from createValue() function is NULL to inform the client programmer that insertion was fail.">
+      <created>1552269312278</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1552269312278</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Transactions file to paste its contents in standard input, malloc checks for NULL pointer, asserts, performTransaction progress, sender/receiver wallet id field in transactions was added">
+      <created>1552298816025</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1552298816026</updated>
+    </task>
+    <task id="LOCAL-00028" summary="free senderWalletId, receiverWalletId from transaction struct">
+      <created>1552313546107</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1552313546107</updated>
+    </task>
+    <task id="LOCAL-00029" summary="tree was deleted and merged with bitcoin.c/h files, function names changed, function for execute transactions.">
+      <created>1552353589822</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1552353589822</updated>
+    </task>
+    <task id="LOCAL-00030" summary="bcDestroyNode function for bitcoin tree, execute function, comments">
+      <created>1552363200160</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1552363200160</updated>
+    </task>
+    <task id="LOCAL-00031" summary="resources updated, documentation">
+      <created>1552363254289</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1552363254289</updated>
+    </task>
+    <task id="LOCAL-00032" summary="variable renames, code beautify">
+      <created>1552364368130</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1552364368130</updated>
+    </task>
+    <task id="LOCAL-00033" summary="makefile, readme">
+      <created>1552366256059</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1552366256059</updated>
+    </task>
+    <task id="LOCAL-00034" summary="assertions, cli, initialize cli functions, bitcoin insert arguments update">
+      <created>1552419532814</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1552419532814</updated>
+    </task>
+    <task id="LOCAL-00035" summary="cli changes">
+      <created>1552421701409</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1552421701409</updated>
+    </task>
+    <task id="LOCAL-00036" summary="comments, assertions, rollback removed, list destroy bug fixed, global init_complete/max_transaction_timestamp variables, requestTransactions cli, name changes, tm initialize, balance field in wallet struct, sample user input file to paste it in cli.">
+      <created>1552519483906</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1552519483906</updated>
+    </task>
+    <task id="LOCAL-00037" summary="ht_remove, ht forceDestroyItem/s for ht_remove/ht_destroy functions, cmpTransaction fixes, change var names.">
+      <created>1552526848223</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1552526848223</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Change var names, memory leaks and conditional jumps that the valgrind warn, now was fixed!">
+      <created>1552531522487</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1552531522487</updated>
+    </task>
+    <task id="LOCAL-00039" summary="accept transactions without date time arguments.">
+      <created>1552538099650</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1552538099650</updated>
+    </task>
+    <task id="LOCAL-00040" summary="TransactionId auto generate, bitcoin now store's only walletId instead of whole wallet object. is_leaf/is_target functions for bitcoin nodes.">
+      <created>1552614751155</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1552614751155</updated>
+    </task>
+    <task id="LOCAL-00041" summary="queue, List name change">
+      <created>1552632232415</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1552632232415</updated>
+    </task>
+    <task id="LOCAL-00042" summary="bitCoinStatus, traceCoin, bcTrace, parent node.">
+      <created>1552659688428</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1552659688428</updated>
+    </task>
+    <task id="LOCAL-00043" summary="cli commands, transaction execute successfully, listRemove declaration, is_left/is_right helper functions for bc tree.">
+      <created>1552673370510</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1552673370510</updated>
+    </task>
+    <task id="LOCAL-00044" summary="bcprint, input file changes, createTransactionList parameters.">
+      <created>1552684942639</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1552684942639</updated>
+    </task>
+    <task id="LOCAL-00045" summary="findTransactions function, cmpTransaction bug fix, performTransaction simplify code, makefile queue.c file, list remove return value.">
+      <created>1552760365884</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1552760365885</updated>
+    </task>
+    <task id="LOCAL-00046" summary="print list of bitcoins in walletStatus function.">
+      <created>1552761049891</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1552761049891</updated>
+    </task>
+    <task id="LOCAL-00047" summary="bitcoin tree insert bug fixes, documentation file was moved in the root folder of project, transaction amount var, bitcoin insertions/deletions.">
+      <created>1552767545340</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1552767545340</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="247548000" />
+    <option name="totallyTimeSpent" value="540412000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="673" width="1920" height="1020" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12700106" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12219851" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="0" visible="true" weight="0.20089787" />
+      <window_info anchor="bottom" id="Messages" order="0" sideWeight="0.49733192" weight="0.16722783" />
       <window_info anchor="bottom" id="Message" order="1" />
-      <window_info anchor="bottom" id="Find" order="2" weight="0.32996634" />
+      <window_info anchor="bottom" id="Find" order="2" sideWeight="0.49893278" weight="0.25925925" />
       <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="5" />
+      <window_info anchor="bottom" id="TODO" order="5" weight="0.26599327" />
       <window_info anchor="bottom" id="Database Changes" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50053364" side_tool="true" weight="0.31200898" />
-      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4994664" weight="0.30415264" />
-      <window_info anchor="bottom" id="CMake" order="9" weight="0.32884398" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.33782268" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5026681" side_tool="true" weight="0.22671156" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49839914" weight="0.36924803" />
+      <window_info anchor="bottom" id="CMake" order="9" sideWeight="0.4994664" weight="0.32884398" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4994664" weight="0.41750842" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="right" x="2226" y="728" width="850" height="712" id="Run" order="4" type="WINDOWED" weight="0.44823906" />
-      <window_info active="true" anchor="right" x="0" y="55" width="1920" height="990" id="Debug" maximized="true" order="5" visible="true" weight="0.32337245" />
+      <window_info anchor="right" x="2216" y="728" width="870" height="712" id="Run" order="4" weight="0.46584845" />
+      <window_info anchor="right" x="0" y="55" width="1920" height="990" id="Debug" maximized="true" order="5" visible="true" weight="0.3484525" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,46 +772,45 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="gitignore file" />
-    <MESSAGE value="parse argument options" />
-    <MESSAGE value="read options now is in a function." />
-    <MESSAGE value="read each word from lines" />
-    <MESSAGE value="wallet creation" />
-    <MESSAGE value="hash table, input file changes" />
-    <MESSAGE value="HT_Insert, helper setter-getter functions for buckets to get quickly pointers of wallets, next pointer and counter." />
-    <MESSAGE value="try to transform current hash table into generic." />
-    <MESSAGE value="." />
-    <MESSAGE value="createWallet/destroyWallet functions,  bitcoins ht, cmpWallet function" />
-    <MESSAGE value="change some ints to unsigned int, bucketIsFull function" />
-    <MESSAGE value="Check for empty slots, allocBucket function, fix get/set value functions offset calculation." />
-    <MESSAGE value="tree" />
-    <MESSAGE value="class renames, various changes." />
-    <MESSAGE value="tree destroy definition" />
-    <MESSAGE value="comments, getBid for trees" />
-    <MESSAGE value="move callbacks into separate files, ht_destroy function, destroy value callback functions" />
-    <MESSAGE value="rename ht_create function, initialize hashtables at the correct place, transaction header/implementation file." />
-    <MESSAGE value="HT_Get function for hashtable to get quickly the requested value for specific keys.&#10;An additional pointer to key was added in all compare functions as needed by HT_Get function.&#10;some functions have been created to split and reduce the length of the main function.&#10;Resources folder was created to store input files, assignment pdf, readme etc." />
-    <option name="LAST_COMMIT_MESSAGE" value="HT_Get function for hashtable to get quickly the requested value for specific keys.&#10;An additional pointer to key was added in all compare functions as needed by HT_Get function.&#10;some functions have been created to split and reduce the length of the main function.&#10;Resources folder was created to store input files, assignment pdf, readme etc." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/transaction.c</url>
-          <line>13</line>
-          <option name="timeStamp" value="67" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-    <watches-manager>
-      <configuration name="CMakeRunConfiguration">
-        <watch expression="(struct Wallet *)v" language="ObjectiveC" />
-        <watch expression="(char *)key" language="ObjectiveC" />
-      </configuration>
-    </watches-manager>
+    <MESSAGE value="create functions for ht, hash params was removed, comment corrections, function parameter changes" />
+    <MESSAGE value="Create transactions list function, list identifier field," />
+    <MESSAGE value="Wallet typedef pointer, Transaction typedef pointer, createTransaction" />
+    <MESSAGE value="cli function to prompt input from user, hashtable for transactions, performTransactions function, transaction helper hashtable functions, ht_insert: return false if created value from createValue() function is NULL to inform the client programmer that insertion was fail." />
+    <MESSAGE value="Transactions file to paste its contents in standard input, malloc checks for NULL pointer, asserts, performTransaction progress, sender/receiver wallet id field in transactions was added" />
+    <MESSAGE value="free senderWalletId, receiverWalletId from transaction struct" />
+    <MESSAGE value="tree was deleted and merged with bitcoin.c/h files, function names changed, function for execute transactions." />
+    <MESSAGE value="bcDestroyNode function for bitcoin tree, execute function, comments" />
+    <MESSAGE value="resources updated, documentation" />
+    <MESSAGE value="variable renames, code beautify" />
+    <MESSAGE value="makefile, readme" />
+    <MESSAGE value="assertions, cli, initialize cli functions, bitcoin insert arguments update" />
+    <MESSAGE value="cli changes" />
+    <MESSAGE value="comments, assertions, rollback removed, list destroy bug fixed, global init_complete/max_transaction_timestamp variables, requestTransactions cli, name changes, tm initialize, balance field in wallet struct, sample user input file to paste it in cli." />
+    <MESSAGE value="ht_remove, ht forceDestroyItem/s for ht_remove/ht_destroy functions, cmpTransaction fixes, change var names." />
+    <MESSAGE value="Change var names, memory leaks and conditional jumps that the valgrind warn, now was fixed!" />
+    <MESSAGE value="accept transactions without date time arguments." />
+    <MESSAGE value="TransactionId auto generate, bitcoin now store's only walletId instead of whole wallet object. is_leaf/is_target functions for bitcoin nodes." />
+    <MESSAGE value="queue, List name change" />
+    <MESSAGE value="bitCoinStatus, traceCoin, bcTrace, parent node." />
+    <MESSAGE value="cli commands, transaction execute successfully, listRemove declaration, is_left/is_right helper functions for bc tree." />
+    <MESSAGE value="bcprint, input file changes, createTransactionList parameters." />
+    <MESSAGE value="findTransactions function, cmpTransaction bug fix, performTransaction simplify code, makefile queue.c file, list remove return value." />
+    <MESSAGE value="print list of bitcoins in walletStatus function." />
+    <MESSAGE value="bitcoin tree insert bug fixes, documentation file was moved in the root folder of project, transaction amount var, bitcoin insertions/deletions." />
+    <option name="LAST_COMMIT_MESSAGE" value="bitcoin tree insert bug fixes, documentation file was moved in the root folder of project, transaction amount var, bitcoin insertions/deletions." />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
+      <expression>
+        <expression-string>&amp;transaction-&gt;senderWalletId</expression-string>
+        <language-id>ObjectiveC</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>rest-&gt;*rest</expression-string>
+        <language-id>ObjectiveC</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>*((long int *)value)</expression-string>
         <language-id>ObjectiveC</language-id>
@@ -593,47 +819,47 @@
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>(char *)params</expression-string>
+        <expression-string>start - end</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(struct Wallet *)value</expression-string>
+        <expression-string>transaction-&gt;receiverWalletId</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(char *)key</expression-string>
+        <expression-string>strcmp(transaction-&gt;receiverWalletId, wallet-&gt;userId)</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(struct Wallet *)v</expression-string>
+        <expression-string>(char *)listGetIdentifier(tr1)</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(struct Wallet *) v</expression-string>
+        <expression-string>listGetIdentifier(tr1)</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>*((struct Tree *)bc)</expression-string>
+        <expression-string>(char *)tr1-&gt;identifier</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>*((struct Tree)bc)</expression-string>
+        <expression-string>*userId</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>*((long int)bc)</expression-string>
+        <expression-string>(char **)userId</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(long int)bc</expression-string>
+        <expression-string>(char *)userId</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -645,11 +871,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file:///usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-900" />
-      </provider>
     </entry>
     <entry file="file:///usr/lib/gcc/x86_64-linux-gnu/7/include/stdbool.h">
       <provider selected="true" editor-type-id="text-editor">
@@ -665,85 +886,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="33" lean-forward="true" selection-start-line="5" selection-start-column="33" selection-end-line="5" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="438">
-          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/include/stdio.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4680">
-          <caret line="312" column="48" selection-start-line="312" selection-start-column="45" selection-end-line="312" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bitcoin.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="20" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bitcoin.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/list.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tree.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="6" lean-forward="true" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
-          <folding>
-            <element signature="e#31#49#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tree.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="11" lean-forward="true" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/transaction.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/transaction.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="3" column="11" lean-forward="true" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/x86_64-linux-gnu/bits/stdint-intn.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -751,90 +893,303 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/transactionsFile">
+    <entry file="file:///usr/include/x86_64-linux-gnu/bits/typesizes.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="27" lean-forward="true" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
+        <state relative-caret-position="193">
+          <caret line="63" column="8" selection-start-line="63" selection-start-column="8" selection-end-line="63" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/include/string.h">
+    <entry file="file:///usr/include/x86_64-linux-gnu/bits/types.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="135" column="11" selection-start-line="135" selection-start-column="11" selection-end-line="135" selection-end-column="11" />
+        <state relative-caret-position="193">
+          <caret line="147" column="21" selection-start-line="147" selection-start-column="21" selection-end-line="147" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/bitCoinBalancesFile">
+    <entry file="file:///usr/include/x86_64-linux-gnu/bits/types/time_t.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="25" lean-forward="true" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="25" />
+        <state relative-caret-position="90">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/SimplebitCoinBalanciesFIle">
+    <entry file="file:///usr/include/time.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        <state relative-caret-position="220">
+          <caret line="81" column="14" selection-start-line="81" selection-start-column="14" selection-end-line="81" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/list.c">
+    <entry file="file://$PROJECT_DIR$/tree.h" />
+    <entry file="file://$PROJECT_DIR$/tree.c" />
+    <entry file="file://$PROJECT_DIR$/stack.h" />
+    <entry file="file://$PROJECT_DIR$/stack.c" />
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="87" column="5" selection-start-line="87" selection-start-column="5" selection-end-line="87" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#253#339#0" />
-            <element signature="e#341#407#0" />
-          </folding>
+        <state relative-caret-position="315">
+          <caret line="21" column="5" lean-forward="true" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/wallet.h">
+    <entry file="file:///usr/include/assert.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="32" selection-start-line="18" selection-start-column="32" selection-end-line="18" selection-end-column="32" />
+        <state relative-caret-position="177">
+          <caret line="106" column="10" selection-start-line="106" selection-start-column="10" selection-end-line="106" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/openssl/md5.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="327">
+          <caret line="109" column="4" selection-start-line="109" selection-start-column="4" selection-end-line="109" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/x86_64-linux-gnu/bits/libio.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="34" column="27" lean-forward="true" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/x86_64-linux-gnu/bits/types/struct_tm.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hash.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="165">
+          <caret line="11" column="37" selection-start-line="11" selection-start-column="37" selection-end-line="11" selection-end-column="37" />
           <folding>
             <element signature="e#41#61#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hash.c">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="196" column="61" lean-forward="true" selection-start-line="196" selection-start-column="61" selection-end-line="196" selection-end-column="61" />
+        <state relative-caret-position="75">
+          <caret line="5" column="84" selection-start-line="5" selection-start-column="84" selection-end-line="5" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="405" column="8" selection-start-line="405" selection-start-column="8" selection-end-line="405" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/stdio.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="317" column="11" selection-start-line="317" selection-start-column="11" selection-end-line="317" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/queue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="30" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/string.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret line="135" column="11" selection-start-line="135" selection-start-column="11" selection-end-line="135" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/bitcoin .png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/list.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#31#51#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/queue.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="730">
+          <caret line="69" column="17" lean-forward="true" selection-start-line="69" selection-start-column="17" selection-end-line="69" selection-end-column="17" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transaction.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="652">
+          <caret line="60" column="12" lean-forward="true" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="12" />
+          <folding>
+            <element signature="e#45#75#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wallet.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="10" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hash.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="102" selection-start-line="102" selection-end-line="102" />
+          <folding>
+            <element signature="e#103#389#1" />
+            <element signature="e#393#623#0" />
+            <element signature="e#625#834#0" />
+            <element signature="e#836#988#0" />
+            <element signature="e#990#1142#0" />
+            <element signature="e#1442#1630#0" />
+            <element signature="e#1632#1819#0" />
+            <element signature="e#1852#2817#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wallet.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="567">
-          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
+        <state relative-caret-position="495">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.c">
+    <entry file="file://$PROJECT_DIR$/resources/input">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="64" column="5" lean-forward="true" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="5" />
+        <state relative-caret-position="120">
+          <caret line="8" column="24" lean-forward="true" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/transactionsFileStdin">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="10" lean-forward="true" selection-start-line="4" selection-start-column="10" selection-end-line="4" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/bitCoinBalancesFile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="25" lean-forward="true" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/list.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="93" column="35" lean-forward="true" selection-start-line="93" selection-start-column="35" selection-end-line="93" selection-end-column="35" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bitcoin.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="310">
+          <caret line="21" column="17" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
+          <folding>
+            <element signature="e#37#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transaction.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="16" column="32" lean-forward="true" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+          <folding>
+            <element signature="e#190#217#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="356" column="55" selection-start-line="356" selection-start-column="55" selection-end-line="356" selection-end-column="55" />
+          <folding>
+            <element signature="e#462#602#0" />
+            <element signature="e#604#2596#0" />
+            <element signature="e#2598#6347#0" />
+            <element signature="e#6349#8374#0" />
+            <element signature="e#8377#10635#0" />
+            <element signature="e#10637#10875#0" />
+            <element signature="e#10877#11955#0" />
+            <element signature="e#11029#11173#0" />
+            <element signature="e#11957#12276#0" />
+            <element signature="e#12278#12593#0" />
+            <element signature="e#13322#14130#0" />
+            <element signature="e#14132#14845#0" />
+            <element signature="e#14847#14930#0" />
+            <element signature="e#14847#16792#0" />
+            <element signature="e#16794#17681#0" />
+            <marker date="1552767919082" expanded="false" signature="6756:8272" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bitcoin.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1340">
+          <caret line="201" column="29" lean-forward="true" selection-start-line="201" selection-start-column="29" selection-end-line="201" selection-end-column="29" />
+          <folding>
+            <element signature="e#165#256#1" />
+            <element signature="e#259#394#1" />
+            <element signature="e#429#508#0" />
+            <element signature="e#515#579#0" />
+            <element signature="e#586#652#0" />
+            <element signature="e#658#747#0" />
+            <element signature="e#749#1259#0" />
+            <element signature="e#1261#2939#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/transactionsFile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="20" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/SimplebitCoinBalanciesFIle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="13" lean-forward="true" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
         </state>
       </provider>
     </entry>
